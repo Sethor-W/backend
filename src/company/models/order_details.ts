@@ -1,6 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import { Branch } from './branch.model';
 import { User } from 'src/user/models/user.model';
+import { Dish } from './dish.model';
 
 @Entity()
 export class OrderDetails {
@@ -15,4 +23,8 @@ export class OrderDetails {
 
   @ManyToOne(() => User, (user) => user.id)
   user: User;
+
+  @ManyToMany(() => Dish)
+  @JoinTable()
+  dish: Dish[];
 }
