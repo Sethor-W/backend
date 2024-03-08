@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { PaymentModule } from './payment/payment.module';
+import { CompanyModule } from './company/company.module';
 
 const config = new ConfigService();
 
@@ -22,6 +23,7 @@ const config = new ConfigService();
     }),
     UserModule,
     PaymentModule,
+    CompanyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
