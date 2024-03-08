@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/user/models/user.model';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Card {
@@ -16,4 +17,7 @@ export class Card {
 
   @Column()
   expirationDate: Date;
+
+  @ManyToOne(() => User, (user) => user.id)
+  user: User;
 }
