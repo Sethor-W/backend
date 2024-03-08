@@ -5,9 +5,10 @@ import { CompanyController } from './controllers/company.controller';
 import { Company } from './models/company.model';
 import { Branch } from './models/branch.model';
 import { Dish } from './models/dish.model';
+import { OrderDetails } from './models/order_details';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Company, Branch, Dish])],
+  imports: [TypeOrmModule.forFeature([Company, Branch, Dish, OrderDetails])],
   providers: [CompanyService],
   controllers: [CompanyController],
 })
