@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { PaymentModule } from './payment/payment.module';
 import { CompanyModule } from './company/company.module';
+import { AuthModule } from './auth/auth.module';
 
 const config = new ConfigService();
 
@@ -24,6 +25,7 @@ const config = new ConfigService();
     UserModule,
     PaymentModule,
     CompanyModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
