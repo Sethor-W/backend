@@ -5,6 +5,11 @@ export class User {
   @PrimaryColumn()
   id: string;
 
+  @Column({
+    nullable: true,
+  })
+  avatar: string;
+
   @Column()
   name: string;
 

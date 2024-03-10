@@ -1,13 +1,12 @@
 import {
   Injectable,
   BadRequestException,
-  BadGatewayException,
   UnauthorizedException,
   HttpException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDTO } from 'src/user/dto/createUser.dto';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/services/user.service';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { LoginDTO } from './dto/login.dto';

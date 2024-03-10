@@ -1,24 +1,24 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
 import { User } from './user.model';
 
 @Entity()
 export class Document {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: string;
 
-  @Column()
+  @Column({
+    nullable: false,
+  })
   rutFrontalPhoto: string;
 
-  @Column()
+  @Column({
+    nullable: false,
+  })
   rutDorsalPhoto: string;
 
-  @Column()
+  @Column({
+    nullable: false,
+  })
   selfie: string;
 
   @OneToOne(() => User)
