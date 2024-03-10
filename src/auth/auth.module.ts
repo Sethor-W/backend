@@ -6,13 +6,13 @@ import { AuthService } from './auth.service';
 import { UserModule } from 'src/user/user.module';
 import { AuthController } from './auth.controller';
 
-const config = new ConfigService();
+//const config = new ConfigService();
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: config.get('JWT_SECRET'),
+      secret: 'secret-key',
       signOptions: { expiresIn: '29d' },
     }),
     UserModule,

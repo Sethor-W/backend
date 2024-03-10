@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './repository/user.repository';
 import { User } from './models/user.model';
 import { CreateUserDTO } from './dto/createUser.dto';
-import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -11,23 +11,24 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: UserRepository,
   ) {}
 
-  async createUser(user: CreateUserDTO) {
-    const { name, lastName, rut, email, password, phone } = user;
+  async createUser(user) {
+    const { id, name, lastName, rut, email, password, phone } = user;
 
-    try {
-      const hash = await bcrypt.hash(password, 10);
-      const newUser = this.userRepository.create({
-        name,
-        lastName,
-        rut,
-        email,
-        password: hash,
-        phone,
-      });
-      await this.userRepository.save(newUser);
-      return newUser;
-    } catch (error) {
-      throw new BadRequestException('new user could not be created', error);
-    }
+    const newUser = this.userRepository.create({
+      id,
+      name,
+      lastName,
+      rut,
+      email,
+      password,
+      phone,
+    });
+    await this.userRepository.save(newUser);
+    return newUser;
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ email });
+    return user;
   }
 }

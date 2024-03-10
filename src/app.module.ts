@@ -12,7 +12,10 @@ const config = new ConfigService();
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: config.get('DB_HOST'),
@@ -28,6 +31,6 @@ const config = new ConfigService();
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ConfigService],
 })
 export class AppModule {}
