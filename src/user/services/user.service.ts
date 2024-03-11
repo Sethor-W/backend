@@ -10,6 +10,7 @@ import { DocumentRepository } from '../repository/document.repository';
 import { Document } from '../models/document.model';
 import { User } from '../models/user.model';
 import { VerificationDataDTO } from '../dto/verificationData.dto';
+import { Encrypt } from 'src/encrypt/encrypt';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -18,6 +19,7 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: UserRepository,
     @InjectRepository(Document)
     private readonly documentRepository: DocumentRepository,
+    private readonly encryptService: Encrypt,
   ) {}
 
   async createUser(user) {
@@ -44,20 +46,28 @@ export class UserService {
   async verified(
     verifyData: VerificationDataDTO,
     id: string,
-  ): Promise<Document> {
+  ): Promise<Document | { ok: boolean; message: string }> {
     const { code, rutFrontalPhoto, rutDorsalPhoto, selfie } = verifyData;
     try {
       //if (code) return;
       const user = await this.userRepository.findOneBy({ id });
-      const document = this.documentRepository.create({
-        id: uuidv4(),
-        rutFrontalPhoto,
-        rutDorsalPhoto,
-        selfie,
-        user,
-      });
-      await this.documentRepository.save(document);
-      return document;
+      const userDocument = await this.documentRepository.findOneBy({ user });
+      if (!userDocument) {
+        const document = this.documentRepository.create({
+          id: uuidv4(),
+          rutFrontalPhoto: this.encryptService.encrypt(rutFrontalPhoto),
+          rutDorsalPhoto: this.encryptService.encrypt(rutDorsalPhoto),
+          selfie: this.encryptService.encrypt(selfie),
+          user,
+        });
+        await this.documentRepository.save(document);
+        return document;
+      } else {
+        return {
+          ok: false,
+          message: 'Previously verified user',
+        };
+      }
     } catch (error) {
       console.error(error);
     }

@@ -21,7 +21,7 @@ export class Document {
   })
   selfie: string;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 }
