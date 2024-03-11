@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { PaymentModule } from './payment/payment.module';
 import { CompanyModule } from './company/company.module';
 import { AuthModule } from './auth/auth.module';
+import { StorageModule } from './storage/storage.module';
 
 const config = new ConfigService();
 
@@ -26,9 +27,10 @@ const config = new ConfigService();
       synchronize: true,
     }),
     UserModule,
-    PaymentModule,
     CompanyModule,
+    PaymentModule,
     AuthModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],

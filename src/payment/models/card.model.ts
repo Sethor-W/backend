@@ -1,23 +1,23 @@
 import { User } from 'src/user/models/user.model';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Card {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn({ nullable: false })
   id: string;
 
-  @Column()
+  @Column({ nullable: false })
   titularName: string;
 
-  @Column()
-  number: number;
+  @Column({ nullable: false })
+  number: string;
 
-  @Column()
-  cvv: number;
+  @Column({ nullable: false })
+  cvv: string;
 
-  @Column()
-  expirationDate: Date;
+  @Column({ nullable: false })
+  expirationDate: string;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
   user: User;
 }
