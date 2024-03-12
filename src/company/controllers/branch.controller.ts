@@ -3,9 +3,12 @@ import {
   Controller,
   UseGuards,
   Post,
+  Param,
   Query,
   Req,
   Get,
+  Put,
+  Delete,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
@@ -32,5 +35,41 @@ export class BranchController {
   @Get('/')
   getBranchs(@Query() companyId: { Id: string }, @Req() req: Request) {
     return this.branchService.getBranch(companyId, req['user']['id']);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/:id')
+  getBranchById(
+    @Param('id') id: string,
+    @Query() companyId: { Id: string },
+    @Req() req: Request,
+  ) {
+    return this.branchService.getBranchById(id, companyId, req['user']['id']);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/update/:id')
+  updateBranch(
+    @Body() data: CreateBranchDTO,
+    @Param('id') id: string,
+    @Query() companyId: { Id: string },
+    @Req() req: Request,
+  ) {
+    return this.branchService.updateBranch(
+      data,
+      id,
+      companyId,
+      req['user']['id'],
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/delete/:id')
+  deleteBranch(
+    @Param('id') id: string,
+    @Query() companyId: { Id: string },
+    @Req() req: Request,
+  ) {
+    return this.branchService.deleteBranch(id, companyId, req['user']['id']);
   }
 }

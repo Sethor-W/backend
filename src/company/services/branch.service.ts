@@ -65,6 +65,79 @@ export class BranchService {
       }
       const branchs = await this.branchRepository.find();
       return branchs;
-    } catch (error) {}
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async getBranchById(id: string, companyId: { Id: string }, userId: string) {
+    try {
+      const user = await this.userService.getUserById(userId);
+      const company = await this.companyRepository.findOneBy({
+        id: companyId.Id,
+        user,
+      });
+      if (!company) {
+        return {
+          ok: false,
+          message: 'compnay not found',
+        };
+      }
+      const branch = await this.branchRepository.findOneBy({ id });
+      return branch;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async updateBranch(
+    data: CreateBranchDTO,
+    id: string,
+    companyId: { Id: string },
+    userId: string,
+  ) {
+    try {
+      const user = await this.userService.getUserById(userId);
+      const company = await this.companyRepository.findOneBy({
+        id: companyId.Id,
+        user,
+      });
+      if (!company) {
+        return {
+          ok: false,
+          message: 'compnay not found',
+        };
+      }
+      await this.branchRepository.update({ id }, data);
+      return {
+        ok: true,
+        message: 'Update branch',
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async deleteBranch(id: string, companyId: { Id: string }, userId: string) {
+    try {
+      const user = await this.userService.getUserById(userId);
+      const company = await this.companyRepository.findOneBy({
+        id: companyId.Id,
+        user,
+      });
+      if (!company) {
+        return {
+          ok: false,
+          message: 'compnay not found',
+        };
+      }
+      await this.branchRepository.delete({ id });
+      return {
+        ok: true,
+        messsage: 'Delete branch',
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 }
