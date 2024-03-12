@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   ManyToOne,
   ManyToMany,
@@ -12,7 +12,7 @@ import { Dish } from './dish.model';
 
 @Entity()
 export class OrderDetails {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: string;
 
   @Column()

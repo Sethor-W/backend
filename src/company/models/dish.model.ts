@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne } from 'typeorm';
 import { Branch } from './branch.model';
 
 @Entity()
 export class Dish {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: string;
 
   @Column()
@@ -12,7 +12,7 @@ export class Dish {
   @Column()
   description: string;
 
-  @Column()
+  @Column('double precision')
   price: number;
 
   @ManyToOne(() => Branch, (branch) => branch.id)
