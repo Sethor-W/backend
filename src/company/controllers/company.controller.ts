@@ -10,10 +10,12 @@ import {
   Put,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CompanyService } from '../services/company.service';
 import { CreateCompanyDTO } from '../dto/createCompany.dto';
 
+@ApiTags('company')
 @Controller('company')
 export class CompanyController {
   constructor(private companyService: CompanyService) {}
