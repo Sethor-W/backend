@@ -21,7 +21,7 @@ const config = new ConfigService();
       type: 'postgres',
       host: config.get('DB_HOST'),
       port: config.get('DB_PORT'),
-      username: 'postgres',
+      username: config.get('DB_USER'),
       password: config.get('DB_PASSWORD'),
       autoLoadEntities: true,
       synchronize: true,
