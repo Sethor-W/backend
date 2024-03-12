@@ -19,23 +19,13 @@ export class CompanyService {
   ) {}
 
   async register(data: CreateCompanyDTO, id: string) {
-    const {
-      name,
-      phone,
-      opening_days,
-      opening_time,
-      closing_time,
-      description,
-    } = data;
+    const { name, phone, description } = data;
     try {
       const user = await this.userService.getUserById(id);
       const newComp = this.companyRepository.create({
         id: uuidv4(),
         name,
         phone,
-        opening_days,
-        opening_time,
-        closing_time,
         description,
         user,
       });
@@ -78,5 +68,24 @@ export class CompanyService {
   }
 
   // revisar los modelos de Company y Branch
-  //async update()
+  async update(data: CreateCompanyDTO, id: string, userId: string) {
+    try {
+      const user = await this.userService.getUserById(userId);
+      const company = await this.companyRepository.findOneBy({
+        id,
+        user,
+      });
+      if (!company) {
+        return {
+          ok: false,
+          message: 'Company not found',
+        };
+      }
+      await this.companyRepository.update({ id }, data);
+      return {
+        ok: true,
+        message: 'company info updated',
+      };
+    } catch (error) {}
+  }
 }

@@ -73,6 +73,14 @@ export class UserService {
     }
   }
 
+  // async updateAvatar(url: string){
+  //   try {
+
+  //   } catch (error) {
+
+  //   }
+  // }
+
   ////// servicios especiales ////////////////////////
   async getUsers(): Promise<User[]> {
     const users = await this.userRepository.find();

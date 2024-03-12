@@ -12,17 +12,5 @@ export class CreateCompanyDTO {
 
   @ApiProperty()
   @IsString()
-  opening_days: string;
-
-  @ApiProperty()
-  @IsString()
-  opening_time: string;
-
-  @ApiProperty()
-  @IsString()
-  closing_time: string;
-
-  @ApiProperty()
-  @IsString()
   description: string;
 }

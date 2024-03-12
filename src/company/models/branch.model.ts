@@ -9,6 +9,18 @@ export class Branch {
   @Column()
   address: string;
 
+  @Column()
+  phone: string;
+
+  @Column()
+  opening_days: string;
+
+  @Column()
+  opening_time: string;
+
+  @Column()
+  closing_time: string;
+
   @ManyToOne(() => Company, (comp) => comp.id)
   company: string;
 }

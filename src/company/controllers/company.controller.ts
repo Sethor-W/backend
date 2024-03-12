@@ -7,6 +7,7 @@ import {
   Get,
   Delete,
   Param,
+  Put,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
@@ -33,5 +34,15 @@ export class CompanyController {
   @Delete('/delete/:id')
   delete(@Param('id') id: string, @Req() req: Request) {
     return this.companyService.delete(id, req['user']['id']);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/update/:id')
+  update(
+    @Param('id') id: string,
+    @Body() data: CreateCompanyDTO,
+    @Req() req: Request,
+  ) {
+    return this.companyService.update(data, id, req['user']['id']);
   }
 }

@@ -13,15 +13,6 @@ export class Company {
   phone: string;
 
   @Column()
-  opening_days: string;
-
-  @Column()
-  opening_time: string;
-
-  @Column()
-  closing_time: string;
-
-  @Column()
   description: string;
 
   @ManyToOne(() => User, (user) => user.id)
