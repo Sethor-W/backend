@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Get, Query, UseGuards } from '@nestjs/common';
 import { DishService } from '../services/dish.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { ApiTags } from '@nestjs/swagger';
@@ -13,5 +13,17 @@ export class DishController {
   @Post('/create')
   create(@Body() data: CreateDishDTO, @Query('branchId') branchId: string) {
     return this.dishService.create(data, branchId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/')
+  getDishes(branchId: string) {
+    return this.dishService.getDishes(branchId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/:id')
+  getOneDish(id: string) {
+    return this.dishService.getOneDish(id);
   }
 }

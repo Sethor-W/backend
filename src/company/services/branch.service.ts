@@ -140,4 +140,13 @@ export class BranchService {
       throw new BadRequestException(error);
     }
   }
+
+  async getAllBranch() {
+    try {
+      const branches = await this.branchRepository.find();
+      return branches;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
 }

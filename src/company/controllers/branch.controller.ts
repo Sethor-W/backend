@@ -72,4 +72,10 @@ export class BranchController {
   ) {
     return this.branchService.deleteBranch(id, companyId, req['user']['id']);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/all')
+  getAllBranch() {
+    return this.branchService.getAllBranch();
+  }
 }

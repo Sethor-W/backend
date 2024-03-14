@@ -37,8 +37,40 @@ export class DishService {
         data: newDish,
       };
     } catch (error) {
-      //throw new BadRequestException(error);
-      console.error(error);
+      throw new BadRequestException(error);
+    }
+  }
+
+  // falta probar
+  async getDishes(branchId: string) {
+    try {
+      const branch = await this.branchRepository.findOneBy({ id: branchId });
+      if (!branch) {
+        return {
+          ok: false,
+          message: 'branch not found',
+        };
+      }
+      const dishes = await this.dishRepository.findBy({ branch });
+      return dishes;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  //falta probar
+  async getOneDish(id: string) {
+    try {
+      const dish = await this.dishRepository.findOneBy({ id });
+      if (!dish) {
+        return {
+          ok: false,
+          message: 'dish not found',
+        };
+      }
+      return dish;
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 }
