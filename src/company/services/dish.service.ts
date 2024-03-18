@@ -41,7 +41,6 @@ export class DishService {
     }
   }
 
-  // falta probar
   async getDishes(branchId: string) {
     try {
       const branch = await this.branchRepository.findOneBy({ id: branchId });
@@ -58,7 +57,6 @@ export class DishService {
     }
   }
 
-  //falta probar
   async getOneDish(id: string) {
     try {
       const dish = await this.dishRepository.findOneBy({ id });
@@ -69,6 +67,44 @@ export class DishService {
         };
       }
       return dish;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async update(id: string, branchId: string, data: CreateDishDTO) {
+    try {
+      const branch = await this.branchRepository.findOneBy({ id: branchId });
+      if (!branch) {
+        return {
+          ok: false,
+          message: 'branch not found',
+        };
+      }
+      await this.dishRepository.update({ id, branch }, data);
+      return {
+        ok: true,
+        message: 'Dish updated',
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async delete(id: string, branchId: string) {
+    try {
+      const branch = await this.branchRepository.findOneBy({ id: branchId });
+      if (!branch) {
+        return {
+          ok: false,
+          message: 'branch not found',
+        };
+      }
+      await this.dishRepository.delete({ id, branch });
+      return {
+        ok: true,
+        message: 'dish deleted',
+      };
     } catch (error) {
       throw new BadRequestException(error);
     }
