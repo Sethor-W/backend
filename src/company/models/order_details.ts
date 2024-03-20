@@ -1,14 +1,13 @@
 import {
   Entity,
-  PrimaryColumn,
   Column,
+  PrimaryColumn,
+  OneToOne,
+  JoinColumn,
   ManyToOne,
-  ManyToMany,
-  JoinTable,
 } from 'typeorm';
-import { Branch } from './branch.model';
-import { User } from 'src/user/models/user.model';
 import { Dish } from './dish.model';
+import { Order } from './order';
 
 @Entity()
 export class OrderDetails {
@@ -16,15 +15,12 @@ export class OrderDetails {
   id: string;
 
   @Column()
-  order_time: Date;
+  amount: number;
 
-  @ManyToOne(() => Branch, (branch) => branch.id)
-  branch: Branch;
+  @OneToOne(() => Dish, { eager: true })
+  @JoinColumn()
+  dish: string;
 
-  @ManyToOne(() => User, (user) => user.id)
-  user: User;
-
-  @ManyToMany(() => Dish)
-  @JoinTable()
-  dish: Dish[];
+  @ManyToOne(() => Order, (order) => order.id, { onDelete: 'CASCADE' })
+  order: Order;
 }
