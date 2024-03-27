@@ -4,7 +4,7 @@ import {
   UploadApiErrorResponse,
   UploadApiResponse,
 } from 'cloudinary';
-import streamifier from 'streamifier';
+import * as streamifier from 'streamifier';
 
 type CloudinaryResponse = UploadApiErrorResponse | UploadApiResponse;
 

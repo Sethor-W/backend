@@ -6,6 +6,8 @@ import {
   UseGuards,
   Param,
   Req,
+  Put,
+  Query,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
@@ -36,8 +38,24 @@ export class UserController {
     return this.userService.getUsers();
   }
 
+  // revisar
+  @UseGuards(JwtAuthGuard)
+  @Get('/matched-password')
+  match(@Query('password') password: string, @Req() req: Request) {
+    return this.userService.isMatchPassword(req['user']['id'], password);
+  }
+
   @Get('/:id')
   getUserById(@Param('id') id: string) {
     return this.userService.getUserById(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/change-password')
+  changePassword(
+    @Query('newPassword') newPassword: string,
+    @Req() req: Request,
+  ) {
+    return this.userService.changePassword(req['user']['id'], newPassword);
   }
 }

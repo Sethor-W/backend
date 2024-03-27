@@ -12,6 +12,8 @@ import { User } from '../models/user.model';
 import { VerificationDataDTO } from '../dto/verificationData.dto';
 import { Encrypt } from 'src/encrypt/encrypt';
 import { v4 as uuidv4 } from 'uuid';
+import * as bcrypt from 'bcrypt';
+import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 
 @Injectable()
 export class UserService {
@@ -96,6 +98,35 @@ export class UserService {
       return user;
     } catch (error) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async isMatchPassword(userId: string, password: string) {
+    try {
+      const user = await this.getUserById(userId);
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        throw new BadRequestException('Password not match');
+      }
+      return {
+        ok: true,
+        message: 'Match password',
+      };
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async changePassword(userId: string, newPassword: string) {
+    try {
+      const hash = await bcrypt.hash(newPassword, 10);
+      await this.userRepository.update({ id: userId }, { password: hash });
+      return {
+        ok: true,
+        message: 'Password changed',
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 }
