@@ -8,6 +8,7 @@ import { PaymentModule } from './payment/payment.module';
 import { CompanyModule } from './company/company.module';
 import { AuthModule } from './auth/auth.module';
 import { StorageModule } from './storage/storage.module';
+import { HelpModule } from './help/help.module';
 
 const config = new ConfigService();
 
@@ -31,6 +32,7 @@ const config = new ConfigService();
     PaymentModule,
     AuthModule,
     StorageModule,
+    HelpModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],
