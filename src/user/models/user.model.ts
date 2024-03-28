@@ -27,4 +27,11 @@ export class User {
 
   @Column()
   phone: string;
+
+  @Column({
+    nullable: true,
+    type: 'numeric',
+    precision: 4,
+  })
+  pin: number;
 }

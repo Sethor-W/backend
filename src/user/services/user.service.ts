@@ -14,6 +14,7 @@ import { Encrypt } from 'src/encrypt/encrypt';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
+import { CreateUserDTO } from '../dto/createUser.dto';
 
 @Injectable()
 export class UserService {
@@ -38,6 +39,18 @@ export class UserService {
     });
     await this.userRepository.save(newUser);
     return newUser;
+  }
+
+  async createPin(userId: string, pin: number) {
+    try {
+      await this.userRepository.update({ id: userId }, { pin });
+      return {
+        ok: true,
+        message: `Create pin for User ${userId}`,
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
@@ -114,6 +127,18 @@ export class UserService {
       };
     } catch (error) {
       throw new InternalServerErrorException();
+    }
+  }
+
+  async updateUser(userId: string, data: CreateUserDTO) {
+    try {
+      await this.userRepository.update({ id: userId }, data);
+      return {
+        ok: true,
+        message: `User ${userId} in change`,
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 

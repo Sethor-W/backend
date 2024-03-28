@@ -38,7 +38,6 @@ export class UserController {
     return this.userService.getUsers();
   }
 
-  // revisar
   @UseGuards(JwtAuthGuard)
   @Get('/matched-password')
   match(@Query('password') password: string, @Req() req: Request) {
@@ -48,6 +47,18 @@ export class UserController {
   @Get('/:id')
   getUserById(@Param('id') id: string) {
     return this.userService.getUserById(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/update')
+  updateUser(@Req() req: Request, @Body() data: CreateUserDTO) {
+    return this.userService.updateUser(req['user']['id'], data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/pin')
+  createPin(@Req() req: Request, @Body() pin: number) {
+    return this.userService.createPin(req['user']['id'], pin);
   }
 
   @UseGuards(JwtAuthGuard)
