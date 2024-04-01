@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
 import { EmployeeType } from '../enum/employee.enum';
+import { Branch } from 'src/company/models/branch.model';
 
 @Entity()
 export class Employee {
@@ -26,4 +27,8 @@ export class Employee {
 
   @Column({ nullable: true })
   ep: string;
+
+  @OneToOne(() => Branch)
+  @JoinColumn()
+  branch: string;
 }

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EmployeeService } from './employee.service';
-import { EmployeeController } from './employee.controller';
+import { EmployeeService } from './services/employee.service';
+import { EmployeeController } from './controllers/employee.controller';
 import { Employee } from './models/employee.model';
 
 @Module({
