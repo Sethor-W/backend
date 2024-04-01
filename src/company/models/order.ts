@@ -17,10 +17,10 @@ export class Order {
   @CreateDateColumn()
   order_time: Date;
 
-  @ManyToOne(() => Branch, (branch) => branch.id)
+  @ManyToOne(() => Branch, (branch) => branch.id, { onDelete: 'CASCADE' })
   branch: Branch;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
   user: User;
 
   @OneToMany(() => OrderDetails, (order) => order.id)

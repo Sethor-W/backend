@@ -24,7 +24,11 @@ export class UserService {
     private readonly documentRepository: DocumentRepository,
     private readonly encryptService: Encrypt,
   ) {}
-
+  /* crear ususario
+   * @param {CreateUserDTO}
+   * @return {newUser}
+   *
+   */
   async createUser(user) {
     const { id, name, lastName, rut, email, password, phone } = user;
 

@@ -17,7 +17,7 @@ export class OrderDetails {
   @Column()
   amount: number;
 
-  @OneToOne(() => Dish, { eager: true })
+  @OneToOne(() => Dish, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn()
   dish: string;
 

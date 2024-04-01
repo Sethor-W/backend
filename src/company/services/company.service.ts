@@ -8,20 +8,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CompanyRepository } from '../repository/company.repository';
 import { Company } from '../models/company.model';
 import { CreateCompanyDTO } from '../dto/createCompany.dto';
-import { UserService } from 'src/user/services/user.service';
+import { UserBusinessService } from 'src/user/services/userBusiness.service';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectRepository(Company) private companyRepository: CompanyRepository,
-    private userService: UserService,
+    private userBusService: UserBusinessService,
   ) {}
 
   async register(data: CreateCompanyDTO, id: string) {
     const { name, phone, description } = data;
     try {
-      const user = await this.userService.getUserById(id);
+      const user = await this.userBusService.getUserById(id);
       const newComp = this.companyRepository.create({
         id: uuidv4(),
         name,
@@ -38,7 +38,7 @@ export class CompanyService {
 
   async getCompany(id: string) {
     try {
-      const user = await this.userService.getUserById(id);
+      const user = await this.userBusService.getUserById(id);
       const companies = await this.companyRepository.findBy({ user });
       return companies;
     } catch (error) {
@@ -48,7 +48,7 @@ export class CompanyService {
 
   async delete(id: string, userId: string) {
     try {
-      const user = await this.userService.getUserById(userId);
+      const user = await this.userBusService.getUserById(userId);
       const company = await this.companyRepository.findOneBy({
         id,
         user,
@@ -70,7 +70,7 @@ export class CompanyService {
   // revisar los modelos de Company y Branch
   async update(data: CreateCompanyDTO, id: string, userId: string) {
     try {
-      const user = await this.userService.getUserById(userId);
+      const user = await this.userBusService.getUserById(userId);
       const company = await this.companyRepository.findOneBy({
         id,
         user,

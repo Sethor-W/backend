@@ -15,6 +15,6 @@ export class Dish {
   @Column('double precision')
   price: number;
 
-  @ManyToOne(() => Branch, (branch) => branch.id)
+  @ManyToOne(() => Branch, (branch) => branch.id, { onDelete: 'CASCADE' })
   branch: Branch;
 }

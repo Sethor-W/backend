@@ -9,6 +9,7 @@ import { CompanyModule } from './company/company.module';
 import { AuthModule } from './auth/auth.module';
 import { StorageModule } from './storage/storage.module';
 import { HelpModule } from './help/help.module';
+import { EmployeeModule } from './employee/employee.module';
 
 const config = new ConfigService();
 
@@ -33,6 +34,7 @@ const config = new ConfigService();
     AuthModule,
     StorageModule,
     HelpModule,
+    EmployeeModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],

@@ -5,11 +5,13 @@ import { User } from './models/user.model';
 import { Document } from './models/document.model';
 import { UserController } from './controllers/user.controller';
 import { Encrypt } from 'src/encrypt/encrypt';
+import { UserBusiness } from './models/userBusiness.model';
+import { UserBusinessService } from './services/userBusiness.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Document])],
-  providers: [UserService, Encrypt],
+  imports: [TypeOrmModule.forFeature([User, UserBusiness, Document])],
+  providers: [UserService, Encrypt, UserBusinessService],
   controllers: [UserController],
-  exports: [UserService],
+  exports: [UserService, UserBusinessService],
 })
 export class UserModule {}
