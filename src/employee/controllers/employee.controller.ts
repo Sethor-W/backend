@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Put, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { EmployeeService } from '../services/employee.service';
 import { CreateEmployeeDTO } from '../dto/createEmployee.dto';
@@ -11,5 +11,15 @@ export class EmployeeController {
   @Post('new')
   createEmployee(@Body() data: CreateEmployeeDTO) {
     return this.employeeService.createEmployee(data);
+  }
+
+  @Get('/list')
+  getListEmplee(branchId: string) {
+    return this.employeeService.getListEmployee(branchId);
+  }
+
+  @Put('/update/:id')
+  updateInfo(@Param('id') id: string, @Body() data: CreateEmployeeDTO) {
+    return this.employeeService.updateInfoEmployee(id, data);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmployeeRepository } from '../repository/employee.repository';
 import { Employee } from '../models/employee.model';
@@ -33,6 +33,31 @@ export class EmployeeService {
       });
       await this.employeeRepo.save(newEmployee);
       return newEmployee;
-    } catch (error) {}
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  //get list of employees
+  async getListEmployee(branchId: string) {
+    try {
+      const employees = await this.employeeRepo.findBy({ branch: branchId });
+      return employees;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  //update employees's info
+  async updateInfoEmployee(id: string, data: CreateEmployeeDTO) {
+    try {
+      await this.employeeRepo.update({ id }, data);
+      return {
+        ok: true,
+        message: `Updated employee information: ${id}`,
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 }
