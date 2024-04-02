@@ -15,6 +15,7 @@ export class UserBusinessService {
     @InjectRepository(UserBusiness) private userBusinessRepo: UserBusinessRepo,
   ) {}
 
+  //create user business profile
   async createUser(data: CreateUserBusDTO) {
     const { id, name, lastName, rut, email, password, key_word, phone } = data;
     try {
@@ -53,9 +54,10 @@ export class UserBusinessService {
     }
   }
 
+  //EP code generation for employees
   generateEP() {
     const caracteres =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
     let codigo = '';
     // Generar 9 caracteres aleatorios
     for (let i = 0; i < 6; i++) {

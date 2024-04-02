@@ -119,6 +119,7 @@ export class AuthService {
           id: newUser.id,
           name: newUser.name,
           email: newUser.email,
+          credential: `${newUser.rut}.${newUser.key_word}`,
         };
         const token = this.jwtServices.sign(payload);
         await this.userBusiness.createUser(newUser);
@@ -131,7 +132,8 @@ export class AuthService {
         message: 'This email is registered',
       };
     } catch (error) {
-      throw new BadRequestException('new user could not be created', error);
+      //throw new BadRequestException('new user could not be created', error);
+      console.error(error);
     }
   }
 
@@ -142,11 +144,12 @@ export class AuthService {
       try {
         const isMatch = await bcrypt.compare(password, user.password);
         if (isMatch) {
-          const { id, name, email } = user;
+          const { id, name, email, credential } = user;
           return {
             id,
             name,
             email,
+            credential,
           };
         } else {
           throw new UnauthorizedException('Invalid password');
@@ -167,6 +170,7 @@ export class AuthService {
       id: validUser.id,
       name: validUser.name,
       email: validUser.email,
+      credential: validUser.credential,
     };
     const token = this.jwtServices.sign(payload);
     return {

@@ -62,6 +62,4 @@ export class EmployeeService {
       throw new BadRequestException(error);
     }
   }
-
-  async generateEP() {}
 }
