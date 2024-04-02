@@ -24,6 +24,10 @@ export class CreateEmployeeDTO {
   rut: string;
 
   @ApiProperty()
+  @IsString()
+  key_word: string;
+
+  @ApiProperty()
   @IsEnum(EmployeeType)
   type: EmployeeType;
 

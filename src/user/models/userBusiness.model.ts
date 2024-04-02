@@ -31,6 +31,9 @@ export class UserBusiness {
   @Column()
   key_word: string;
 
+  @Column()
+  credential: string;
+
   //   @Column({
   //     nullable: true,
   //     type: 'numeric',

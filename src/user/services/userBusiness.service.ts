@@ -26,6 +26,7 @@ export class UserBusinessService {
         email,
         password,
         key_word,
+        credential: `${rut}.${key_word}`,
         phone,
       });
       await this.userBusinessRepo.save(user);
@@ -50,5 +51,18 @@ export class UserBusinessService {
     } catch (error) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
+  }
+
+  generateEP() {
+    const caracteres =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let codigo = '';
+    // Generar 9 caracteres aleatorios
+    for (let i = 0; i < 6; i++) {
+      const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
+      codigo += caracteres[indiceAleatorio];
+    }
+
+    return codigo;
   }
 }

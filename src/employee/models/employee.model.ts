@@ -23,6 +23,12 @@ export class Employee {
   rut: string;
 
   @Column()
+  key_word: string;
+
+  @Column()
+  credential: string;
+
+  @Column()
   type: EmployeeType;
 
   @Column({ nullable: true })

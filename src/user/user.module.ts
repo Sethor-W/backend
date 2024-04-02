@@ -7,11 +7,12 @@ import { UserController } from './controllers/user.controller';
 import { Encrypt } from 'src/encrypt/encrypt';
 import { UserBusiness } from './models/userBusiness.model';
 import { UserBusinessService } from './services/userBusiness.service';
+import { UserBusinessController } from './controllers/userBusiness.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, UserBusiness, Document])],
   providers: [UserService, Encrypt, UserBusinessService],
-  controllers: [UserController],
+  controllers: [UserController, UserBusinessController],
   exports: [UserService, UserBusinessService],
 })
 export class UserModule {}

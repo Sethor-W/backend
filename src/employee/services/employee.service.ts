@@ -27,6 +27,8 @@ export class EmployeeService {
         email: data.email,
         phone: data.phone,
         rut: data.rut,
+        key_word: data.key_word,
+        credential: `${data.rut}.${data.key_word}`,
         type: data.type,
         ep: data.ep,
         branch: data.branchId,
@@ -60,4 +62,6 @@ export class EmployeeService {
       throw new BadRequestException(error);
     }
   }
+
+  async generateEP() {}
 }
