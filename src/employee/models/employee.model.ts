@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
 import { EmployeeType } from '../enum/employee.enum';
-import { Branch } from 'src/company/models/branch.model';
+import { Branch } from '../../company/models/branch.model';
 
 @Entity()
 export class Employee {

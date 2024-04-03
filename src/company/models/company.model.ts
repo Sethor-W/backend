@@ -1,4 +1,4 @@
-import { UserBusiness } from 'src/user/models/userBusiness.model';
+import { UserBusiness } from '../../user/models/userBusiness.model';
 import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
 
 @Entity()

@@ -6,7 +6,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Branch } from './branch.model';
-import { User } from 'src/user/models/user.model';
+import { User } from '../../user/models/user.model';
 import { OrderDetails } from './order_details';
 
 @Entity()
