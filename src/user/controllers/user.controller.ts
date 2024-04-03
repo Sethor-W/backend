@@ -26,11 +26,11 @@ export class UserController {
     return this.userService.createUser(user);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/verified')
-  verified(@Body() verificationData: VerificationDataDTO, @Req() req: Request) {
-    return this.userService.verified(verificationData, req['user']['id']);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Post('/verified')
+  // verified(@Body() verificationData: VerificationDataDTO, @Req() req: Request) {
+  //   return this.userService.verified(verificationData, req['user']['id']);
+  // }
 
   //@UseGuards(JwtAuthGuard)
   @Get('/')

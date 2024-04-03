@@ -62,35 +62,35 @@ export class UserService {
     return user;
   }
 
-  async verified(
-    verifyData: VerificationDataDTO,
-    id: string,
-  ): Promise<Document | { ok: boolean; message: string }> {
-    const { code, rutFrontalPhoto, rutDorsalPhoto, selfie } = verifyData;
-    try {
-      //if (code) return;
-      const user = await this.userRepository.findOneBy({ id });
-      const userDocument = await this.documentRepository.findOneBy({ user });
-      if (!userDocument) {
-        const document = this.documentRepository.create({
-          id: uuidv4(),
-          rutFrontalPhoto: this.encryptService.encrypt(rutFrontalPhoto),
-          rutDorsalPhoto: this.encryptService.encrypt(rutDorsalPhoto),
-          selfie: this.encryptService.encrypt(selfie),
-          user,
-        });
-        await this.documentRepository.save(document);
-        return document;
-      } else {
-        return {
-          ok: false,
-          message: 'Previously verified user',
-        };
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  // async verified(
+  //   verifyData: VerificationDataDTO,
+  //   id: string,
+  // ): Promise<Document | { ok: boolean; message: string }> {
+  //   const { code, rutFrontalPhoto, rutDorsalPhoto, selfie } = verifyData;
+  //   try {
+  //     //if (code) return;
+  //     const user = await this.userRepository.findOneBy({ id });
+  //     const userDocument = await this.documentRepository.findOneBy({ user });
+  //     if (!userDocument) {
+  //       const document = this.documentRepository.create({
+  //         id: uuidv4(),
+  //         rutFrontalPhoto: this.encryptService.encrypt(rutFrontalPhoto),
+  //         rutDorsalPhoto: this.encryptService.encrypt(rutDorsalPhoto),
+  //         selfie: this.encryptService.encrypt(selfie),
+  //         user,
+  //       });
+  //       await this.documentRepository.save(document);
+  //       return document;
+  //     } else {
+  //       return {
+  //         ok: false,
+  //         message: 'Previously verified user',
+  //       };
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
 
   // async updateAvatar(url: string){
   //   try {

@@ -7,6 +7,7 @@ import { UserModule } from 'src/user/user.module';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { JwtBusinessStrategy } from './strategy/jwtBusiness.strategy';
+import { JwtManagerStrategy } from './strategy/jwtManager.strategy';
 
 //const config = new ConfigService();
 
@@ -19,7 +20,12 @@ import { JwtBusinessStrategy } from './strategy/jwtBusiness.strategy';
     }),
     UserModule,
   ],
-  providers: [AuthService, JwtStrategy, JwtBusinessStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    JwtBusinessStrategy,
+    JwtManagerStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}
