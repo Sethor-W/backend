@@ -9,12 +9,12 @@ import { UserRepository } from '../repository/user.repository';
 import { DocumentRepository } from '../repository/document.repository';
 import { Document } from '../models/document.model';
 import { User } from '../models/user.model';
-import { VerificationDataDTO } from '../dto/verificationData.dto';
 import { Encrypt } from 'src/encrypt/encrypt';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { CreateUserDTO } from '../dto/createUser.dto';
+import { CreateDocumentDTO } from '../dto/createDocument.dto';
 
 @Injectable()
 export class UserService {
@@ -100,6 +100,31 @@ export class UserService {
   //   }
   // }
 
+  async createDocuments(data: CreateDocumentDTO, userId: string) {
+    try {
+      const user = await this.getUserById(userId);
+      const userDocument = await this.documentRepository.findOneBy({ user });
+      if (!userDocument) {
+        const document = this.documentRepository.create({
+          id: uuidv4(),
+          rutFrontalPhoto: this.encryptService.encrypt(data.rutFrontalPhoto),
+          rutDorsalPhoto: this.encryptService.encrypt(data.rutDorsalPhoto),
+          selfie: this.encryptService.encrypt(data.selfie),
+          user,
+        });
+        await this.documentRepository.save(document);
+        return document;
+      } else {
+        return {
+          ok: false,
+          message: 'Previously verified user',
+        };
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   ////// servicios especiales ////////////////////////
   async getUsers(): Promise<User[]> {
     const users = await this.userRepository.find();
@@ -153,6 +178,18 @@ export class UserService {
       return {
         ok: true,
         message: 'Password changed',
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async updateAvatar(url: string, userId: string) {
+    try {
+      await this.userRepository.update({ id: userId }, { avatar: url });
+      return {
+        ok: true,
+        message: `Avatar of user: ${userId} updated`,
       };
     } catch (error) {
       throw new BadRequestException(error);

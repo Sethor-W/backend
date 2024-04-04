@@ -14,7 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UserService } from '../services/user.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CreateUserDTO } from '../dto/createUser.dto';
-import { VerificationDataDTO } from '../dto/verificationData.dto';
+import { CreateDocumentDTO } from '../dto/createDocument.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -24,6 +24,12 @@ export class UserController {
   @Post('/')
   createUser(@Body() user: CreateUserDTO) {
     return this.userService.createUser(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/documents')
+  createDocuments(@Body() data: CreateDocumentDTO, @Req() req: Request) {
+    return this.userService.createDocuments(data, req['user']['id']);
   }
 
   // @UseGuards(JwtAuthGuard)
@@ -53,6 +59,12 @@ export class UserController {
   @Put('/update')
   updateUser(@Req() req: Request, @Body() data: CreateUserDTO) {
     return this.userService.updateUser(req['user']['id'], data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/avatar')
+  updateAvatar(@Body() url: string, @Req() req: Request) {
+    return this.userService.updateAvatar(url, req['user']['id']);
   }
 
   @UseGuards(JwtAuthGuard)

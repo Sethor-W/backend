@@ -6,7 +6,7 @@ import {
 } from 'cloudinary';
 import * as streamifier from 'streamifier';
 
-type CloudinaryResponse = UploadApiErrorResponse | UploadApiResponse;
+type CloudinaryResponse = UploadApiErrorResponse | UploadApiResponse | string;
 
 @Injectable()
 export class StorageService {
@@ -15,7 +15,7 @@ export class StorageService {
       const uploadStream = cloudinary.uploader.upload_stream(
         (error, result) => {
           if (error) return reject(error);
-          resolve(result);
+          resolve(result.secure_url);
         },
       );
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
