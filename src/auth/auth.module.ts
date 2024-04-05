@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { JwtBusinessStrategy } from './strategy/jwtBusiness.strategy';
 import { JwtManagerStrategy } from './strategy/jwtManager.strategy';
+import { GoogleAuthStrategy } from './strategy/google.strategy';
 
 //const config = new ConfigService();
 
@@ -25,6 +26,7 @@ import { JwtManagerStrategy } from './strategy/jwtManager.strategy';
     JwtStrategy,
     JwtBusinessStrategy,
     JwtManagerStrategy,
+    GoogleAuthStrategy,
   ],
   controllers: [AuthController],
 })

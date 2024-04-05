@@ -1,13 +1,10 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { GoogleStrategy } from 'passport-google-oauth20';
+import { Strategy } from 'passport-google-oauth20';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class GoogleAuthStrategy extends PassportStrategy(
-  GoogleStrategy,
-  'google',
-) {
+export class GoogleAuthStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(private readonly authService: AuthService) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
