@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { LoginDTO } from './dto/login.dto';
 import { CreateUserBusDTO } from 'src/user/dto/createUserBus.dto';
+import { User } from 'src/user/models/user.model';
 
 @Injectable()
 export class AuthService {
@@ -176,5 +177,19 @@ export class AuthService {
     return {
       token,
     };
+  }
+
+  async findOrCreateUser(profile: any): Promise<User> {
+    const user = await this.userService.getUserByEmail(profile.email);
+    if (user) {
+      return user;
+    }
+
+    await this.userService.createUser({
+      id: uuidv4(),
+      name: profile.name,
+      email: profile.email,
+      password: profile.id,
+    });
   }
 }
