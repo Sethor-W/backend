@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { StorageModule } from './storage/storage.module';
 import { HelpModule } from './help/help.module';
 import { EmployeeModule } from './employee/employee.module';
+import { InvoiceModule } from './invoice/invoice.module';
 
 const config = new ConfigService();
 
@@ -35,6 +36,7 @@ const config = new ConfigService();
     StorageModule,
     HelpModule,
     EmployeeModule,
+    InvoiceModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],
