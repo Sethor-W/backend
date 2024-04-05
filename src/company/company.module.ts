@@ -27,5 +27,6 @@ import { OrderController } from './controllers/orders.controller';
     DishController,
     OrderController,
   ],
+  exports: [OrderService],
 })
 export class CompanyModule {}

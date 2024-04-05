@@ -5,7 +5,7 @@ import { Order } from '../models/order';
 import { OrderDetails } from '../models/order_details';
 import { OrederDetailsRepository } from '../repository/order_details.repository';
 import { BranchRepository } from '../repository/branch.repository';
-import { UserService } from 'src/user/services/user.service';
+import { UserService } from '../../user/services/user.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Branch } from '../models/branch.model';
 import { CreateOrderDTO } from '../dto/createOrder.dto';
@@ -67,5 +67,14 @@ export class OrderService {
         data: orders,
       };
     } catch (error) {}
+  }
+
+  async getOrderById(id: string) {
+    try {
+      const order = await this.orderRepository.findOneBy({ id });
+      return order;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 }
