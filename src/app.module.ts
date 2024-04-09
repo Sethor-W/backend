@@ -11,6 +11,7 @@ import { StorageModule } from './storage/storage.module';
 import { HelpModule } from './help/help.module';
 import { EmployeeModule } from './employee/employee.module';
 import { InvoiceModule } from './invoice/invoice.module';
+import { EmailModule } from './email/email.module';
 
 const config = new ConfigService();
 
@@ -38,6 +39,7 @@ const config = new ConfigService();
     HelpModule,
     EmployeeModule,
     InvoiceModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],
