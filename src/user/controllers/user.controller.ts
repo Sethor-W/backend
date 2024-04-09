@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserService } from '../services/user.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CreateUserDTO } from '../dto/createUser.dto';
@@ -26,6 +26,7 @@ export class UserController {
     return this.userService.createUser(user);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('/documents')
   createDocuments(@Body() data: CreateDocumentDTO, @Req() req: Request) {

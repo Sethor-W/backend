@@ -10,7 +10,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CompanyService } from '../services/company.service';
 import { CreateCompanyDTO } from '../dto/createCompany.dto';
@@ -26,6 +26,7 @@ export class CompanyController {
     return this.companyService.register(data, req['user']['id']);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('/')
   getCompanies(@Req() req: Request) {

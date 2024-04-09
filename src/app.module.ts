@@ -27,6 +27,7 @@ const config = new ConfigService();
       username: config.get('DB_USER'),
       password: config.get('DB_PASSWORD'),
       autoLoadEntities: true,
+      database: config.get('DB_NAME'),
       synchronize: true,
     }),
     UserModule,

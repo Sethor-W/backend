@@ -22,40 +22,51 @@ export class AuthService {
     private readonly userBusiness: UserBusinessService,
   ) {}
 
+  private validateProperty(data: CreateUserDTO) {
+    for (const prop in data) {
+      if (typeof data[prop] === 'string' && data[prop] === '') {
+        throw new BadRequestException(`${prop} cant't be a void string`);
+      }
+    }
+    return true;
+  }
+
   //registro de usuario
   async register(user: CreateUserDTO) {
-    const { name, lastName, rut, email, password, phone } = user;
+    if (this.validateProperty(user)) {
+      const { name, lastName, rut, email, password, phone } = user;
 
-    try {
-      const userByEmail = await this.userService.getUserByEmail(email);
-      if (!userByEmail) {
-        const hash = await bcrypt.hash(password, 10);
-        const newUser = {
-          id: uuidv4(),
-          name,
-          lastName,
-          rut,
-          email,
-          password: hash,
-          phone,
-        };
-        const payload = {
-          id: newUser.id,
-          name: newUser.name,
-          email: newUser.email,
-        };
-        const token = this.jwtServices.sign(payload);
-        await this.userService.createUser(newUser);
+      try {
+        const userByEmail = await this.userService.getUserByEmail(email);
+        if (!userByEmail) {
+          const hash = await bcrypt.hash(password, 10);
+          const newUser = {
+            id: uuidv4(),
+            name,
+            lastName,
+            rut,
+            email,
+            password: hash,
+            phone,
+          };
+          const payload = {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+          };
+          const token = this.jwtServices.sign(payload);
+          await this.userService.createUser(newUser);
+          return {
+            token,
+          };
+        }
         return {
-          token,
+          ok: false,
+          message: 'This email is registered',
         };
+      } catch (error) {
+        throw new BadRequestException('new user could not be created', error);
       }
-      return {
-        ok: false,
-        message: 'This email is registered',
-      };
-    } catch (error) {
-      throw new BadRequestException('new user could not be created', error);
     }
   }
 
