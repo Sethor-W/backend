@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 import * as crypto from 'crypto';
 
@@ -25,7 +25,10 @@ export class EmailService {
     if (parsedToken.expiresAt < now.toISOString()) {
       return false;
     }
-    return parsedToken.otp;
+    return {
+      ok: true,
+      code: parsedToken.otp,
+    };
   }
 
   async sendEmail(email: string) {
@@ -43,5 +46,14 @@ export class EmailService {
     return {
       message: 'email send',
     };
+  }
+
+  async verifyCode(code: string) {
+    try {
+      const verify = this.verifyToken(code);
+      return verify;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 }
