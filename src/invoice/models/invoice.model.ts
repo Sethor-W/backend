@@ -1,4 +1,4 @@
-import { Order } from 'src/company/models/order';
+import { Order } from '../../company/models/order';
 import { Entity, PrimaryColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity()
