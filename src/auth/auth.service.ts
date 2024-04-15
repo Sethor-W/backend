@@ -84,10 +84,10 @@ export class AuthService {
             email,
           };
         } else {
-          throw new UnauthorizedException('Invalid password');
+          throw new UnauthorizedException('Invalid credential');
         }
       } catch (error) {
-        throw new HttpException('password not found', 301);
+        throw new HttpException('Invalid credential', 301);
       }
     } else {
       throw new HttpException('user not found', 302);
