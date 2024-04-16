@@ -96,17 +96,21 @@ export class AuthService {
 
   // login de usuario
   async login(data: LoginDTO) {
-    const { email, password } = data;
-    const validUser = await this.validateUserPassword(email, password);
-    const payload = {
-      id: validUser.id,
-      name: validUser.name,
-      email: validUser.email,
-    };
-    const token = this.jwtServices.sign(payload);
-    return {
-      token,
-    };
+    try {
+      const { email, password } = data;
+      const validUser = await this.validateUserPassword(email, password);
+      const payload = {
+        id: validUser.id,
+        name: validUser.name,
+        email: validUser.email,
+      };
+      const token = this.jwtServices.sign(payload);
+      return {
+        token,
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   // registro de usuario business
