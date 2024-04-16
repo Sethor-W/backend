@@ -20,7 +20,7 @@ export class OrderService {
     private userService: UserService,
   ) {}
 
-  async create(userId: string, branchId: string, data: CreateOrderDTO[]) {
+  async create(userId: string, branchId: string, data: CreateOrderDTO) {
     try {
       const user = await this.userService.getUserById(userId);
       const branch = await this.branchRepository.findOneBy({ id: branchId });
@@ -30,14 +30,18 @@ export class OrderService {
         user,
       });
       await this.orderRepository.save(order);
-      for (let i = 0; i < data.length; i++) {
+      for (let i = 0; i < data.order_data.length; i++) {
         const orderDetail = this.orderDetailsRepository.create({
           id: uuidv4(),
-          amount: data[i].amount,
-          dish: data[i].dish,
+          amount: data[i].order_data.amount,
+          dish: data[i].order_data.dish,
           order,
         });
         await this.orderDetailsRepository.save(orderDetail);
+        return {
+          ok: true,
+          message: 'order check',
+        };
       }
     } catch (error) {
       throw new BadRequestException(error);
