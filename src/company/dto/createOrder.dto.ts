@@ -1,12 +1,21 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString, IsNumber, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateOrderDTO {
-  @ApiProperty()
+export class OrderData {
   @IsNumber()
-  amount: number;
+  amounr: number;
 
-  @ApiProperty()
   @IsString()
   dish: string;
+}
+
+export class CreateOrderDTO {
+  @ApiProperty({
+    example: {
+      amount: 3.99,
+      dish: 'asdjjfsfs7a897f87',
+    },
+  })
+  @IsArray()
+  order_data: OrderData[];
 }

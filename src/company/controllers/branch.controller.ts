@@ -155,6 +155,14 @@ export class BranchController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: {
+        result: ['Brances...'],
+      },
+    },
+  })
   @Get('/all')
   getAllBranch() {
     return this.branchService.getAllBranch();
