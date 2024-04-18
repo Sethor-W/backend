@@ -5,6 +5,7 @@ import * as crypto from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TemporaryCodeRepo } from '../repository/tempCode.repository';
 import { TemporaryCode } from '../models/temporary_code.model';
+import { template } from '../templates/email_template';
 
 @Injectable()
 export class EmailService {
@@ -66,29 +67,29 @@ export class EmailService {
   async sendEmail(email: string) {
     const code = this.generateOTP();
 
-    const temp_code = this.temporaryCodeRepo.create({
-      code,
-      user_email: email,
-      active: true,
-      minute: new Date().getMinutes(),
-      seconds: new Date().getSeconds(),
-    });
-
-    await this.temporaryCodeRepo.save(temp_code);
-    return temp_code;
-
-    // await this.mailerService.sendMail({
-    //   to: email,
-    //   subject: 'Verify code',
-    //   template: './email_template.html',
-    //   context: {
-    //     code,
-    //   },
-    // });
-    // return {
-    //   message: 'email send',
+    // const temp_code = this.temporaryCodeRepo.create({
     //   code,
-    // };
+    //   user_email: email,
+    //   active: true,
+    //   minute: new Date().getMinutes(),
+    //   seconds: new Date().getSeconds(),
+    // });
+
+    //await this.temporaryCodeRepo.save(temp_code);
+    //return temp_code;
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Verify code',
+      html: template(code),
+      context: {
+        code,
+      },
+    });
+    return {
+      message: 'email send',
+      code,
+    };
   }
 
   async verifyCode(data: { code: string; email: string }) {

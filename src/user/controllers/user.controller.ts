@@ -46,6 +46,7 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Get('/matched-password')
   match(@Query('password') password: string, @Req() req: Request) {
     return this.userService.isMatchPassword(req['user']['id'], password);
@@ -57,24 +58,28 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Put('/update')
   updateUser(@Req() req: Request, @Body() data: CreateUserDTO) {
     return this.userService.updateUser(req['user']['id'], data);
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Put('/avatar')
   updateAvatar(@Body() url: string, @Req() req: Request) {
     return this.userService.updateAvatar(url, req['user']['id']);
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Put('/pin')
   createPin(@Req() req: Request, @Body() pin: number) {
     return this.userService.createPin(req['user']['id'], pin);
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Put('/change-password')
   changePassword(
     @Query('newPassword') newPassword: string,

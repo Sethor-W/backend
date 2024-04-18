@@ -8,7 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { StorageService } from './storage.service';
 
@@ -18,6 +18,7 @@ export class StorageController {
   constructor(private readonly storageService: StorageService) {}
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Post('/')
   @UseInterceptors(FileInterceptor('file'))
   uploadImage(
