@@ -67,15 +67,15 @@ export class EmailService {
   async sendEmail(email: string) {
     const code = this.generateOTP();
 
-    // const temp_code = this.temporaryCodeRepo.create({
-    //   code,
-    //   user_email: email,
-    //   active: true,
-    //   minute: new Date().getMinutes(),
-    //   seconds: new Date().getSeconds(),
-    // });
+    const temp_code = this.temporaryCodeRepo.create({
+      code,
+      user_email: email,
+      active: true,
+      minute: new Date().getMinutes(),
+      seconds: new Date().getSeconds(),
+    });
 
-    //await this.temporaryCodeRepo.save(temp_code);
+    await this.temporaryCodeRepo.save(temp_code);
     //return temp_code;
 
     await this.mailerService.sendMail({
