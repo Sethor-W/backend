@@ -12,7 +12,7 @@ import { CreateUserDTO } from 'src/user/dto/createUser.dto';
 import { LoginDTO } from './dto/login.dto';
 import { CreateUserBusDTO } from 'src/user/dto/createUserBus.dto';
 import { GoogleAuthGuard } from './guards/google.guard';
-import { authResponses } from 'src/responses/auth.responses';
+import { authResponses } from '../responses/auth.responses';
 
 @ApiTags('auth')
 @Controller('auth')
