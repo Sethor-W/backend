@@ -12,6 +12,8 @@ import { HelpModule } from './help/help.module';
 import { EmployeeModule } from './employee/employee.module';
 import { InvoiceModule } from './invoice/invoice.module';
 import { EmailModule } from './email/email.module';
+import { TasksModule } from './tasks/tasks.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const config = new ConfigService();
 
@@ -31,6 +33,7 @@ const config = new ConfigService();
       database: config.get('DB_NAME'),
       synchronize: true,
     }),
+    ScheduleModule.forRoot(),
     UserModule,
     CompanyModule,
     PaymentModule,
@@ -40,6 +43,7 @@ const config = new ConfigService();
     EmployeeModule,
     InvoiceModule,
     EmailModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],

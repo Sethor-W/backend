@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export function template(code: string) {
   return ` <style amp4email-boilerplate>
     body {

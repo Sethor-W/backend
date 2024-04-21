@@ -66,32 +66,45 @@ export class EmailService {
 
   async sendEmail(email: string) {
     const code = this.generateOTP();
+    try {
+      const getEmail = await this.temporaryCodeRepo.findOneBy({
+        user_email: email,
+        active: true,
+      });
+      if (!getEmail) {
+        const temp_code = this.temporaryCodeRepo.create({
+          code,
+          user_email: email,
+          active: true,
+          minute: new Date().getMinutes(),
+          seconds: new Date().getSeconds(),
+        });
 
-    const temp_code = this.temporaryCodeRepo.create({
-      code,
-      user_email: email,
-      active: true,
-      minute: new Date().getMinutes(),
-      seconds: new Date().getSeconds(),
-    });
+        await this.temporaryCodeRepo.save(temp_code);
+        return temp_code;
 
-    await this.temporaryCodeRepo.save(temp_code);
-    //return temp_code;
-
-    await this.mailerService.sendMail({
-      to: email,
-      subject: 'Verify code',
-      html: template(code),
-      context: {
-        code,
-      },
-    });
-    return {
-      message: 'email send',
-      code,
-    };
+        await this.mailerService.sendMail({
+          to: email,
+          subject: 'Verify code',
+          html: template(code),
+          context: {
+            code,
+          },
+        });
+        return {
+          message: 'email send',
+          code,
+        };
+      }
+      return {
+        message: 'code sended',
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
+  // verifica la valides del codigo enviado
   async verifyCode(data: { code: string; email: string }) {
     try {
       const temp_code = await this.temporaryCodeRepo.findOneBy({
@@ -135,5 +148,11 @@ export class EmailService {
     } catch (error) {
       throw new BadRequestException(error);
     }
+  }
+
+  async deleteInvalidCodes() {
+    try {
+      await this.temporaryCodeRepo.delete({ active: false });
+    } catch (error) {}
   }
 }
