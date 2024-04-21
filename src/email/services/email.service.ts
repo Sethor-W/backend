@@ -81,7 +81,7 @@ export class EmailService {
         });
 
         await this.temporaryCodeRepo.save(temp_code);
-        return temp_code;
+        //return temp_code;
 
         await this.mailerService.sendMail({
           to: email,
