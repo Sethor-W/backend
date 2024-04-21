@@ -106,6 +106,8 @@ export class EmailService {
 
   // verifica la valides del codigo enviado
   async verifyCode(data: { code: string; email: string }) {
+    // tiempo de valides del codigo
+    const validTime = 15;
     try {
       const temp_code = await this.temporaryCodeRepo.findOneBy({
         user_email: data.email,
@@ -122,7 +124,7 @@ export class EmailService {
         nowSecond,
       );
       if (data.code === temp_code.code && temp_code.active === true) {
-        if (dif.minutes < 2) {
+        if (dif.minutes < validTime) {
           await this.temporaryCodeRepo.update(
             {
               user_email: temp_code.user_email,
