@@ -12,25 +12,18 @@ import { OrderService } from '../services/orders.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { ApiTags, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { CreateOrderDTO } from '../dto/createOrder.dto';
+import { orderResponses } from 'src/responses/order.responses';
 
 @ApiTags('order')
 @Controller('order')
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
+  @Post('/')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiResponse({
-    status: 201,
-    schema: {
-      example: {
-        ok: true,
-        message: 'order check',
-      },
-    },
-  })
-  @ApiResponse({ status: 400, description: 'bad request' })
-  @Post('/')
+  @ApiResponse(orderResponses.createSuccess)
+  @ApiResponse(orderResponses.createBadRequest)
   create(
     @Body() data: CreateOrderDTO,
     @Query('branchId') branchId: string,
@@ -39,34 +32,11 @@ export class OrderController {
     return this.orderService.create(req['user']['id'], branchId, data);
   }
 
+  @Get('/')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiResponse({
-    status: 200,
-    schema: {
-      example: {
-        ok: true,
-        data: [
-          {
-            id: 'g8jfj57ds9j598dfj4',
-            amount: 3.99,
-            dish: 'pasta a la carbonara',
-          },
-          {},
-        ],
-      },
-    },
-  })
-  @ApiResponse({
-    status: 404,
-    schema: {
-      example: {
-        ok: false,
-        message: 'the user has no orders',
-      },
-    },
-  })
-  @Get('/')
+  @ApiResponse(orderResponses.getOrdersSuccess)
+  @ApiResponse(orderResponses.getOrdersNotFound)
   getOrdersByUser(@Req() req: Request) {
     return this.orderService.getOrderByUser(req['user']['id']);
   }
