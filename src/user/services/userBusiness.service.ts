@@ -38,8 +38,12 @@ export class UserBusinessService {
   }
 
   async getUserByEmail(email: string) {
-    const user = await this.userBusinessRepo.findOneBy({ email });
-    return user;
+    try {
+      const user = await this.userBusinessRepo.findOneBy({ email });
+      return user;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   async getUserById(id: string) {
@@ -48,7 +52,14 @@ export class UserBusinessService {
       if (!user) {
         throw new BadRequestException();
       }
-      return user;
+      return {
+        id: user.id,
+        name: user.name,
+        lastName: user.lastName,
+        rut: user.rut,
+        email: user.email,
+        phone: user.phone,
+      };
     } catch (error) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
