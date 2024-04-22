@@ -137,6 +137,7 @@ export class AuthService {
             name: newUser.name,
             email: newUser.email,
             type: 'business',
+            role: 'owner',
           };
           const token = this.jwtServices.sign(payload);
           await this.userBusiness.createUser(newUser);
@@ -189,6 +190,7 @@ export class AuthService {
       name: validUser.name,
       email: validUser.email,
       type: 'business',
+      role: 'owner',
     };
     const token = this.jwtServices.sign(payload);
     return {

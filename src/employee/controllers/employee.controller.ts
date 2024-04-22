@@ -12,8 +12,10 @@ import { ApiTags, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { EmployeeService } from '../services/employee.service';
 import { CreateEmployeeDTO } from '../dto/createEmployee.dto';
 import { CreateEmployeeWorkerDTO } from '../dto/createEmployeeWorker.dto';
-import { JwtManagerAuthGuard } from 'src/auth/guards/jwt.manager.guard';
 import { employeeResponses } from 'src/responses/employee.responses';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { Role } from 'src/auth/enums/roles.enums';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('employee')
 @Controller('employee')
@@ -21,7 +23,8 @@ export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
   @Post('new')
-  @UseGuards(JwtBusinessAuthGuard)
+  @Roles(Role.Owner)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(employeeResponses.createEmployeeSuccess)
   @ApiResponse(employeeResponses.createEmployeeConflict)
@@ -31,7 +34,8 @@ export class EmployeeController {
   }
 
   @Post('/new-worker')
-  @UseGuards(JwtManagerAuthGuard)
+  @Roles(Role.Manager)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(employeeResponses.createWorkerSuccess)
   @ApiResponse(employeeResponses.createWorkerConflict)
@@ -41,7 +45,8 @@ export class EmployeeController {
   }
 
   @Get('/list')
-  @UseGuards(JwtBusinessAuthGuard, JwtManagerAuthGuard)
+  @Roles(Role.Owner, Role.Manager)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(employeeResponses.listEmployeeSuccess)
   @ApiResponse(employeeResponses.listEmployeeBadRequest)
@@ -50,7 +55,8 @@ export class EmployeeController {
   }
 
   @Put('/update/:id')
-  @UseGuards(JwtBusinessAuthGuard, JwtManagerAuthGuard)
+  @Roles(Role.Owner, Role.Manager)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(employeeResponses.updateEmployeeSuccess)
   @ApiResponse(employeeResponses.updateEmployeeBadRequest)

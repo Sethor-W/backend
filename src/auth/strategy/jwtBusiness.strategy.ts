@@ -16,7 +16,6 @@ export class JwtBusinessStrategy extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    console.log(payload);
     if (!payload.type) {
       throw new UnauthorizedException();
     }
@@ -25,6 +24,7 @@ export class JwtBusinessStrategy extends PassportStrategy(
       name: payload.name,
       email: payload.email,
       type: payload.type,
+      role: payload.role,
     };
   }
 }
