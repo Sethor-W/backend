@@ -136,7 +136,7 @@ export class AuthService {
             id: newUser.id,
             name: newUser.name,
             email: newUser.email,
-            credential: `${newUser.rut}.${newUser.key_word}`,
+            type: 'business',
           };
           const token = this.jwtServices.sign(payload);
           await this.userBusiness.createUser(newUser);
@@ -188,7 +188,7 @@ export class AuthService {
       id: validUser.id,
       name: validUser.name,
       email: validUser.email,
-      credential: validUser.credential,
+      type: 'business',
     };
     const token = this.jwtServices.sign(payload);
     return {
