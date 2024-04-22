@@ -16,7 +16,7 @@ export class EmployeeService {
     try {
       //check if the employee already exists
       const employee = await this.employeeRepo.findOneBy({ email: data.email });
-      if (!employee) {
+      if (employee) {
         return {
           ok: false,
           message: 'the employee already exists',
@@ -74,6 +74,15 @@ export class EmployeeService {
   async getEmployeeById(id: string) {
     try {
       const employee = await this.employeeRepo.findOneBy({ id });
+      return employee;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async getEmployeeEmailCredential(email: string, credential: string) {
+    try {
+      const employee = await this.employeeRepo.findOneBy({ email, credential });
       return employee;
     } catch (error) {
       throw new BadRequestException(error);

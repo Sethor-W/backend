@@ -14,6 +14,7 @@ import { LoginDTO } from './dto/login.dto';
 import { CreateUserBusDTO } from 'src/user/dto/createUserBus.dto';
 import { User } from 'src/user/models/user.model';
 import { LoginBusinessDTO } from './dto/loginBusiness.dto';
+import { EmployeeService } from 'src/employee/services/employee.service';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
     private jwtServices: JwtService,
     private readonly userService: UserService,
     private readonly userBusiness: UserBusinessService,
+    private readonly employeeService: EmployeeService,
   ) {}
 
   private validateProperty(data: CreateUserDTO) {
@@ -203,6 +205,54 @@ export class AuthService {
       email: validUser.email,
       type: 'business',
       role: 'owner',
+    };
+    const token = this.jwtServices.sign(payload);
+    return {
+      token,
+    };
+  }
+
+  async validateEmployee(email: string, password: string, credential: string) {
+    const employee = await this.employeeService.getEmployeeEmailCredential(
+      email,
+      credential,
+    );
+    if (employee) {
+      try {
+        const isMatch = await bcrypt.compare(password, employee.password);
+        if (isMatch) {
+          const { id, name, email, credential, type } = employee;
+          return {
+            id,
+            name,
+            email,
+            credential,
+            type,
+          };
+        } else {
+          throw new UnauthorizedException('Invalid password');
+        }
+      } catch (error) {
+        throw new HttpException('password not found', 301);
+      }
+    } else {
+      throw new HttpException('user not found', 302);
+    }
+  }
+
+  async loginEmployee(data: LoginBusinessDTO) {
+    const { email, password, credential } = data;
+    const validEmployee = await this.validateEmployee(
+      email,
+      password,
+      credential,
+    );
+    const payload = {
+      id: validEmployee.id,
+      name: validEmployee.name,
+      email: validEmployee.email,
+      type: 'business',
+      role: validEmployee.type,
     };
     const token = this.jwtServices.sign(payload);
     return {

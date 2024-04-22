@@ -9,6 +9,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { JwtBusinessStrategy } from './strategy/jwtBusiness.strategy';
 import { JwtManagerStrategy } from './strategy/jwtManager.strategy';
 import { GoogleAuthStrategy } from './strategy/google.strategy';
+import { EmployeeModule } from 'src/employee/employee.module';
 
 //const config = new ConfigService();
 
@@ -20,6 +21,7 @@ import { GoogleAuthStrategy } from './strategy/google.strategy';
       signOptions: { expiresIn: '29d' },
     }),
     UserModule,
+    EmployeeModule,
   ],
   providers: [
     AuthService,
