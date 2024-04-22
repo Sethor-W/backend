@@ -240,6 +240,7 @@ export class AuthService {
     }
   }
 
+  // login para empleados
   async loginEmployee(data: LoginBusinessDTO) {
     const { email, password, credential } = data;
     const validEmployee = await this.validateEmployee(

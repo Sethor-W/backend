@@ -48,6 +48,13 @@ export class AuthController {
     return this.authService.loginBusiness(data);
   }
 
+  @Post('/login-employee')
+  @ApiResponse(authResponses.loginSuccess)
+  @ApiResponse(authResponses.loginError)
+  loginEmployee(@Body() data: LoginBusinessDTO) {
+    return this.authService.loginEmployee(data);
+  }
+
   @Get('google')
   @UseGuards(GoogleAuthGuard)
   async googleLogin() {
