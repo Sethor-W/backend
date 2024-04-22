@@ -71,6 +71,15 @@ export class EmployeeService {
     }
   }
 
+  async getEmployeeById(id: string) {
+    try {
+      const employee = await this.employeeRepo.findOneBy({ id });
+      return employee;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
   //get list of employees
   async getListEmployee(branchId: string) {
     try {

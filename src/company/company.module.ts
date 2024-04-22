@@ -14,11 +14,13 @@ import { DishService } from './services/dish.service';
 import { DishController } from './controllers/dish.controller';
 import { OrderService } from './services/orders.service';
 import { OrderController } from './controllers/orders.controller';
+import { EmployeeModule } from 'src/employee/employee.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Company, Branch, Dish, Order, OrderDetails]),
     UserModule,
+    EmployeeModule,
   ],
   providers: [CompanyService, BranchService, DishService, OrderService],
   controllers: [

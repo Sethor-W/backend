@@ -9,6 +9,7 @@ import { UserService } from '../../user/services/user.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Branch } from '../models/branch.model';
 import { CreateOrderDTO } from '../dto/createOrder.dto';
+import { EmployeeService } from 'src/employee/services/employee.service';
 
 @Injectable()
 export class OrderService {
@@ -18,16 +19,24 @@ export class OrderService {
     private orderDetailsRepository: OrederDetailsRepository,
     @InjectRepository(Branch) private branchRepository: BranchRepository,
     private userService: UserService,
+    private employeeService: EmployeeService,
   ) {}
 
-  async create(userId: string, branchId: string, data: CreateOrderDTO) {
+  async create(
+    employeeId: string,
+    userId: string,
+    branchId: string,
+    data: CreateOrderDTO,
+  ) {
     try {
       const user = await this.userService.getUserById(userId);
       const branch = await this.branchRepository.findOneBy({ id: branchId });
+      const employee = await this.employeeService.getEmployeeById(employeeId);
       const order = this.orderRepository.create({
         id: uuidv4(),
         branch,
         user,
+        employee,
       });
       await this.orderRepository.save(order);
       for (let i = 0; i < data.order_data.length; i++) {

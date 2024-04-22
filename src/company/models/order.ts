@@ -8,6 +8,7 @@ import {
 import { Branch } from './branch.model';
 import { User } from '../../user/models/user.model';
 import { OrderDetails } from './order_details';
+import { Employee } from 'src/employee/models/employee.model';
 
 @Entity()
 export class Order {
@@ -22,6 +23,9 @@ export class Order {
 
   @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
   user: User;
+
+  @ManyToOne(() => Employee, (empl) => empl.id, { onDelete: 'CASCADE' })
+  employee: Employee;
 
   @OneToMany(() => OrderDetails, (order) => order.id)
   order_detail: OrderDetails[];
