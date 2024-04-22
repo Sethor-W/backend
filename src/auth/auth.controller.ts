@@ -13,6 +13,7 @@ import { LoginDTO } from './dto/login.dto';
 import { CreateUserBusDTO } from 'src/user/dto/createUserBus.dto';
 import { GoogleAuthGuard } from './guards/google.guard';
 import { authResponses } from '../responses/auth.responses';
+import { LoginBusinessDTO } from './dto/loginBusiness.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -43,7 +44,7 @@ export class AuthController {
   @Post('/login-business')
   @ApiResponse(authResponses.loginSuccess)
   @ApiResponse(authResponses.loginError)
-  loginBusiness(@Body() data: LoginDTO) {
+  loginBusiness(@Body() data: LoginBusinessDTO) {
     return this.authService.loginBusiness(data);
   }
 

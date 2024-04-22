@@ -46,6 +46,15 @@ export class UserBusinessService {
     }
   }
 
+  async getUserByEmailCredential(email: string, credential: string) {
+    try {
+      const user = await this.userBusinessRepo.findOneBy({ email, credential });
+      return user;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
   async getUserById(id: string) {
     try {
       const user = await this.userBusinessRepo.findOneBy({ id });

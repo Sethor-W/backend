@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { LoginDTO } from './dto/login.dto';
 import { CreateUserBusDTO } from 'src/user/dto/createUserBus.dto';
 import { User } from 'src/user/models/user.model';
+import { LoginBusinessDTO } from './dto/loginBusiness.dto';
 
 @Injectable()
 export class AuthService {
@@ -157,8 +158,15 @@ export class AuthService {
   }
 
   //validacion de contraseña para usuario business
-  async validateUserBusPassword(email: string, password: string) {
-    const user = await this.userBusiness.getUserByEmail(email);
+  async validateUserBusPassword(
+    email: string,
+    password: string,
+    credential: string,
+  ) {
+    const user = await this.userBusiness.getUserByEmailCredential(
+      email,
+      credential,
+    );
     if (user) {
       try {
         const isMatch = await bcrypt.compare(password, user.password);
@@ -182,9 +190,13 @@ export class AuthService {
   }
 
   // login de usuario business
-  async loginBusiness(data: LoginDTO) {
-    const { email, password } = data;
-    const validUser = await this.validateUserBusPassword(email, password);
+  async loginBusiness(data: LoginBusinessDTO) {
+    const { email, password, credential } = data;
+    const validUser = await this.validateUserBusPassword(
+      email,
+      password,
+      credential,
+    );
     const payload = {
       id: validUser.id,
       name: validUser.name,
