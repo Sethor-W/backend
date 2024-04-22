@@ -44,13 +44,13 @@ export class EmployeeController {
     return this.employeeService.createEmployeeWorker(data);
   }
 
-  @Get('/list')
+  @Get('/list:branchId')
   @Roles(Role.Owner, Role.Manager)
   @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(employeeResponses.listEmployeeSuccess)
   @ApiResponse(employeeResponses.listEmployeeBadRequest)
-  getListEmployee(branchId: string) {
+  getListEmployee(@Param('branchId') branchId: string) {
     return this.employeeService.getListEmployee(branchId);
   }
 
