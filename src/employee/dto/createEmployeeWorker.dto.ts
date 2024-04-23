@@ -1,6 +1,5 @@
-import { IsString, IsEnum } from 'class-validator';
+import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { EmployeeType } from '../enum/employee.enum';
 
 export class CreateEmployeeWorkerDTO {
   @ApiProperty()
@@ -28,8 +27,8 @@ export class CreateEmployeeWorkerDTO {
   key_word: string;
 
   @ApiProperty()
-  @IsEnum(EmployeeType)
-  type: EmployeeType;
+  @IsString()
+  ep: string;
 
   @ApiProperty()
   @IsString()

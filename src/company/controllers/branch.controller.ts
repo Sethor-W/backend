@@ -16,6 +16,10 @@ import { BranchService } from '../services/branch.service';
 import { CreateBranchDTO } from '../dto/createBranch.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { branchResponses } from 'src/responses/branch.responses';
+import { JwtBusinessAuthGuard } from 'src/auth/guards/jwt.business.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { Role } from 'src/auth/enums/roles.enums';
 
 @ApiTags('branch')
 @Controller('branch')
@@ -23,7 +27,8 @@ export class BranchController {
   constructor(private readonly branchService: BranchService) {}
 
   @Post('/create')
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Owner)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(branchResponses.createSuccess)
   @ApiResponse(branchResponses.createError)
@@ -36,7 +41,8 @@ export class BranchController {
   }
 
   @Get('/')
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Owner)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(branchResponses.getBranchesSuccess)
   @ApiResponse(branchResponses.getBranchesError)
@@ -58,7 +64,8 @@ export class BranchController {
   }
 
   @Put('/update/:id')
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Owner)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(branchResponses.updateBranchSuccess)
   @ApiResponse(branchResponses.updateBranchErrorBadRequest)
@@ -78,7 +85,8 @@ export class BranchController {
   }
 
   @Delete('/delete/:id')
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Owner)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(branchResponses.deleteBranchSuccess)
   @ApiResponse(branchResponses.deleteBranchErrorBadRequest)

@@ -29,9 +29,11 @@ export class EmployeeService {
         };
       }
       const newEmployee = this.employeeRepo.create({
+        id: uuidv4(),
         name: data.name,
         lastName: data.lastName,
         email: data.email,
+        password: data.password,
         phone: data.phone,
         rut: data.rut,
         key_word: data.key_word,
@@ -66,8 +68,8 @@ export class EmployeeService {
         rut: data.rut,
         key_word: data.key_word,
         credential: `${data.rut}.${data.key_word}`,
-        type: data.type,
-        ep: 'worker',
+        type: EmployeeType.Worker,
+        ep: data.ep,
         branch: data.branchId,
       });
       await this.employeeRepo.save(newEmployee);

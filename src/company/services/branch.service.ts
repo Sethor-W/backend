@@ -5,7 +5,7 @@ import { Company } from '../models/company.model';
 import { CompanyRepository } from '../repository/company.repository';
 import { BranchRepository } from '../repository/branch.repository';
 import { CreateBranchDTO } from '../dto/createBranch.dto';
-import { UserService } from 'src/user/services/user.service';
+import { UserBusinessService } from 'src/user/services/userBusiness.service';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class BranchService {
   constructor(
     @InjectRepository(Branch) private branchRepository: BranchRepository,
     @InjectRepository(Company) private companyRepository: CompanyRepository,
-    private readonly userService: UserService,
+    private readonly userBusService: UserBusinessService,
   ) {}
 
   async create(
@@ -23,7 +23,7 @@ export class BranchService {
   ) {
     const { address, phone, opening_days, opening_time, closing_time } = data;
     try {
-      const user = await this.userService.getUserById(userId);
+      const user = await this.userBusService.getUserById(userId);
       const company = await this.companyRepository.findOneBy({
         id: companyId.Id,
         user,
@@ -52,7 +52,7 @@ export class BranchService {
 
   async getBranch(companyId: { Id: string }, userId: string) {
     try {
-      const user = await this.userService.getUserById(userId);
+      const user = await this.userBusService.getUserById(userId);
       const company = await this.companyRepository.findOneBy({
         id: companyId.Id,
         user,
@@ -72,7 +72,7 @@ export class BranchService {
 
   async getBranchById(id: string, companyId: { Id: string }, userId: string) {
     try {
-      const user = await this.userService.getUserById(userId);
+      const user = await this.userBusService.getUserById(userId);
       const company = await this.companyRepository.findOneBy({
         id: companyId.Id,
         user,
@@ -97,7 +97,7 @@ export class BranchService {
     userId: string,
   ) {
     try {
-      const user = await this.userService.getUserById(userId);
+      const user = await this.userBusService.getUserById(userId);
       const company = await this.companyRepository.findOneBy({
         id: companyId.Id,
         user,
@@ -120,7 +120,7 @@ export class BranchService {
 
   async deleteBranch(id: string, companyId: { Id: string }, userId: string) {
     try {
-      const user = await this.userService.getUserById(userId);
+      const user = await this.userBusService.getUserById(userId);
       const company = await this.companyRepository.findOneBy({
         id: companyId.Id,
         user,

@@ -15,6 +15,10 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CompanyService } from '../services/company.service';
 import { CreateCompanyDTO } from '../dto/createCompany.dto';
 import { companyResponses } from 'src/responses/company.responses';
+import { JwtBusinessAuthGuard } from 'src/auth/guards/jwt.business.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { Role } from 'src/auth/enums/roles.enums';
 
 @ApiTags('company')
 @Controller('company')
@@ -22,7 +26,8 @@ export class CompanyController {
   constructor(private companyService: CompanyService) {}
 
   @Post('/register')
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Owner)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(companyResponses.registerSuccess)
   @ApiResponse(companyResponses.registerError)
@@ -40,7 +45,8 @@ export class CompanyController {
   }
 
   @Delete('/delete/:id')
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Owner)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(companyResponses.deleteCompanySuccess)
   @ApiResponse(companyResponses.deleteCompanyError)
@@ -49,7 +55,8 @@ export class CompanyController {
   }
 
   @Put('/update/:id')
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Owner)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiResponse(companyResponses.updateCompanySuccess)
   @ApiResponse(companyResponses.updateCompanyError)

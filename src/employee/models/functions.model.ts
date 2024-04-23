@@ -7,7 +7,7 @@ export class Functions {
   @PrimaryColumn()
   id: string;
 
-  @Column({ nullable: true })
+  @Column()
   func_name: FunctionEnum;
 
   @ManyToOne(() => Employee)
