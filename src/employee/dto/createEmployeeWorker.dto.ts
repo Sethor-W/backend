@@ -16,6 +16,10 @@ export class CreateEmployeeWorkerDTO {
 
   @ApiProperty()
   @IsString()
+  password: string;
+
+  @ApiProperty()
+  @IsString()
   phone: string;
 
   @ApiProperty()

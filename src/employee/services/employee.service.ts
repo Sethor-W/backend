@@ -9,6 +9,7 @@ import { Functions } from '../models/functions.model';
 import { v4 as uuidv4 } from 'uuid';
 import { FunctionEnum } from '../enum/functions.enum';
 import { EmployeeType } from '../enum/employee.enum';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class EmployeeService {
@@ -28,12 +29,14 @@ export class EmployeeService {
           message: 'the employee already exists',
         };
       }
+      const hash = await bcrypt.hash(data.password, 10);
+
       const newEmployee = this.employeeRepo.create({
         id: uuidv4(),
         name: data.name,
         lastName: data.lastName,
         email: data.email,
-        password: data.password,
+        password: hash,
         phone: data.phone,
         rut: data.rut,
         key_word: data.key_word,
@@ -60,10 +63,13 @@ export class EmployeeService {
           message: 'the employee already exists',
         };
       }
+      const hash = await bcrypt.hash(data.password, 10);
+
       const newEmployee = this.employeeRepo.create({
         name: data.name,
         lastName: data.lastName,
         email: data.email,
+        password: hash,
         phone: data.phone,
         rut: data.rut,
         key_word: data.key_word,
