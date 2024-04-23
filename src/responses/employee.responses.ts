@@ -99,4 +99,27 @@ export const employeeResponses = {
         status: 400,
         description: 'Bad request',
     },
+    delegateFunctionSucces: {
+        status: 201,
+        schema: {
+          example: {
+            id: 'fsdfs7fs87sdf67s6f',
+            func_name: 'stats',
+            employee: 'employee data',
+          },
+        },
+    },
+    delegateFunctionError: {
+        status: 404,
+        schema: {
+          example: {
+            ok: false,
+            message: 'employee not found',
+          },
+        },
+    },
+    delegateFunctionBadRequest: {
+        status: 400,
+        description: 'Bad request',
+    }
 };

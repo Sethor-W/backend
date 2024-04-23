@@ -4,11 +4,17 @@ import { EmployeeRepository } from '../repository/employee.repository';
 import { Employee } from '../models/employee.model';
 import { CreateEmployeeDTO } from '../dto/createEmployee.dto';
 import { CreateEmployeeWorkerDTO } from '../dto/createEmployeeWorker.dto';
+import { FunctionsRepository } from '../repository/functions.repository';
+import { Functions } from '../models/functions.model';
+import { v4 as uuidv4 } from 'uuid';
+import { FunctionEnum } from '../enum/functions.enum';
+import { EmployeeType } from '../enum/employee.enum';
 
 @Injectable()
 export class EmployeeService {
   constructor(
     @InjectRepository(Employee) private employeeRepo: EmployeeRepository,
+    @InjectRepository(Functions) private functionRepo: FunctionsRepository,
   ) {}
 
   //creation new employee
@@ -66,6 +72,31 @@ export class EmployeeService {
       });
       await this.employeeRepo.save(newEmployee);
       return newEmployee;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  //delegate functions to manager
+  async delegateFunction(employeeId: string, func_name: FunctionEnum) {
+    try {
+      const employee = await this.employeeRepo.findOneBy({
+        id: employeeId,
+        type: EmployeeType.Manager,
+      });
+      if (!employee) {
+        return {
+          ok: false,
+          message: 'employee not found',
+        };
+      }
+      const func = this.functionRepo.create({
+        id: uuidv4(),
+        func_name,
+        employee,
+      });
+      await this.functionRepo.save(func);
+      return func;
     } catch (error) {
       throw new BadRequestException(error);
     }

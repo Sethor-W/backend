@@ -5,6 +5,7 @@ import {
   Get,
   Put,
   Param,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtBusinessAuthGuard } from 'src/auth/guards/jwt.business.guard';
@@ -16,6 +17,7 @@ import { employeeResponses } from 'src/responses/employee.responses';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { Role } from 'src/auth/enums/roles.enums';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { FunctionEnum } from '../enum/functions.enum';
 
 @ApiTags('employee')
 @Controller('employee')
@@ -42,6 +44,20 @@ export class EmployeeController {
   @ApiResponse(employeeResponses.createWorkerBadRequest)
   createWorker(@Body() data: CreateEmployeeWorkerDTO) {
     return this.employeeService.createEmployeeWorker(data);
+  }
+
+  @Post('/delegate')
+  @Roles(Role.Owner)
+  @UseGuards(JwtBusinessAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @ApiResponse(employeeResponses.delegateFunctionSucces)
+  @ApiResponse(employeeResponses.delegateFunctionError)
+  @ApiResponse(employeeResponses.delegateFunctionBadRequest)
+  delegateFunction(
+    @Query('employeeId') employeeId: string,
+    @Query('func_name') func_name: FunctionEnum,
+  ) {
+    return this.employeeService.delegateFunction(employeeId, func_name);
   }
 
   @Get('/list:branchId')
