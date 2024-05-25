@@ -43,6 +43,7 @@ import { routerInvoice } from '../routes/invoice.router.js';
 import { routerProfileBusiness } from '../routes/profileBusiness.router.js';
 import { routerProfile } from '../routes/profile.router.js';
 import { routerStatistics } from '../routes/statistics.router.js';
+import { routerStorage } from '../routes/storage.router.js';
 
 
 
@@ -57,6 +58,7 @@ class Server {
     this.business = '/business'
     this.versionAPI = '/api/v1'
     this.path = {
+      
       auth: this.versionAPI + '/auth',
       profile: this.versionAPI + '/users/profile',
       securityAccount: this.versionAPI + '/security',
@@ -74,7 +76,9 @@ class Server {
       profileBusiness: this.versionAPI + this.business + '/users/profile', 
       invoice: this.versionAPI + '/invoices', 
 
+      storage: this.versionAPI + '/storage',
       others: this.versionAPI, 
+      
     }
     
     // DB
@@ -110,6 +114,7 @@ class Server {
     
     // Otras rutas
     this.app.use(this.path.others, routerOther);
+    this.app.use(this.path.storage, routerStorage);
     
 
     // Error 404

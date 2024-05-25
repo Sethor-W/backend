@@ -37,6 +37,10 @@ routerStatistics.get('/business/:businessId/buying-users', [
     verifyAssociatedUserMiddleware,
 ], StatisticsController.getBuyingUsers);
 
+routerStatistics.get('/user/buying-users', [
+    verifyTokenMiddleware,
+], StatisticsController.getBuyingUserStatistics);
+
 routerStatistics.get('/business/:businessId/monthly-earnings', [
     verifyTokenMiddleware,
     checkRoleMiddleware([

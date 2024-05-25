@@ -110,6 +110,32 @@ export class StatisticsController {
     }
 
     /**
+     * Obtener todas las estadisticas de compra del usuario
+     */
+    // GET /statistics/user/buying-users
+    static async getBuyingUserStatistics(req, res) {
+        const {userId} = req.user
+        try {
+            const buyingUsers = await BuyingUserStatistic.findAndCountAll({
+                where: {
+                    userId: userId
+                }
+            });
+
+            const totalSpent = await BuyingUserStatistic.sum('amountPaidByTheUser', {
+                where: {
+                    userId: userId
+                }
+            });
+
+            return sendResponse(res, 200, false, 'Statistics retrieved successfully', {totalSpent, ...buyingUsers});
+        } catch (error) {
+            console.error('Error retrieving buying users statistics:', error);
+            return sendResponse(res, 500, true, 'Could not retrieve buying users statistics');
+        }
+    }
+
+    /**
      * Obtener todas las estadisticas ganancias mensuales
      */
     // GET /statistics/business/:businessId/monthly-earnings
