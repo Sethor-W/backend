@@ -24,12 +24,12 @@ export class CodeController {
             const requiredFields = ['email'];
             const missingFields = validateRequiredFields(req.body, requiredFields);
             if (missingFields.length > 0) {
-                return sendResponse(res, 400, true, `The fields are required: ${missingFields.join(', ')}`);
+                return sendResponse(res, 400, true, `Los campos son obligatorios: ${missingFields.join(', ')}`);
             }
 
             // Validar si el email tiene un formato válido
             if (!validateEmailFormat(email)) {
-                return sendResponse(res, 400, true, 'The email does not have a valid format');
+                return sendResponse(res, 400, true, 'El correo electrónico no tiene un formato válido.');
             }
 
 
@@ -55,10 +55,10 @@ export class CodeController {
 
             await Code.create({ code, email });
 
-            return sendResponse(res, 200, false, 'Code sent successfully');
+            return sendResponse(res, 200, false, 'Código enviado exitosamente');
         } catch (error) {
-            console.error('Error al registrar usuario:', error);
-            return sendResponse(res, 500, true, 'Error al registrar usuario');
+            console.error('Error al enviar el codigo al correo:', error);
+            return sendResponse(res, 500, true, 'Error al enviar el codigo al correo');
         }
     }
 
@@ -75,12 +75,12 @@ export class CodeController {
             const requiredFields = ['email', 'code'];
             const missingFields = validateRequiredFields(req.body, requiredFields);
             if (missingFields.length > 0) {
-                return sendResponse(res, 400, true, `The fields are required: ${missingFields.join(', ')}`);
+                return sendResponse(res, 400, true, `Los campos son obligatorios: ${missingFields.join(', ')}`);
             }
 
             // Validar si el email tiene un formato válido
             if (!validateEmailFormat(email)) {
-                return sendResponse(res, 400, true, 'The email does not have a valid format');
+                return sendResponse(res, 400, true, 'El correo electrónico no tiene un formato válido.');
             }
 
             // Verificar si el codigo esta en la base de datos
@@ -91,16 +91,16 @@ export class CodeController {
                 }
             });
             if (!codeExists) {
-                return sendResponse(res, 400, true, 'Invalid code');
+                return sendResponse(res, 400, true, 'Codigo invalido');
             }
 
             // Si el código existe, elimínalo de la base de datos
             await codeExists.destroy();
 
-            return sendResponse(res, 200, false, 'Code verified successfully');
+            return sendResponse(res, 200, false, 'Código verificado exitosamente');
         } catch (error) {
-            console.error('Error al registrar usuario:', error);
-            return sendResponse(res, 500, true, 'Error al registrar usuario');
+            console.error('Error al verificar el codigo: ', error);
+            return sendResponse(res, 500, true, 'Error al verificar el codigo');
         }
     }
 

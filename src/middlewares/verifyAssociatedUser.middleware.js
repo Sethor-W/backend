@@ -9,14 +9,14 @@ export const verifyAssociatedUserMiddleware = async (req, res, next) => {
 
     try {
         if (!businessId) {
-            return sendResponse(res, 400, true, '"businessId" is required.');
+            return sendResponse(res, 400, true, '"businessId" se requiere.');
         }
 
         // Si el usuario tiene el rol de "owner", verificar el campo ownerId en la tabla Business
         if (role === rolesEnum.OWNER) {
             const business = await Business.findByPk(businessId);
             if (!business || business.ownerId !== userId) {
-                return sendResponse(res, 403, true, 'Unauthorized. You are not associated with this business.');
+                return sendResponse(res, 403, true, 'No autorizado. No estás asociado con este negocio.');
             }
         } else {
             // Si el usuario tiene otro rol, verificar en la tabla employees_associated_businesses
@@ -28,14 +28,14 @@ export const verifyAssociatedUserMiddleware = async (req, res, next) => {
             });
 
             if (!association) {
-                return sendResponse(res, 403, true, 'Unauthorized. You are not associated with this business.');
+                return sendResponse(res, 403, true, 'No autorizado. No estás asociado con este negocio.');
             }
         }
 
         // Si se encuentra una asociación o es owner, permitir que continúe la solicitud
         next();
     } catch (error) {
-        console.error('Error verifying associated user:', error);
+        console.error('Error al verificar el usuario asociado:', error);
         return sendResponse(res, 500, true, 'Internal Server Error');
     }
 };

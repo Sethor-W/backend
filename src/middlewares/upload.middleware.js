@@ -28,11 +28,10 @@ export function uploadFileMiddleware(req, res, next) {
 
     upload.single('file')(req, res, (err) => {
         if (err instanceof multer.MulterError) {
-            // Enviar respuesta de error si el archivo excede el límite de tamaño
             return sendResponse(res, 400, true, 'El archivo excede el límite de tamaño permitido (2MB)');
         } else if (err) {
-            console.error(err)
-            return sendResponse(res, 500, true, 'Error uploading file');
+            console.error(`Error al cargar el archivo: ${err}`)
+            return sendResponse(res, 500, true, 'Error al cargar el archivo');
         }
         next();
     });

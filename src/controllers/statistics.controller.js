@@ -70,7 +70,7 @@ export class StatisticsController {
             // Obtener estadísticas de ganancias mensuales
             const monthlyEarnings = await StatisticsController.getStatistics(req, res, EarningsStatistic, 'totalEarnings');
 
-            return sendResponse(res, 200, false, 'All statistics retrieved successfully', {
+            return sendResponse(res, 200, false, 'All Estadísticas recuperadas exitosamente', {
                 soldProducts,
                 buyingUsers,
                 monthlyEarnings
@@ -88,7 +88,7 @@ export class StatisticsController {
     static async getSoldProducts(req, res) {
         try {
             const soldProducts = await StatisticsController.getStatistics(req, res, SoldProductStatistic, 'soldCount');
-            return sendResponse(res, 200, false, 'Statistics retrieved successfully', null, {soldProducts});
+            return sendResponse(res, 200, false, 'Estadísticas recuperadas exitosamente', null, {soldProducts});
         } catch (error) {
             console.error('Error retrieving sold products statistics:', error);
             return sendResponse(res, 500, true, 'Could not retrieve sold products statistics');
@@ -102,10 +102,10 @@ export class StatisticsController {
     static async getBuyingUsers(req, res) {
         try {
             const buyingUsers = await StatisticsController.getStatistics(req, res, BuyingUserStatistic, 'userCount');
-            return sendResponse(res, 200, false, 'Statistics retrieved successfully', null, {buyingUsers});
+            return sendResponse(res, 200, false, 'Estadísticas recuperadas exitosamente', null, {buyingUsers});
         } catch (error) {
-            console.error('Error retrieving buying users statistics:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve buying users statistics');
+            console.error('Error al recuperar estadísticas de usuarios de compra:', error);
+            return sendResponse(res, 500, true, 'No se pudieron recuperar las estadísticas de los usuarios compradores');
         }
     }
 
@@ -128,10 +128,10 @@ export class StatisticsController {
                 }
             });
 
-            return sendResponse(res, 200, false, 'Statistics retrieved successfully', {totalSpent, ...buyingUsers});
+            return sendResponse(res, 200, false, 'Estadísticas recuperadas exitosamente', {totalSpent, ...buyingUsers});
         } catch (error) {
-            console.error('Error retrieving buying users statistics:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve buying users statistics');
+            console.error('Error al recuperar estadísticas de usuarios de compra:', error);
+            return sendResponse(res, 500, true, 'No se pudieron recuperar las estadísticas de los usuarios compradores');
         }
     }
 
@@ -142,13 +142,12 @@ export class StatisticsController {
     static async getMonthlyEarnings(req, res) {
         try {
             const monthlyEarnings = await StatisticsController.getStatistics(req, res, EarningsStatistic, 'totalEarnings');
-            return sendResponse(res, 200, false, 'Statistics retrieved successfully', null, {monthlyEarnings});
+            return sendResponse(res, 200, false, 'Estadísticas recuperadas exitosamente', null, {monthlyEarnings});
         } catch (error) {
-            console.error('Error retrieving monthly earnings statistics:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve monthly earnings statistics');
+            console.error('Error al recuperar las estadísticas de ingresos mensuales:', error);
+            return sendResponse(res, 500, true, 'No se pudieron recuperar las estadísticas de ganancias mensuales');
         }
     }
-
 
 
 
@@ -172,13 +171,13 @@ export class StatisticsController {
             });
 
             if (updatedRows === 1) {
-                return sendResponse(res, 200, false, 'Statistic updated successfully');
+                return sendResponse(res, 200, false, 'Estadística actualizada con éxito');
             } else {
-                return sendResponse(res, 404, true, 'Statistic not found');
+                return sendResponse(res, 404, true, 'Estadística no encontrada');
             }
         } catch (error) {
-            console.error('Error updating statistic:', error);
-            return sendResponse(res, 500, true, 'Could not update statistic');
+            console.error('Error al actualizar la estadística:', error);
+            return sendResponse(res, 500, true, 'No se pudo actualizar la estadística');
         }
     }
 

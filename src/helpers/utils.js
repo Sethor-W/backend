@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 
 
@@ -78,4 +79,15 @@ export async function comparePassword(password, hashedPassword) {
 export function generate_6_digitRandomNumericCode() {
     const code = Math.floor(100000 + Math.random() * 900000);
     return code.toString();
+}
+
+/**
+ * Genera un código único compuesto por una combinación de números y letras.
+ * @returns {string} Código único generado en el formato "numbers-letters".
+ */
+export const generateUniqueCode = () => {
+    const uuid = uuidv4();
+    const numeros = uuid.substring(0, 6).replace(/-/g, ''); 
+    const letras = uuid.substring(6, 12).replace(/-/g, ''); 
+    return `${numeros}-${letras}`;
 }

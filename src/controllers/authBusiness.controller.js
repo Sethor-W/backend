@@ -38,7 +38,7 @@ export class AuthBusinessController {
           res,
           400,
           true,
-          `The fields are required: ${missingFields.join(", ")}`
+          `Los campos son obligatorios: ${missingFields.join(", ")}`
         );
       }
 
@@ -48,7 +48,7 @@ export class AuthBusinessController {
           res,
           400,
           true,
-          "The email does not have a valid format"
+          "El correo electrónico no tiene un formato válido."
         );
       }
 
@@ -63,7 +63,7 @@ export class AuthBusinessController {
           res,
           400,
           true,
-          "Email or credential is already in use"
+          "El correo electrónico o la credencial ya están en uso"
         );
       }
 
@@ -97,7 +97,7 @@ export class AuthBusinessController {
         role: ownerRole.role,
       });
 
-      return sendResponse(res, 201, false, "Registred", null, {
+      return sendResponse(res, 201, false, "Registrado", null, {
         token: token,
         role: ownerRole.role,
       });
@@ -118,13 +118,13 @@ export class AuthBusinessController {
       // Verificar si el usuario existe
       const user = await UserBusiness.findOne({ where: { credential } });
       if (!user) {
-        return sendResponse(res, 401, true, "Invalid credentials");
+        return sendResponse(res, 401, true, "Credenciales no válidas");
       }
 
       // Verificar la contraseña
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
-        return sendResponse(res, 401, true, "Invalid credentials");
+        return sendResponse(res, 401, true, "Credenciales no válidas");
       }
 
       // Obtener rol del usuario
@@ -135,7 +135,7 @@ export class AuthBusinessController {
       // Generar token de autenticación
       const token = signJWT({ userId: user.id, role: role.role });
 
-      return sendResponse(res, 201, false, "Successful login", null, {
+      return sendResponse(res, 201, false, "Acceso exitoso", null, {
         role: role.role,
         token: token,
       });
@@ -153,7 +153,7 @@ export class AuthBusinessController {
       try {
           const {role, userId} = req.user;
 
-          return sendResponse(res, 201, false, 'Get data', {role, userId});
+          return sendResponse(res, 201, false, 'Datos obtenidos exitosamente', {role, userId});
       } catch (error) {
           console.error('Error al obtener la información:', error);
           res.status(500).json({ error: 'Error al obtener la información' });

@@ -28,13 +28,13 @@ export class BusinessController {
             ];
             const missingFields = validateRequiredFields(req.body, requiredFields);
             if (missingFields.length > 0) {
-                return sendResponse(res, 400, true, `The fields are required: ${missingFields.join(", ")}`);
+                return sendResponse(res, 400, true, `Los campos son obligatorios: ${missingFields.join(", ")}`);
             }
 
             // Registrar empresa   
             const newBusiness = await Business.create({ name, rut_business, tax_code, ownerId: userId });
 
-            return sendResponse(res, 201, false, "The company has been successfully registered", newBusiness);
+            return sendResponse(res, 201, false, "La empresa ha sido registrada exitosamente", newBusiness);
         } catch (error) {
             console.error("Error al registrar el negocio:", error);
             return sendResponse(res, 500, true, "Error al registrar el negocio");
@@ -50,13 +50,13 @@ export class BusinessController {
         try {
             const business = await Business.findByPk(id);
             if (!business) {
-                return sendResponse(res, 404, true, 'Business not found');
+                return sendResponse(res, 404, true, 'Negocio no encontrado');
             }
 
-            return sendResponse(res, 200, false, "Business details retrieved successfully", business);
+            return sendResponse(res, 200, false, "Detalles comerciales recuperados exitosamente", business);
         } catch (error) {
             console.error('Error getting business by ID:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve business');
+            return sendResponse(res, 500, true, 'No se pudo recuperar el negocio');
         }
     };
 
@@ -81,13 +81,13 @@ export class BusinessController {
 
             // Comprobar si se encontraron empresas
             if (!businesses || businesses.length === 0) {
-                return sendResponse(res, 404, true, 'No businesses found for the provided search term');
+                return sendResponse(res, 404, true, 'No se encontraron empresas para el término de búsqueda proporcionado');
             }
 
-            return sendResponse(res, 200, false, 'Businesses retrieved successfully', businesses);
+            return sendResponse(res, 200, false, 'Empresas recuperadas con éxito', businesses);
         } catch (error) {
             console.error('Error searching businesses by name:', error);
-            return sendResponse(res, 500, true, 'Could not search businesses');
+            return sendResponse(res, 500, true, 'No se pudieron buscar empresas');
         }
     };
 
@@ -101,7 +101,7 @@ export class BusinessController {
         try {
             const business = await Business.findByPk(id);
             if (!business) {
-                return sendResponse(res, 404, true, 'Business not found');
+                return sendResponse(res, 404, true, 'Negocio no encontrado');
             }
 
             // Actualizar la empresa
@@ -112,10 +112,10 @@ export class BusinessController {
                 coverPicture
             });
 
-            return sendResponse(res, 200, false, 'Business updated successfully', business);
+            return sendResponse(res, 200, false, 'Negocio actualizado exitosamente', business);
         } catch (error) {
             console.error('Error updating business:', error);
-            return sendResponse(res, 500, true, 'Could not update business');
+            return sendResponse(res, 500, true, 'No se pudo actualizar el negocio');
         }
     }
 
@@ -129,21 +129,21 @@ export class BusinessController {
         try {
             const business = await Business.findByPk(id);
             if (!business) {
-                return sendResponse(res, 404, true, 'Business not found');
+                return sendResponse(res, 404, true, 'Negocio no encontrado');
             }
 
             // Verificar si el usuario es el propietario de la empresa
             if (business.ownerId !== userId) {
-                return sendResponse(res, 403, true, 'Only the owner can delete this business');
+                return sendResponse(res, 403, true, 'Sólo el propietario puede eliminar esta empresa');
             }
 
             // Eliminar la empresa
             await business.destroy();
 
-            return sendResponse(res, 200, false, 'Business deleted successfully');
+            return sendResponse(res, 200, false, 'Negocio eliminado exitosamente');
         } catch (error) {
             console.error('Error deleting business:', error);
-            return sendResponse(res, 500, true, 'Could not delete business');
+            return sendResponse(res, 500, true, 'No se pudo eliminar el negocio');
         }
     }
 
@@ -164,13 +164,13 @@ export class BusinessController {
                 }
             });
             if (!business) {
-                return sendResponse(res, 404, true, 'Business not found');
+                return sendResponse(res, 404, true, 'Negocio no encontrado');
             }
 
-            return sendResponse(res, 200, false, "Business details retrieved successfully", business);
+            return sendResponse(res, 200, false, "Detalles comerciales recuperados exitosamente", business);
         } catch (error) {
             console.error('Error getting business by ID:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve business');
+            return sendResponse(res, 500, true, 'No se pudo recuperar el negocio');
         }
     };
 
@@ -210,10 +210,10 @@ export class BusinessController {
 
             // Verificar si se encontraron empresas
             if (!businesses.rows.length) {
-                return sendResponse(res, 404, true, 'No businesses found');
+                return sendResponse(res, 404, true, 'No se encontraron negocios');
             }
 
-            return sendResponse(res, 200, false, "Businesses retrieved successfully", {
+            return sendResponse(res, 200, false, "Empresas recuperadas con éxito", {
                 count: businesses.count,
                 total: businesses.count,
                 page: pageNumber,
@@ -222,7 +222,7 @@ export class BusinessController {
             });
         } catch (error) {
             console.error('Error getting business by ID:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve business');
+            return sendResponse(res, 500, true, 'No se pudo recuperar el negocio');
         }
     };
 
@@ -251,10 +251,10 @@ export class BusinessController {
                 ]
             })
 
-            return sendResponse(res, 200, false, 'Business details retrieved successfully', businessAssociated);
+            return sendResponse(res, 200, false, 'Detalles comerciales recuperados exitosamente', businessAssociated);
         } catch (error) {
             console.error('Error getting business details:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve business details');
+            return sendResponse(res, 500, true, 'No se pudo recuperar los detalles del negocio');
         }
     }
 
@@ -276,7 +276,7 @@ export class BusinessController {
             });
             
             if (!business) {
-                return sendResponse(res, 404, true, 'Business not found');
+                return sendResponse(res, 404, true, 'Negocio no encontrado');
             }
 
             // Buscar el perfil del propietario utilizando ownerId
@@ -286,7 +286,7 @@ export class BusinessController {
             });
 
             if (!profileOwner) {
-                return sendResponse(res, 404, true, 'Owner profile not found');
+                return sendResponse(res, 404, true, 'Perfil del propietario no encontrado');
             }
 
             const businessDetails = {
@@ -294,10 +294,10 @@ export class BusinessController {
                 owner: profileOwner
             };
 
-            return sendResponse(res, 200, false, 'Business details retrieved successfully', businessDetails);
+            return sendResponse(res, 200, false, 'Detalles comerciales recuperados exitosamente', businessDetails);
         } catch (error) {
             console.error('Error getting business details:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve business details');
+            return sendResponse(res, 500, true, 'No se pudo recuperar los detalles del negocio');
         }
     }
 
@@ -318,13 +318,13 @@ export class BusinessController {
             });
     
             // if (!businesses || businesses.length === 0) {
-            //     return sendResponse(res, 404, true, 'No businesses found for this owner');
+            //     return sendResponse(res, 404, true, 'No se encontraron negocios for this owner');
             // }
     
-            return sendResponse(res, 200, false, 'Businesses retrieved successfully', businesses);
+            return sendResponse(res, 200, false, 'Empresas recuperadas con éxito', businesses);
         } catch (error) {
             console.error('Error updating business:', error);
-            return sendResponse(res, 500, true, 'Could not update business');
+            return sendResponse(res, 500, true, 'No se pudo actualizar el negocio');
         }
     }
 

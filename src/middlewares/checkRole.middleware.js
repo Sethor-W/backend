@@ -7,7 +7,7 @@ export function checkRoleMiddleware(roles) {
 
         // Verificar si el usuario tiene alguno de los roles necesarios
         if (!roles.includes(user.role)) {
-            return sendResponse(res, 403, true, `Only ${roles.join(' or ')} can perform this action`, user);
+            return sendResponse(res, 403, true, `Sólo ${roles.join(' o ')} puede realizar esta acción`, user);
         }
 
         // Si el usuario tiene uno de los roles correctos, continúa con la solicitud

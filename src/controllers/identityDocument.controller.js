@@ -12,9 +12,9 @@ export class identityDocumentController {
 
         try {
             if (!req.files) {
-                return sendResponse(res, 400, true, 'No image provided for upload');
+                return sendResponse(res, 400, true, 'No se proporcionó ninguna imagen para cargar');
             }
-            return sendResponse(res, 200, false, 'Documents saved successfully', req.files);
+            return sendResponse(res, 200, false, 'Documentos guardados exitosamente', req.files);
     
             const image = req.files.image; // Obtén el archivo de la solicitud
             const rutaArchivo = `/ruta/donde/guardar/${image.name}`; // Define la ruta donde se guardará el archivo

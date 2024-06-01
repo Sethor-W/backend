@@ -14,10 +14,10 @@ export class BusinessFunctionController {
         try {
             const functions = await BusinessFunction.findAll();
 
-            return sendResponse(res, 200, false, "Functions retrieved successfully", functions);
+            return sendResponse(res, 200, false, "Funciones recuperadas exitosamente", functions);
         } catch (error) {
             console.error('Error getting functions:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve functions');
+            return sendResponse(res, 500, true, 'No se pudieron recuperar funciones');
         }
     };
 

@@ -8,14 +8,14 @@ export function verifyTokenMiddleware(req, res, next) {
 
     // Verificar si el token existe
     if (!authorizationHeader) {
-        return sendResponse(res, 401, true, 'Authentication token not provided');
+        return sendResponse(res, 401, true, 'Token de autenticación no proporcionado');
     }
     const [tokenType, token] = authorizationHeader.split(' ');
 
     // Verificar y decodificar el token utilizando el helper
     const decodedToken = verifyJWT(token);
     if (!decodedToken) {
-        return sendResponse(res, 401, true, 'Invalid authentication');
+        return sendResponse(res, 401, true, 'Autenticación no válida');
     } else {
         req.user = decodedToken;
         next();

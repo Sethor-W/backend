@@ -26,13 +26,13 @@ export class ProfileController {
 
             
             if (!profile) {
-                return sendResponse(res, 404, true, "Profile not found");
+                return sendResponse(res, 404, true, "Perfil no encontrado");
             }
 
-            return sendResponse(res, 200, false, 'Profile retrieved successfully', profile);
+            return sendResponse(res, 200, false, 'Perfil recuperado exitosamente', profile);
         } catch (error) {
-            console.error('Error retrieving user profile:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve profile');
+            console.error('Error al recuperar el perfil de usuario:', error);
+            return sendResponse(res, 500, true, 'No se pudo recuperar el perfil');
         }
     }
 

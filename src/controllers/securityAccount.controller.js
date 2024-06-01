@@ -19,13 +19,13 @@ export class SecurityAccountController {
             // Busca al usuario por su ID
             const user = await User.findByPk(userId);
             if (!user) {
-                return res.status(404).json({ mensaje: 'User not found' });
+                return res.status(404).json({ mensaje: 'Usuario no encontrado' });
             }
 
             // Verifica si la contraseña actual es correcta
             const correctPassword = await comparePassword(currentPassword, user.password);
             if (!correctPassword) {
-                return res.status(401).json({ mensaje: 'Incorrect current password' });
+                return res.status(401).json({ mensaje: 'Contraseña actual incorrecta' });
             }
 
             // Actualiza la contraseña del usuario
@@ -33,7 +33,7 @@ export class SecurityAccountController {
             user.password = hashedPassword;
             await user.save();
 
-            return sendResponse(res, 201, false, 'Password updated successfully');
+            return sendResponse(res, 201, false, 'Contraseña actualizada exitosamente');
         } catch (error) {
             console.error('Error al cambiar la contraseña:', error);
             res.status(500).json({ error: 'Error al cambiar la contraseña' });

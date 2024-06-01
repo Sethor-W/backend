@@ -20,13 +20,13 @@ export class ProductController {
             const requiredFields = ["name", "type", "price", "description", "branchId"];
             const missingFields = validateRequiredFields({ ...req.body, ...req.params }, requiredFields);
             if (missingFields.length > 0) {
-                return sendResponse(res, 400, true, `The following fields are required: ${missingFields.join(", ")}`);
+                return sendResponse(res, 400, true, `Se requieren los siguientes campos: ${missingFields.join(", ")}`);
             }
 
             // Check if the specified branch exists
             const branch = await Branch.findByPk(branchId);
             if (!branch) {
-                return sendResponse(res, 404, true, 'Branch not found');
+                return sendResponse(res, 404, true, 'Sucursal no encontrada');
             }
 
             // Create a new product in the database
@@ -45,7 +45,7 @@ export class ProductController {
             });
 
             // Send a successful response
-            return sendResponse(res, 201, false, "Product created successfully", newProduct);
+            return sendResponse(res, 201, false, "Producto creado exitosamente", newProduct);
         } catch (error) {
             console.error("Error al registrar el producto:", error);
             return sendResponse(res, 500, true, "Error al registrar el producto");
@@ -86,10 +86,10 @@ export class ProductController {
                 ...optionsPagination
             });
 
-            return sendResponse(res, 200, false, 'Products retrieved successfully', products);
+            return sendResponse(res, 200, false, 'Productos recuperados exitosamente', products);
         } catch (error) {
-            console.error('Error getting products by business:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve products');
+            console.error('Error al obtener productos por empresa:', error);
+            return sendResponse(res, 500, true, 'Error al obtener productos por empresa');
         }
     }
 
@@ -105,7 +105,7 @@ export class ProductController {
 
             // Verificar si se encontró el producto
             if (!product) {
-                return sendResponse(res, 404, true, 'Product not found');
+                return sendResponse(res, 404, true, 'Producto no encontrado');
             }
 
             // Convertir la cadena de photos en un array
@@ -113,10 +113,10 @@ export class ProductController {
                 product.photos = product.photos.split(', ').map(photo => photo.trim());
             }
 
-            return sendResponse(res, 200, false, 'Product retrieved successfully', product);
+            return sendResponse(res, 200, false, 'Producto recuperado exitosamente', product);
         } catch (error) {
-            console.error('Error getting product by ID:', error);
-            return sendResponse(res, 500, true, 'Could not retrieve product');
+            console.error('Error al obtener el producto por ID:', error);
+            return sendResponse(res, 500, true, 'No se pudo recuperar el producto');
         }
     }
 
@@ -134,14 +134,14 @@ export class ProductController {
                 // Check if the specified branch exists
                 const branch = await Branch.findByPk(branchId);
                 if (!branch) {
-                    return sendResponse(res, 404, true, 'Branch not found');
+                    return sendResponse(res, 404, true, 'Sucursal no encontrado');
                 }
             }
 
             // Buscar el producto por su ID
             let product = await Product.findByPk(productId);
             if (!product) {
-                return sendResponse(res, 404, true, 'Product not found');
+                return sendResponse(res, 404, true, 'Producto no encontrado');
             }
 
             const photosString = Array.isArray(photos) ? photos.join(', ') : product.photos;
@@ -149,10 +149,10 @@ export class ProductController {
             // Actualizar el producto con los nuevos datos
             product = await product.update({ name, category, offer, type, description, photos: photosString, price, profilePicture, branchId });
 
-            return sendResponse(res, 200, false, 'Product updated successfully', product);
+            return sendResponse(res, 200, false, 'Producto actualizado exitosamente', product);
         } catch (error) {
-            console.error('Error updating product by ID:', error);
-            return sendResponse(res, 500, true, 'Could not update product');
+            console.error('Error al actualizar el producto por ID:', error);
+            return sendResponse(res, 500, true, 'No se pudo actualizar el producto');
         }
     }
 
@@ -168,16 +168,16 @@ export class ProductController {
 
             // Verificar si se encontró el producto
             if (!product) {
-                return sendResponse(res, 404, true, 'Product not found');
+                return sendResponse(res, 404, true, 'Producto no encontrado');
             }
 
             // Eliminar el producto
             await product.destroy();
 
-            return sendResponse(res, 200, false, 'Product deleted successfully');
+            return sendResponse(res, 200, false, 'Producto eliminado exitosamente');
         } catch (error) {
-            console.error('Error deleting product by ID:', error);
-            return sendResponse(res, 500, true, 'Could not delete product');
+            console.error('Error al eliminar producto por ID:', error);
+            return sendResponse(res, 500, true, 'No se pudo eliminar el producto');
         }
     }
 

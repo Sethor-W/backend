@@ -21,7 +21,7 @@ export class OtherController {
             const requiredFields = ['contactNumber', 'detail', 'userType'];
             const missingFields = validateRequiredFields(req.body, requiredFields);
             if (missingFields.length > 0) {
-                return sendResponse(res, 400, true, `The fields are required: ${missingFields.join(', ')}`);
+                return sendResponse(res, 400, true, `Los campos son obligatorios: ${missingFields.join(', ')}`);
             }
 
             let docsString = null;
@@ -30,10 +30,10 @@ export class OtherController {
             }
             const newHelp = await Help.create({ contactNumber, detail, docs: docsString, userType, userId });
 
-            return sendResponse(res, 201, false, "Help request submitted successfully", newHelp);
+            return sendResponse(res, 201, false, "Solicitud de ayuda enviada correctamente", newHelp);
         } catch (error) {
-            console.error("Error submitting help request:", error);
-            return sendResponse(res, 500, true, "Error submitting help request");
+            console.error("Error al enviar solicitud de ayuda:", error);
+            return sendResponse(res, 500, true, "Error al enviar solicitud de ayuda");
         }
     }
 
@@ -49,7 +49,7 @@ export class OtherController {
             const requiredFields = ['detail', 'userType'];
             const missingFields = validateRequiredFields(req.body, requiredFields);
             if (missingFields.length > 0) {
-                return sendResponse(res, 400, true, `The fields are required: ${missingFields.join(', ')}`);
+                return sendResponse(res, 400, true, `Los campos son obligatorios: ${missingFields.join(', ')}`);
             }
 
             let docsString = null;
@@ -59,10 +59,10 @@ export class OtherController {
             
             const newOpinionOrSuggestion = await OpinionOrSuggestion.create({ detail, docs: docsString, userType });
 
-            return sendResponse(res, 201, false, "Opinion/suggestion submitted successfully", newOpinionOrSuggestion);
+            return sendResponse(res, 201, false, "Opinión/sugerencia enviada exitosamente", newOpinionOrSuggestion);
         } catch (error) {
-            console.error("Error submitting opinion/suggestion:", error);
-            return sendResponse(res, 500, true, "Error submitting opinion/suggestion");
+            console.error("Error al enviar Opinión/sugerencia:", error);
+            return sendResponse(res, 500, true, "Error al enviar Opinión/sugerencia");
         }
     }
 
@@ -79,7 +79,7 @@ export class OtherController {
             const requiredFields = ['contactNumber', 'detail', 'userType'];
             const missingFields = validateRequiredFields(req.body, requiredFields);
             if (missingFields.length > 0) {
-                return sendResponse(res, 400, true, `The fields are required: ${missingFields.join(', ')}`);
+                return sendResponse(res, 400, true, `Los campos son obligatorios: ${missingFields.join(', ')}`);
             }
 
             let docsString = null;
@@ -89,10 +89,10 @@ export class OtherController {
 
             const newRepresentativeSethor = await RepresentativeSethor.create({ contactNumber, detail, docs: docsString, userType, userId });
 
-            return sendResponse(res, 201, false, "Contact request submitted successfully", newRepresentativeSethor);
+            return sendResponse(res, 201, false, "Solicitud de contacto enviada exitosamente", newRepresentativeSethor);
         } catch (error) {
-            console.error("Error submitting contact request to Sethor representative:", error);
-            return sendResponse(res, 500, true, "Error submitting contact request to Sethor representative");
+            console.error("Error al enviar solicitud de contacto al representante de Sethor:", error);
+            return sendResponse(res, 500, true, "Error al enviar solicitud de contacto al representante de Sethor");
         }
     }
 

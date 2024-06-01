@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { Op } from "sequelize";
-import { sendResponse, validateEmailFormat, validateRequiredFields } from "../helpers/utils.js";
+import { generateUniqueCode, sendResponse, validateEmailFormat, validateRequiredFields } from "../helpers/utils.js";
 
 import { UserBusinessRole } from "../models/userBusinessRoles.js";
 import { UserBusiness } from "../models/usersBusiness.js";
@@ -38,18 +38,18 @@ export class EmployeeManagementController {
             ];
             const missingFields = validateRequiredFields(req.body, requiredFields);
             if (missingFields.length > 0) {
-                return sendResponse(res, 400, true, `The fields are required: ${missingFields.join(", ")}`);
+                return sendResponse(res, 400, true, `Los campos son obligatorios: ${missingFields.join(", ")}`);
             }
 
             // Validar si el email tiene un formato válido
             if (!validateEmailFormat(email)) {
-                return sendResponse(res, 400, true, "The email does not have a valid format");
+                return sendResponse(res, 400, true, "El correo electrónico no tiene un formato válido.");
             }
 
             // Verificar si la sucursal existe
             const branch = await Branch.findOne({ where: { id: branchId, businessId } });
             if (!branch) {
-                return sendResponse(res, 404, true, 'Branch not found');
+                return sendResponse(res, 404, true, 'Sucursal no encontrado');
             }
 
             // Verificar si todas las funciones en el array existen
@@ -75,7 +75,7 @@ export class EmployeeManagementController {
                 }
             });
             if (existingUser) {
-                return sendResponse(res, 400, true, "Email or credential is already in use");
+                return sendResponse(res, 400, true, "El correo electrónico o la credencial ya están en uso");
             }
 
             // Buscar el rol "manager" en la tabla de roles
@@ -93,7 +93,7 @@ export class EmployeeManagementController {
 
             // Registrar perfil del usuario
             const newProfile = await ProfileBusiness.create({
-                codeEmployee: '0022',
+                codeEmployee: generateUniqueCode(),
                 name,
                 lastname,
                 rut,
@@ -113,7 +113,7 @@ export class EmployeeManagementController {
             })
 
 
-            return sendResponse(res, 201, false, "The credential has been created successfully", newUserBusiness);
+            return sendResponse(res, 201, false, "La credencial ha sido creada exitosamente", newUserBusiness);
         } catch (error) {
             console.error("Error al crear la credential:", error);
             return sendResponse(res, 500, true, "Error al crear la credential");
@@ -144,18 +144,18 @@ export class EmployeeManagementController {
             ];
             const missingFields = validateRequiredFields(req.body, requiredFields);
             if (missingFields.length > 0) {
-                return sendResponse(res, 400, true, `The fields are required: ${missingFields.join(", ")}`);
+                return sendResponse(res, 400, true, `Los campos son obligatorios: ${missingFields.join(", ")}`);
             }
 
             // Validar si el email tiene un formato válido
             if (!validateEmailFormat(email)) {
-                return sendResponse(res, 400, true, "The email does not have a valid format");
+                return sendResponse(res, 400, true, "El correo electrónico no tiene un formato válido.");
             }
 
             // Verificar si la sucursal existe
             const branch = await Branch.findOne({ where: { id: branchId, businessId } });
             if (!branch) {
-                return sendResponse(res, 404, true, 'Branch not found');
+                return sendResponse(res, 404, true, 'Sucursal no encontrado');
             }
 
             // Verificar si el nombre de usuario ya existe
@@ -168,7 +168,7 @@ export class EmployeeManagementController {
                 }
             });
             if (existingUser) {
-                return sendResponse(res, 400, true, "Email or credential is already in use");
+                return sendResponse(res, 400, true, "El correo electrónico o la credencial ya están en uso");
             }
 
             // Buscar el rol "manager" en la tabla de roles
@@ -186,7 +186,7 @@ export class EmployeeManagementController {
 
             // Registrar perfil del usuario
             const newProfile = await ProfileBusiness.create({
-                codeEmployee: '0022',
+                codeEmployee: generateUniqueCode(),
                 name,
                 lastname,
                 rut,
@@ -204,7 +204,7 @@ export class EmployeeManagementController {
             // Asociar al empleado a la empresa
             const EmployeesAssociated = EmployeesAssociatedBusinesses.create({ usersBusinessId: newUserBusiness.id, businessId })
 
-            return sendResponse(res, 201, false, "The credential has been created successfully", newUserBusiness);
+            return sendResponse(res, 201, false, "La credencial ha sido creada exitosamente.", newUserBusiness);
         } catch (error) {
             console.error("Error al crear la credential:", error);
             return sendResponse(res, 500, true, "Error al crear la credential");
@@ -234,7 +234,7 @@ export class EmployeeManagementController {
             });
 
             if (!employee) {
-                return sendResponse(res, 404, true, "Employee not found");
+                return sendResponse(res, 404, true, "Empleado no encontrada");
             }
             
             // Convertir la cadena JSON de productos en un objeto
@@ -243,10 +243,10 @@ export class EmployeeManagementController {
                 employee.profiles_business.additionalData.branch.operatingHours = JSON.parse(employee.profiles_business.additionalData.branch.operatingHours);
             }
 
-            return sendResponse(res, 200, false, "Employees retrieved successfull", employee);
+            return sendResponse(res, 200, false, "Empleado recuperado exitosamente", employee);
         } catch (error) {
-            console.error('Error getting employees by business:', error);
-            return sendResponse(res, 500, true, "Could not retrieve employees");
+            console.error('Error al conseguir empleado por empresa:', error);
+            return sendResponse(res, 500, true, "No se pudo recuperar los empleado");
         }
     }
 
@@ -266,7 +266,7 @@ export class EmployeeManagementController {
 
         try {
             if (!page) {
-                return sendResponse(res, 400, true, 'The page parameter is required');
+                return sendResponse(res, 400, true, 'El parámetro de página es obligatorio');
             }
 
             // Configurar opciones de paginación
@@ -308,10 +308,10 @@ export class EmployeeManagementController {
                 ]
             });
 
-            return sendResponse(res, 200, false, "Employees retrieved successfull", employees);
+            return sendResponse(res, 200, false, "Empleados recuperados exitosamente", employees);
         } catch (error) {
-            console.error('Error getting employees by business:', error);
-            return sendResponse(res, 500, true, "Could not retrieve employees");
+            console.error('Error al localizar empleados por empresa:', error);
+            return sendResponse(res, 500, true, "No se pudo recuperar los empleados");
         }
     }
 
