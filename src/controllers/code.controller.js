@@ -48,7 +48,7 @@ export class CodeController {
             const info = await transporter.sendMail({
                 from: `"Sethor" <${process.env.MAIL_FROM}>`, // sender address
                 to: `${email}`, // list of receivers
-                subject: "Hello ✔", // Subject line
+                subject: "Código de verificacion del correo", // Subject line
                 text: 'Este es el codigo para acceder a los beneficios de la lista de espera: ' + code, // plain text body
                 html: HTML, // html body
             });

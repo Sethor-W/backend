@@ -24,9 +24,11 @@ export class ProductController {
             }
 
             // Check if the specified branch exists
-            const branch = await Branch.findByPk(branchId);
-            if (!branch) {
-                return sendResponse(res, 404, true, 'Sucursal no encontrada');
+            if (branchId !=='all') {
+                const branch = await Branch.findByPk(branchId);
+                if (!branch) {
+                    return sendResponse(res, 404, true, 'Sucursal no encontrada');
+                }
             }
 
             // Create a new product in the database
@@ -40,7 +42,7 @@ export class ProductController {
                 photos: photosString,
                 price,
                 profilePicture,
-                branchId,
+                branchId: branchId === 'all' ? null : branchId,
                 businessId
             });
 

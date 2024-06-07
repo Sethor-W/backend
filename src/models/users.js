@@ -16,5 +16,11 @@ export const User = sequelize.define('users', {
     password: {
         type: DataTypes.STRING,
         allowNull: false,
-    }
+    },
+    resetPasswordCode: {
+        type: DataTypes.STRING,
+    },
+    resetPasswordExpires: {
+        type: DataTypes.DATE,
+    },
 });
