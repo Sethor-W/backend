@@ -6,6 +6,6 @@ import { uploadFileMiddleware } from '../middlewares/upload.middleware.js';
 export const routerStorage = Router();
 
 routerStorage.post('/upload/:nameFolder', [
-    // verifyTokenMiddleware,
+    verifyTokenMiddleware,
     uploadFileMiddleware
 ], StorageController.uploadFile);

@@ -9,3 +9,9 @@ export const routerProfile = Router();
 routerProfile.get('/', [
     verifyTokenMiddleware,
 ], ProfileController.getUserProfile);
+
+// actualizar perfil
+routerProfile.put('/', [
+    verifyTokenMiddleware,
+], ProfileController.updateUserProfile);
+

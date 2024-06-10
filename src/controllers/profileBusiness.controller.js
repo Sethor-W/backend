@@ -14,8 +14,6 @@ export class ProfileBusinessController {
     static async getUserProfile(req, res) {
         const { userId } = req.user;
         try {
-
-            
             const profile = await UserBusiness.findByPk(userId, {
                 attributes: ['id', 'email', 'status', 'keyword'],
                 include: [
@@ -47,5 +45,35 @@ export class ProfileBusinessController {
             return sendResponse(res, 500, true, 'No se pudo recuperar el perfil');
         }
     }
+
+    /**
+     * Actualizar el perfil del usuario
+     */
+    // PUT /users/profile
+    static async updateUserProfile(req, res) {
+        const { userId } = req.user;
+        const { phone, profilePicture } = req.body;
+
+        try {
+            // Buscar el perfil del usuario por el userId
+            const profile = await ProfileBusiness.findOne({ where: { usersBusinessId: userId } });  
+
+            if (!profile) {
+                return sendResponse(res, 404, true, "Perfil no encontrado");
+            }
+
+            profile.phone = phone || profile.phone;
+            profile.profilePicture = profilePicture || profile.profilePicture
+
+            // Guardar los cambios en la base de datos
+            await profile.save();
+
+            return sendResponse(res, 200, false, 'Perfil actualizado exitosamente', profile);
+        } catch (error) {
+            console.error('Error al actualizar el perfil de usuario:', error);
+            return sendResponse(res, 500, true, 'No se pudo actualizar el perfil');
+        }
+    }
+
 
 }

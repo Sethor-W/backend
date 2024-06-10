@@ -22,7 +22,7 @@ export class StorageController {
 
             const file = req.file;
             const result = await cloudinary.uploader.upload(file.path, {
-                folder: nameFolder
+                folder: `sethor/${nameFolder}`
             });
 
             // Eliminar el archivo del sistema de archivos local

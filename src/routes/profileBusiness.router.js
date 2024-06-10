@@ -9,3 +9,8 @@ export const routerProfileBusiness = Router();
 routerProfileBusiness.get('/', [
     verifyTokenMiddleware,
 ], ProfileBusinessController.getUserProfile);
+
+// actualizar perfil
+routerProfileBusiness.put('/', [
+    verifyTokenMiddleware,
+], ProfileBusinessController.updateUserProfile);

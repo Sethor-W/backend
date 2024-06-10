@@ -30,7 +30,10 @@ export const ProfileBusiness = sequelize.define('profiles_business', {
     },
     additionalData: {
         type: DataTypes.JSON,
-    }
+    },
+    profilePicture: {
+        type: DataTypes.STRING,
+    },
 });
 
 UserBusiness.hasOne(ProfileBusiness, {

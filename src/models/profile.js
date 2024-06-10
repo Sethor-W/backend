@@ -28,7 +28,10 @@ export const Profile = sequelize.define('profiles', {
     phone: {
         type: DataTypes.STRING,
         allowNull: false,
-    }
+    },
+    profilePicture: {
+        type: DataTypes.STRING,
+    },
 });
 
 User.hasOne(Profile, {
