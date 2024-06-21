@@ -23,13 +23,13 @@ export function uploadFileMiddleware(req, res, next) {
 
     const upload = multer({ 
         storage,
-        limits: { fileSize: 2 * 1024 * 1024 }
+        limits: { fileSize: 5 * 1024 * 1024 }
     });
 
     upload.single('file')(req, res, (err) => {
         if (err instanceof multer.MulterError) {
             console.error(err)
-            return sendResponse(res, 400, true, 'El archivo excede el límite de tamaño permitido (2MB)');
+            return sendResponse(res, 400, true, 'El archivo excede el límite de tamaño permitido (5MB)');
         } else if (err) {
             console.error(`Error al cargar el archivo: ${err}`)
             return sendResponse(res, 500, true, 'Error al cargar el archivo');
