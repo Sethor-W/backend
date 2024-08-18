@@ -44,6 +44,7 @@ import { routerProfileBusiness } from '../routes/profileBusiness.router.js';
 import { routerProfile } from '../routes/profile.router.js';
 import { routerStatistics } from '../routes/statistics.router.js';
 import { routerStorage } from '../routes/storage.router.js';
+import { routerPayment } from '../routes/payment.router.js';
 
 
 class Server {
@@ -75,6 +76,7 @@ class Server {
       invoice: this.versionAPI + '/invoices', 
 
       storage: this.versionAPI + '/storage',
+      payment: this.versionAPI + '/payment',
       others: this.versionAPI, 
       
     }
@@ -99,7 +101,6 @@ class Server {
     this.app.use(this.path.profile, routerProfile);
 
     this.app.use(this.path.statistics, routerStatistics);
-    
     // Rutas para la app business
     this.app.use(this.path.businessFunction, routerBusinessFunction);
     this.app.use(this.path.authBusiness, routerAuthBusiness);
@@ -109,6 +110,8 @@ class Server {
     this.app.use(this.path.employeeManagement, routerEmployeeManagement);
     this.app.use(this.path.invoice, routerInvoice);
     this.app.use(this.path.profileBusiness, routerProfileBusiness);
+    // Rutas para Payments
+    this.app.use(this.path.payment, routerPayment);
     
     // Otras rutas
     this.app.use(this.path.others, routerOther);

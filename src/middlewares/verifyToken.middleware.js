@@ -12,6 +12,7 @@ export function verifyTokenMiddleware(req, res, next) {
     }
     const [tokenType, token] = authorizationHeader.split(' ');
 
+
     // Verificar y decodificar el token utilizando el helper
     const decodedToken = verifyJWT(token);
     if (!decodedToken) {

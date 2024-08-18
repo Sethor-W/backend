@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Braintree Drop-in UI Integration</title>
+    <script src="https://js.braintreegateway.com/web/dropin/1.43.0/js/dropin.min.js"></script>
+</head>
+<body>
+    <h1>Braintree Payment Method Nonce Generator</h1>
+    <div id="dropin-container"></div>
+    <form id="payment-form" action="/your-server-endpoint" method="POST">
+        <input type="hidden" id="payment-method-nonce" name="payment_method_nonce">
+        <button type="button" id="submit-button">Generate Payment Method Nonce</button>
+        <button type="submit" id="form-submit-button" style="display:none;">Submit Form</button>
+    </form>
+    <p id="result"></p>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('http://localhost:3000/api/v1/payment/client-token')
+                .then(response => response.json())
+                .then(data => {
+                    const token = data.data.clientToken;
+                    braintree.dropin.create({
+                        authorization: token,
+                        container: '#dropin-container'
+                    }, function (err, dropinInstance) {
+                        if (err) {
+                            console.error('Error initializing Braintree Drop-in UI:', err);
+                            document.getElementById('result').innerText = 'Error initializing Braintree Drop-in UI: ' + err.message;
+                            return;
+                        }
+                        document.getElementById('submit-button').addEventListener('click', function() {
+                            dropinInstance.requestPaymentMethod(function (err, payload) {
+                                if (err) {
+                                    console.error('Error getting payment method nonce:', err);
+                                    document.getElementById('result').innerText = 'Error: ' + err.message;
+                                } else {
+                                    document.getElementById('payment-method-nonce').value = payload.nonce;
+                                    document.getElementById('form-submit-button').click();
+                                }
+                            });
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching client token:', error);
+                });
+        });
+    </script>
+</body>
+</html>
