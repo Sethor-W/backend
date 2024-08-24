@@ -15,3 +15,6 @@ routerProfile.put('/', [
     verifyTokenMiddleware,
 ], ProfileController.updateUserProfile);
 
+
+// Obtener perfil by id
+routerProfile.get('/:id', ProfileController.getUserProfileById);

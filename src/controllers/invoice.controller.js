@@ -92,10 +92,16 @@ export class InvoiceController {
         : {
             collectorId: userId,
           };
+
+      // Determina el orden basado en el status
+      const orderCondition = status === invoiceStatusEnum.PAID 
+      ? [["dateTimePayment", "DESC"]] 
+      : [["createdAt", "DESC"]];
+
       // Consultar las facturas del cobrador
       const invoices = await Invoice.findAndCountAll({
         where: whereCondition,
-        order: [["createdAt", "DESC"]],
+        order: orderCondition,
         include: [
           {
             model: User,
@@ -330,7 +336,7 @@ export class InvoiceController {
       // Consultar las facturas del cobrador
       const invoices = await Invoice.findAndCountAll({
         where: whereCondition,
-        order: [["createdAt", "DESC"]],
+        order: [["dateTimePayment", "DESC"]],
         include: [
           {
             model: User,
@@ -607,4 +613,77 @@ export class InvoiceController {
       return sendResponse(res, 500, true, "Error al recuperar los detalles de la factura");
     }
   }
+
+
+
+  /**
+   * Pay the invoice by collector
+   * POST invoices/:businessId/collector/pay/:invoiceId
+   */
+  static async payInvoiceByCollector(req, res) {
+    const { invoiceId } = req.params;
+    const { userId } = req.user;
+    const { clientId, dateTimePayment } = req.body;
+
+    try {
+      // Verificar si el usuario que va a pagar existe
+      const user = await User.findOne({ where: { id: clientId } });
+      if (!user) {
+        return sendResponse( res, 404, true, "Factura no encontrada o no tienes permiso para actualizarla");
+      }
+
+      // Verificar si la factura existe y pertenece al collector
+      const invoice = await Invoice.findOne({
+        where: {
+          id: invoiceId,
+          collectorId: userId,
+          status: {
+            [Op.ne]: invoiceStatusEnum.PAID,
+          },
+        },
+      });
+
+      if (!invoice) {
+        return sendResponse( res, 404, true, "Factura no encontrada o no tienes permiso para actualizarla");
+      }
+
+      // Generar un número de comprobante único
+      const voucherNumber = `ST-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+
+      // Formatear la fecha y hora actual usando JavaScript nativo
+      // const dateTimePayment = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+      // Pagar factura
+      await Invoice.update(
+        {
+          status: invoiceStatusEnum.PAID,
+          clientId: user.id,
+          dateTimePayment: dateTimePayment,
+          voucherNumber: voucherNumber,
+        },
+        {
+          where: {
+            id: invoiceId,
+          },
+        }
+      );
+
+      // Recuperar la factura pagada
+      const updatedInvoice = await Invoice.findByPk(invoiceId);
+      updatedInvoice.products = JSON.parse(invoice.products);
+
+      // Actualizar estadísticas
+      await StatisticsController.updateStatistics(invoice.businessId, updatedInvoice);
+
+      // Enviar la respuesta con la factura actualizada
+      return sendResponse(res, 200, false, "Factura pagada exitosamente", updatedInvoice);
+
+    } catch (error) {
+      console.error("Error al actualizar la factura:", error);
+      return sendResponse(res, 500, true, "Error al actualizar la factura");
+    }
+  }
+
+
+
 }

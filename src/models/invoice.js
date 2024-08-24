@@ -24,7 +24,8 @@ export const Invoice = sequelize.define('invoice', {
         defaultValue: invoiceStatusEnum.DRAFT,
     },
     dateTimePayment: {
-        type: DataTypes.STRING,
+        // type: DataTypes.STRING,
+        type: DataTypes.DATE,
     },
     voucherNumber: {
         type: DataTypes.STRING,

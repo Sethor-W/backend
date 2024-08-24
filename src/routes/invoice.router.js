@@ -56,6 +56,15 @@ routerInvoice.put('/:businessId/collector/update/:invoiceId', [
     verifyAssociatedUserMiddleware,
 ], InvoiceController.updateInvoiceByCollector);
 
+routerInvoice.post('/:businessId/collector/pay/:invoiceId', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.COLLECTOR,
+    ]),
+    verifyAssociatedUserMiddleware,
+], InvoiceController.payInvoiceByCollector);
+
+
 
 /** *********************************************************************************
  * MANGERS and OWNERS

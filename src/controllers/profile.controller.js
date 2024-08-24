@@ -10,7 +10,37 @@ export class ProfileController {
     /**
      * Obtener el perfil del usuario
      */
-    // PUT users/profile
+    // GET users/profile/:id
+    static async getUserProfileById(req, res) {
+        const { id } = req.params;
+        try {
+            
+            const profile = await User.findByPk(id, {
+                attributes: ['id', 'email'],
+                include: [
+                    {
+                        model: Profile,
+                    }
+                ]
+            });
+
+            
+            if (!profile) {
+                return sendResponse(res, 404, true, "Perfil no encontrado");
+            }
+
+            return sendResponse(res, 200, false, 'Perfil recuperado exitosamente', profile);
+        } catch (error) {
+            console.error('Error al recuperar el perfil de usuario:', error);
+            return sendResponse(res, 500, true, 'No se pudo recuperar el perfil');
+        }
+    }
+
+
+    /**
+     * Obtener el perfil del usuario
+     */
+    // GET users/profile
     static async getUserProfile(req, res) {
         const { userId } = req.user;
         try {

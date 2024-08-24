@@ -91,3 +91,30 @@ export const generateUniqueCode = () => {
     const letras = uuid.substring(6, 12).replace(/-/g, ''); 
     return `${numeros}-${letras}`;
 }
+
+/**
+ * Calcular el porcentaje de cambio entre dos valores.
+ * @param {number} current - Valor actual.
+ * @param {number} previous - Valor anterior.
+ * @returns {number} - Porcentaje de cambio.
+ */
+export const calculatePercentageChange = (current, previous) => {
+    if (previous === 0) {
+        return current === 0 ? 0 : 100;
+    }
+    return ((current - previous) / previous) * 100;
+};
+
+/**
+ * Redondear un valor hacia abajo a dos decimales.
+ * 
+ * Esta función toma un número y lo redondea hacia abajo a dos decimales.
+ * 
+ * @param {number} value - El valor numérico que se desea redondear.
+ * @returns {number} - El valor redondeado a dos decimales.
+ * 
+ * @example
+ * // Devuelve 12.34
+ * roundDownToTwoDecimals(12.3456);
+ */
+export const roundDownToTwoDecimals = (value) => Math.floor(value * 100) / 100;

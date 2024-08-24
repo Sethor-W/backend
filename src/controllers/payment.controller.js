@@ -525,71 +525,47 @@ export class PaymentController {
             // Crear la cuenta de comerciante en Braintree
             const merchantAccountParams = {
                 individual: {
-                    firstName: accountHolderName || 'Nombre del Titular', // Uso de datos del body
-                    lastName: 'Apellido', // Completa con un apellido adecuado
-                    email: 'contacto@example.com', // Ajusta según el caso
-                    phone: '5555555555', // Ajusta según el caso
-                    dateOfBirth: '1980-01-01', // Ajusta según el caso
-                    ssn: '12345678', // Ajusta según el caso
+                    firstName: accountHolderName || 'Nombre del Titular',
+                    lastName: 'Apellido',
+                    email: 'contacto@example.com',
+                    phone: '5555555555',
+                    dateOfBirth: '1980-01-01',
+                    ssn: '12345678',
                     address: {
-                        streetAddress: 'Dirección', // Ajusta según el caso
-                        locality: 'Ciudad', // Ajusta según el caso
-                        region: 'Región', // Ajusta según el caso
-                        postalCode: 'Código Postal' // Ajusta según el caso
+                        streetAddress: 'Dirección',
+                        locality: 'Ciudad',
+                        region: 'Región',
+                        postalCode: 'Código Postal'
                     }
                 },
                 business: {
-                    legalName: business.legalName || 'Nombre Legal de la Empresa', // Uso de datos del body
-                    dbaName: business.dbaName || 'Nombre Comercial de la Empresa', // Uso de datos del body
-                    taxId: business.taxId || 'RUT o Identificación Fiscal', // Uso de datos del body
+                    legalName: business.legalName || 'Nombre Legal de la Empresa',
+                    dbaName: business.dbaName || 'Nombre Comercial de la Empresa',
+                    taxId: business.taxId || 'RUT o Identificación Fiscal',
                     address: {
-                        streetAddress: business.address.streetAddress || 'Dirección de la Empresa', // Uso de datos del body
-                        locality: business.address.locality || 'Ciudad de la Empresa', // Uso de datos del body
-                        region: business.address.region || 'Región de la Empresa', // Uso de datos del body
-                        postalCode: business.address.postalCode || 'Código Postal de la Empresa' // Uso de datos del body
+                        streetAddress: business.address.streetAddress || 'Dirección de la Empresa',
+                        locality: business.address.locality || 'Ciudad de la Empresa',
+                        region: business.address.region || 'Región de la Empresa',
+                        postalCode: business.address.postalCode || 'Código Postal de la Empresa'
                     }
                 },
                 funding: {
                     descriptor: bankName,
                     destination: braintree.MerchantAccount.FundingDestination.Bank,
-                    email: funding.email || 'funding@example.com', // Ajusta según el caso
-                    mobilePhone: funding.mobilePhone || '5555555555', // Ajusta según el caso
-                    accountNumber: accountNumber, // Número de cuenta cifrado
-                    routingNumber: routingNumber, // Número de ruta cifrado
+                    email: funding.email || 'funding@example.com',
+                    mobilePhone: funding.mobilePhone || '5555555555',
+                    accountNumber: accountNumber,
+                    routingNumber: routingNumber,
                 },
                 tosAccepted: true,
-                masterMerchantAccountId: process.env.MASTER_MERCHANT_ACCOUNT_ID || 'Sethor_LT', // Configurable
-                id: 'sethor_new', // Ajusta según el caso
+                masterMerchantAccountId: 'Sethor_LT',
+                id: 'sethor_new',
             };
 
             gatewayBraintree.merchantAccount.create(merchantAccountParams, async (err, result) => {
                 if (result.success) {
-                    // Guardar la cuenta bancaria en la base de datos
-                    // const newAccount = await BusinessAccount.create({
-                    //     userId: req.user.userId,
-                    //     bankName,
-                    //     accountNumber,
-                    //     // accountHolderName,
-                    //     routingNumber,
-                    //     merchantAccountId: result.merchantAccount.id
-                    // });
-
                     return sendResponse(res, 201, false, "Cuenta bancaria registrada correctamente", {});
                 } else {
-
-                    // En lugar de crear una cuenta bancaria real, simula la creación y transferencia
-                    const simulatedAccount = {
-                        bankName,
-                        accountNumber,
-                        accountHolderName,
-                        routingNumber,
-                        merchantAccountId: 'Sethor_LT', // ID simulado
-                        status: 'registered', // Estado simulado
-                        timestamp: new Date()
-                    };
-                    return sendResponse(res, 201, false, "Cuenta bancaria registrada correctamente", simulatedAccount);
-
-                    
                     console.error('Error al crear la cuenta del comerciante:', err);
                     return sendResponse(res, 400, true, 'Error al crear la cuenta del comerciante', result);
                 }

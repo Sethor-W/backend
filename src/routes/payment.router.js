@@ -59,7 +59,7 @@ routerPayment.get('/customers/:customerId/transactions', [
 ], PaymentController.getCustomerTransactionsByIdBraintree);
 
 routerPayment.post('/business/bank-account', [
-    verifyTokenMiddleware,
+    // verifyTokenMiddleware,
 ], PaymentController.registerBusinessBankAccount);
 
 
