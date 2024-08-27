@@ -354,25 +354,48 @@ export class StatisticsController {
      */
     // GET /statistics/user/buying-users
     static async getBuyingUserStatistics(req, res) {
-        const {
-            userId
-        } = req.user
-        try {
-            const buyingUsers = await BuyingUserStatistic.findAndCountAll({
-                where: {
-                    userId: userId
-                }
-            });
+        const { userId } = req.user;
 
-            const totalSpent = await BuyingUserStatistic.sum('amountPaidByTheUser', {
-                where: {
-                    userId: userId
-                }
-            });
+        // Definir los literales para las fechas
+        const startOfMonth = Sequelize.literal("DATE_FORMAT(NOW(), '%Y-%m-01')"); // Mes actual
+        const endOfMonth = Sequelize.literal("LAST_DAY(NOW())"); // Mes actual
+        const startOfLastMonth = Sequelize.literal("DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m-01')"); // Mes anterior
+        const endOfLastMonth = Sequelize.literal("LAST_DAY(NOW() - INTERVAL 1 MONTH)"); // Mes anterior
+
+        try {
+            // Consultar el total gastado en el mes actual y en el mes anterior
+            const [currentMonthSpent, lastMonthSpent] = await Promise.all([
+                Invoice.sum('totalGeneral', {
+                    where: {
+                        clientId: userId,
+                        dateTimePayment: {
+                            [Sequelize.Op.gte]: startOfMonth,
+                            [Sequelize.Op.lte]: endOfMonth
+                        }
+                    }
+                }),
+                Invoice.sum('totalGeneral', {
+                    where: {
+                        clientId: userId,
+                        dateTimePayment: {
+                            [Sequelize.Op.gte]: startOfLastMonth,
+                            [Sequelize.Op.lte]: endOfLastMonth
+                        }
+                    }
+                })
+            ]);
+
+            // Redondear los valores
+            const roundedCurrentMonthSpent = roundDownToTwoDecimals(currentMonthSpent || 0);
+            const roundedLastMonthSpent = roundDownToTwoDecimals(lastMonthSpent || 0);
+
+            // Calcular el porcentaje de cambio
+            const percentageChange = calculatePercentageChange(roundedCurrentMonthSpent, roundedLastMonthSpent)
 
             return sendResponse(res, 200, false, 'Estadísticas recuperadas exitosamente', {
-                totalSpent,
-                ...buyingUsers
+                currentMonthSpent: roundedCurrentMonthSpent,
+                lastMonthSpent: roundedLastMonthSpent,
+                percentageChange: roundDownToTwoDecimals(percentageChange)
             });
         } catch (error) {
             console.error('Error al recuperar estadísticas de usuarios de compra:', error);

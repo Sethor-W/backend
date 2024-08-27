@@ -488,7 +488,7 @@ export class InvoiceController {
           clientId: userId,
           status: invoiceStatusEnum.PAID,
         },
-        order: [["createdAt", "DESC"]],
+        order: [["dateTimePayment", "DESC"]],
         include: [
           {
             model: User,
@@ -671,9 +671,6 @@ export class InvoiceController {
       // Recuperar la factura pagada
       const updatedInvoice = await Invoice.findByPk(invoiceId);
       updatedInvoice.products = JSON.parse(invoice.products);
-
-      // Actualizar estadísticas
-      await StatisticsController.updateStatistics(invoice.businessId, updatedInvoice);
 
       // Enviar la respuesta con la factura actualizada
       return sendResponse(res, 200, false, "Factura pagada exitosamente", updatedInvoice);
