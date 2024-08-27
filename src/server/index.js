@@ -126,8 +126,8 @@ class Server {
   }
 
   connectionDB() {
-    // sequelize.sync({ alter: true });
-    sequelize.sync();
+    sequelize.sync({ alter: true });
+    // sequelize.sync();
   }
 
   middlewares() {
