@@ -38,6 +38,14 @@ export const Business = sequelize.define('business', {
         allowNull: false,
         defaultValue: true
     },
+    validated_business: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+    },
+    PSPWalletId: {
+        type: DataTypes.STRING,
+    }
 });
 
 Business.belongsTo(UserBusiness, {

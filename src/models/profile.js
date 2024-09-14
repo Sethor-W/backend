@@ -13,7 +13,7 @@ export const Profile = sequelize.define('profiles', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    braintreeCustomerId: {
+    PSPCustomerId: {
         type: DataTypes.STRING,
         allowNull: true
     },

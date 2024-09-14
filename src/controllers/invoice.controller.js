@@ -9,6 +9,7 @@ import { Profile } from "../models/profile.js";
 import { ProfileBusiness } from "../models/profileBusiness.js";
 import { Branch } from "../models/branch.js";
 import { EmployeesAssociatedBusinesses } from "../models/employeesAssocitedBusiness.js";
+import { PaymentController } from "./payment.controller.js";
 
 export class InvoiceController {
   /** *********************************************************************************
@@ -621,9 +622,9 @@ export class InvoiceController {
    * POST invoices/:businessId/collector/pay/:invoiceId
    */
   static async payInvoiceByCollector(req, res) {
-    const { invoiceId } = req.params;
+    const { invoiceId, businessId } = req.params;
     const { userId } = req.user;
-    const { clientId, dateTimePayment } = req.body;
+    const { clientId, dateTimePayment, ...bodyReq } = req.body;
 
     try {
       // Verificar si el usuario que va a pagar existe
@@ -631,6 +632,13 @@ export class InvoiceController {
       if (!user) {
         return sendResponse( res, 404, true, "Factura no encontrada o no tienes permiso para actualizarla");
       }
+
+      // Verificar si la factura existe y pertenece al collector
+      const business = await Business.findOne({
+        where: {
+          id: businessId,
+        },
+      });
 
       // Verificar si la factura existe y pertenece al collector
       const invoice = await Invoice.findOne({
@@ -642,6 +650,30 @@ export class InvoiceController {
           },
         },
       });
+
+      // Verificar si la factura existe y pertenece al collector
+      const userProfile = await Profile.findOne({
+        where: {
+          userId: clientId,
+        },
+      });
+      
+      const body = {
+        amount: 148.8,
+        currency: 'USD',
+        description: `Pago de la empresa ${business.name}: ${invoice.note}`,
+        capture: true,
+        receipt_email: user.email,
+        customer: userProfile.PSPCustomerId,
+        ...bodyReq
+      };
+
+
+      // Llama a la función independiente para crear el pago
+      const paymentResponse = await PaymentController.createPaymentHandleFuntion(body);
+
+
+      return sendResponse( res, 200, true, "tessss", paymentResponse.body.data);
 
       if (!invoice) {
         return sendResponse( res, 404, true, "Factura no encontrada o no tienes permiso para actualizarla");
@@ -676,8 +708,8 @@ export class InvoiceController {
       return sendResponse(res, 200, false, "Factura pagada exitosamente", updatedInvoice);
 
     } catch (error) {
-      console.error("Error al actualizar la factura:", error);
-      return sendResponse(res, 500, true, "Error al actualizar la factura");
+      console.error("Error al pagar la factura:", error);
+      return sendResponse(res, error.statusCode || 500, true, "Error al pagar la factura", error.message || error.body || "Unknown error");
     }
   }
 

@@ -11,19 +11,26 @@ export const IdentityDocument = sequelize.define('IdentityDocuments', {
     },
     front_rut: {
         type: DataTypes.STRING,
-        unique: true,
+        // unique: true,
         allowNull: false,
     },
     back_rut: {
         type: DataTypes.STRING,
-        unique: true,
+        // unique: true,
         allowNull: false,
     },
     face: {
         type: DataTypes.STRING,
-        unique: true,
+        // unique: true,
         allowNull: false,
     }
+}, {
+    indexes: [
+        {
+            unique: true,
+            fields: ['front_rut', 'back_rut', 'face'] // Crea un índice único compuesto
+        }
+    ]
 });
 
 User.hasOne(IdentityDocument, {

@@ -12,7 +12,7 @@ const private_key_decrypt = getContentKeys('private_key_decrypt.pem');
 const publicKey = getContentKeys('public_key.pem');
 
 export function signJWT(payload) {
-    return jwt.sign(payload, private_key_decrypt, { algorithm: 'RS256', expiresIn: '24h' });
+    return jwt.sign(payload, private_key_decrypt, { algorithm: 'RS256', expiresIn: '30days' });
 }
 
 export function verifyJWT(token) {

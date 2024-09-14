@@ -323,8 +323,8 @@ export class BusinessController {
     
             return sendResponse(res, 200, false, 'Empresas recuperadas con éxito', businesses);
         } catch (error) {
-            console.error('Error updating business:', error);
-            return sendResponse(res, 500, true, 'No se pudo actualizar el negocio');
+            console.error('Error al recuperar empresas:', error);
+            return sendResponse(res, 500, true, 'Error al recuperar empresas');
         }
     }
 
