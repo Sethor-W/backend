@@ -143,12 +143,6 @@ routerPayment.get('/payout_methods/:payout_method_type/required_fields', [
 
 
 
-routerPayment.get('/data/countries', [
-    // verifyTokenMiddleware,
-], PaymentController.listCountries);
-
-
-
 
 routerPayment.post('/beneficiary', [
     // verifyTokenMiddleware,
@@ -163,3 +157,17 @@ routerPayment.post('/ewallets', [
 routerPayment.post('/ewallets/:wallet/contacts', [
     verifyTokenMiddleware,
 ], PaymentController.addContactToWallet);
+
+
+
+
+
+
+
+routerPayment.get('/data/countries', [
+    // verifyTokenMiddleware,
+], PaymentController.listCountries);
+
+routerPayment.get('/data/fx_rates', [
+    // verifyTokenMiddleware,
+], PaymentController.getFXRate);

@@ -26,6 +26,7 @@ import '../models/invoice.js'
 import '../models/soldProductStatistic.js'
 import '../models/buyingUserStatistic.js'
 import '../models/earningsStatistic.js'
+import '../models/availableCountry.js'
 
 // Routes
 import { routerAuth } from '../routes/auth.router.js';

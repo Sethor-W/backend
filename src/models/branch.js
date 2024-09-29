@@ -12,6 +12,10 @@ export const Branch = sequelize.define('branch', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    country_cca2: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     address: {
         type: DataTypes.STRING,
         allowNull: false,

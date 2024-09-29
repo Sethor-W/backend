@@ -15,7 +15,7 @@ export class BranchController {
     // POST business/branches/:businessId
     static async registerBranch(req, res) {
         const { businessId } = req.params;
-        const { name, address, googleMap, operatingHours } = req.body;
+        const { name, address, googleMap, operatingHours, country_cca2 } = req.body;
 
         try {
             // Validar la presencia de los campos requeridos
@@ -25,6 +25,7 @@ export class BranchController {
                 "googleMap",
                 "operatingHours",
                 "businessId",
+                "country_cca2",
             ];
             const missingFields = validateRequiredFields({...req.body, ...req.params}, requiredFields);
             if (missingFields.length > 0) {
@@ -32,7 +33,7 @@ export class BranchController {
             }
 
             // Registrar sucursal  
-            const newBranch = await Branch.create({ name, address, googleMap, operatingHours, businessId });
+            const newBranch = await Branch.create({ name, address, googleMap, operatingHours, businessId, country_cca2 });
 
             return sendResponse(res, 201, false, "La sucursal ha sido registrada exitosamente");
         } catch (error) {

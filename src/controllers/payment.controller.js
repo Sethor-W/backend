@@ -1082,28 +1082,6 @@ export class PaymentController {
      ************************************************************************************************
      ************************************************************************************************/
 
-
-     // Función independiente para crear un pago
-    static async createPaymentHandleFuntion(body) {
-        const httpMethod = 'POST';
-        const urlPath = `/v1/payments`;
-        // const body = {
-        //     amount,
-        //     currency,
-        //     capture, // Captura inmediata
-        //     description,
-        //     receipt_email,
-        //     customer,
-        //     ...bodyReq,
-        // };
-
-        console.log(body)
-
-        // Realiza la solicitud con makeRequest
-        const response = await makeRequest(httpMethod, urlPath, body);
-        return response;
-    }
-
     /**
      * Create Payment
      * 
@@ -1132,6 +1110,7 @@ export class PaymentController {
         } = req.body;
 
         try {
+
             const httpMethod = 'POST';
             const urlPath = `/v1/payments`;
             const body = {
@@ -1143,7 +1122,7 @@ export class PaymentController {
                 customer,
                 ...bodyReq,
             };
-            console.log(body)
+            // console.log(body)
 
             // Llama a la función independiente para crear el pago
             const paymentResponse = await PaymentController.createPaymentHandleFuntion(body);
@@ -1351,39 +1330,7 @@ export class PaymentController {
     }
 
 
-    /************************************************************************************************
-     ************************************************************************************************
-     *                              Resource Methods - Localization Methods 
-     ************************************************************************************************
-     ************************************************************************************************/
-
     
-    /**
-    * List Countries
-    * 
-    * GET /payment/data/countries
-    */
-    static async listCountries(req, res) {
-        const { ...params } = req.query;
-
-        // Convierte los parámetros adicionales en una cadena de consulta
-        const searchParams = new URLSearchParams({ ...params }).toString();
-
-        try {
-            const httpMethod = 'GET';
-            const urlPath = `/v1/data/countries?${searchParams}`;
-
-            // Realiza la solicitud con makeRequest
-            const response = await makeRequest(httpMethod, urlPath);
-
-            // Responde al cliente con la data obtenida
-            return sendResponse(res, 200, false, "List countries retrieved successfully", response.body.data, { status: response.body.status });
-
-        } catch (error) {
-            console.error("Error retrieved list countries:", error);
-            return sendResponse(res, error.statusCode || 500, true, "Error retrieved list countries", error.message || error.body || "Unknown error");
-        }
-    }
 
 
 
@@ -1541,5 +1488,121 @@ export class PaymentController {
             return sendResponse(res, error.statusCode || 500, true, "Error adding contact to Wallet", error.message || error.body || "Unknown error");
         }
     }
+
+
+    /************************************************************************************************
+     ************************************************************************************************
+     *                              Resource Methods - Localization Methods 
+     ************************************************************************************************
+     ************************************************************************************************/
+
+    
+    /**
+    * List Countries
+    * 
+    * GET /payment/data/countries
+    */
+    static async listCountries(req, res) {
+        const { ...params } = req.query;
+
+        // Convierte los parámetros adicionales en una cadena de consulta
+        const searchParams = new URLSearchParams({ ...params }).toString();
+
+        try {
+            const httpMethod = 'GET';
+            const urlPath = `/v1/data/countries?${searchParams}`;
+
+            // Realiza la solicitud con makeRequest
+            const response = await makeRequest(httpMethod, urlPath);
+
+            // Responde al cliente con la data obtenida
+            return sendResponse(res, 200, false, "List countries retrieved successfully", response.body.data, { status: response.body.status });
+
+        } catch (error) {
+            console.error("Error retrieved list countries:", error);
+            return sendResponse(res, error.statusCode || 500, true, "Error retrieved list countries", error.message || error.body || "Unknown error");
+        }
+    }
+
+
+    /**
+    * Get FX Rate
+    * Recupere un tipo de cambio para la conversión de divisas en pagos y desembolsos.
+    * 
+    * El tipo de cambio que se muestra refleja el tipo de cambio vigente en ese momento.
+    * El tipo de cambio puede variar según el momento y los detalles de la transacción. 
+    * El tipo de cambio incluye las tarifas de margen de cambio.
+    * 
+    * POST /payment/data/fx_rates
+    */
+    static async getFXRate(req, res) {
+        // const { ...params } = req.query;
+        // const searchParams = new URLSearchParams({ ...params }).toString();
+
+        try {
+            // const httpMethod = 'GET';
+            // const urlPath = `/v1/fx_rates?${searchParams}`;
+            
+            // // Realiza la solicitud con makeRequest
+            // const response = await makeRequest(httpMethod, urlPath);
+
+            const response = await PaymentController.getFXRateHandleFuntion(req.query)
+
+            // Responde al cliente con la data obtenida
+            return sendResponse(res, 200, false, "FX rate retrieved successfully", response.body.data, { status: response.body.status });
+
+        } catch (error) {
+            console.error("Error retrieving FX rate:", error);
+            return sendResponse(res, error.statusCode || 500, true, "Error retrieving FX rate", error.message || error.body || "Unknown error");
+        }
+    }
+
+
+
+
+
+    /************************************************************************************************
+     ************************************************************************************************
+     *                                          HANDLE FUNCTIONS
+     ************************************************************************************************
+     ************************************************************************************************/
+
+    // Función independiente para crear un pago
+    static async createPaymentHandleFuntion(body) {
+        const httpMethod = 'POST';
+        const urlPath = `/v1/payments`;
+        // const body = {
+        //     amount,
+        //     currency,
+        //     capture, // Captura inmediata
+        //     description,
+        //     receipt_email,
+        //     customer,
+        //     ...bodyReq,
+        // };
+
+        console.log(body)
+
+        // Realiza la solicitud con makeRequest
+        const response = await makeRequest(httpMethod, urlPath, body);
+        return response;
+    }
+
+    // Función independiente para obtener los FX Rate
+    static async getFXRateHandleFuntion(query) {
+        const { ...params } = query;
+        const searchParams = new URLSearchParams({ ...params }).toString();
+        
+        const httpMethod = 'GET';
+        const urlPath = `/v1/fx_rates?${searchParams}`;
+        
+        // Realiza la solicitud con makeRequest
+        const response = await makeRequest(httpMethod, urlPath);
+
+        console.log(body)
+
+        return response;
+    }
+
 
 }

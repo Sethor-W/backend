@@ -118,3 +118,59 @@ export const calculatePercentageChange = (current, previous) => {
  * roundDownToTwoDecimals(12.3456);
  */
 export const roundDownToTwoDecimals = (value) => Math.floor(value * 100) / 100;
+
+
+
+/**
+ * Calcular la fecha de expiración de un pago.
+ * 
+ * Esta función calcula la fecha de expiración en formato Unix time dependiendo del método de pago 
+ * y si es expirable. Para métodos de pago con tarjeta, el tiempo de expiración es de 7 días. 
+ * Para otros métodos de pago, es de 2 semanas.
+ * 
+ * @param {string} paymentMethod - El método de pago (ej. 'card', 'bank', 'paypal', etc.).
+ * @param {boolean} isExpirable - Indica si el método de pago es expirable o no.
+ * @returns {number|null} - La fecha de expiración en Unix time. Si no es expirable, devuelve `null`.
+ * 
+ * @example
+ * -- Devuelve una fecha de expiración en Unix time para un pago con tarjeta (7 días desde hoy)
+ * calculateExpirationDate('card', true);
+ * 
+ * @example
+ * -- Devuelve una fecha de expiración en Unix time para otro método de pago expirable (14 días desde hoy)
+ * calculateExpirationDate('bank', true);
+ * 
+ * @example
+ * -- Devuelve null porque el método de pago no es expirable
+ * calculateExpirationDate('paypal', false);
+ */
+export const calculateExpirationDate = (paymentMethod, isExpirable) => {
+    const SECONDS_IN_DAY = 86400; // 24 hours in seconds
+    const SECONDS_IN_WEEK = SECONDS_IN_DAY * 7; // 7 days in seconds
+    let expirationInSeconds;
+
+    // Si el método de pago es una tarjeta y es expirable
+    if (paymentMethod === 'card' && isExpirable) {
+        expirationInSeconds = SECONDS_IN_DAY * 7; // 7 días
+    } 
+    // Para otros métodos de pago expirable
+    else if (isExpirable) {
+        expirationInSeconds = SECONDS_IN_WEEK * 2; // 2 semanas
+    } else {
+        return null; // No expira si no es expirable
+    }
+
+    // Obtener la fecha actual en Unix timestamp
+    const currentUnixTime = Math.floor(Date.now() / 1000);
+
+    // Fecha de expiración calculada en Unix timestamp
+    const expirationUnixTime = currentUnixTime + expirationInSeconds;
+
+    // Si necesitas ajustar la expiración para ciertos casos de redes de tarjetas
+    // if (paymentMethod === 'card' && needShorterExpiration) {
+    //     expirationUnixTime = currentUnixTime + SECONDS_IN_DAY * 3; // Ejemplo: Red que requiere 3 días
+    // }
+
+    return expirationUnixTime;
+}
+

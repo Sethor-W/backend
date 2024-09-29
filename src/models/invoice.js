@@ -4,6 +4,7 @@ import { invoiceStatusEnum } from "../enum/invoiceStatus.enum.js";
 import { Business } from "./business.js";
 import { UserBusiness } from "./usersBusiness.js";
 import { User } from "./users.js";
+import { Branch } from "./branch.js";
 
 export const Invoice = sequelize.define('invoice', {
     id: {
@@ -45,7 +46,9 @@ export const Invoice = sequelize.define('invoice', {
     totalGeneral: {
         type: DataTypes.FLOAT,
     },
-    
+    currency: {
+        type: DataTypes.STRING,
+    },
 });
 
 
