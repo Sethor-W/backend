@@ -4,8 +4,8 @@ import { generate_6_digitRandomNumericCode, sendResponse, validateEmailFormat, v
 import { transporter } from '../config/email.config.js';
 
 // Models
-import { Profile } from "../models/profile.js";
-import { User } from "../models/users.js";
+import { Profile } from "../models/client/profile.js";
+import { User } from "../models/client/users.js";
 import { Code } from '../models/code.js';
 
 

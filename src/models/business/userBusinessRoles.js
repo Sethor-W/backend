@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../config/database.config.js";
-import { rolesEnum } from "../enum/roles.enum.js";
+import { sequelize } from "../../config/database.config.js";
+import { rolesEnum } from "../../enum/roles.enum.js";
 
 export const UserBusinessRole = sequelize.define('user_business_roles', {
     id: {

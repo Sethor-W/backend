@@ -1,7 +1,7 @@
 import { sendResponse } from "../helpers/utils.js";
-import { ProfileBusiness } from "../models/profileBusiness.js";
-import { UserBusinessRole } from "../models/userBusinessRoles.js";
-import { UserBusiness } from "../models/usersBusiness.js";
+import { ProfileBusiness } from "../models/business/profileBusiness.js";
+import { UserBusinessRole } from "../models/business/userBusinessRoles.js";
+import { UserBusiness } from "../models/business/usersBusiness.js";
 
 
 export class ProfileBusinessController {

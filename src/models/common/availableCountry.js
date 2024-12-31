@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../config/database.config.js";
-import { availableCountriesEnum } from "../enum/availableCountry.enum.js";
+import { sequelize } from "../../config/database.config.js";
+import { availableCountriesEnum } from "../../enum/availableCountry.enum.js";
 
 export const AvailableCountry = sequelize.define('available_country', {
     id: {

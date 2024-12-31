@@ -1,5 +1,5 @@
 import faker from 'faker';
-import { Business } from '../models/business.js';
+import { Business } from '../models/common/business.js';
 
 export const generateBusinessData = () => {
   const businesses = [];

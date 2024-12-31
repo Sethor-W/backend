@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../config/database.config.js";
-import { UserBusiness } from "./usersBusiness.js";
+import { sequelize } from "../../config/database.config.js";
+import { UserBusiness } from "../business/usersBusiness.js";
 
 
 export const Business = sequelize.define('business', {

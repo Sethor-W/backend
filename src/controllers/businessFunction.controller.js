@@ -1,5 +1,5 @@
 import { sendResponse } from "../helpers/utils.js";
-import { BusinessFunction } from "../models/businessFunction.js";
+import { BusinessFunction } from "../models/business/businessFunction.js";
 
 
 export class BusinessFunctionController {

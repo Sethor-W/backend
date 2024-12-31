@@ -10,17 +10,17 @@ import {
 
 import {
     User
-} from "../models/users.js";
+} from "../models/client/users.js";
 import {
     Profile
-} from "../models/profile.js";
+} from "../models/client/profile.js";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import {
     generateInvoicePrefix,
     makeRequest
 } from "../helpers/payment.helper.js";
-import { Business } from "../models/business.js";
+import { Business } from "../models/common/business.js";
 
 async function getInfoCustomerId(userId) {
     const profile = await Profile.findOne({ userId: { userId } });

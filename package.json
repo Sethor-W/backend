@@ -1,7 +1,7 @@
 {
   "name": "sethor",
   "version": "1.0.0",
-  "description": "api de sethor personal",
+  "description": "api de sethor",
   "main": "src/app.js",
   "type": "module",
   "scripts": {

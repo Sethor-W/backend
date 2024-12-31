@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../config/database.config.js";
-import { Branch } from "./branch.js";
-import { Business } from "./business.js";
-import { typeProductEnum } from "../enum/typeProduct.enum.js";
+import { sequelize } from "../../config/database.config.js";
+import { Branch } from "../common/branch.js";
+import { Business } from "../common/business.js";
+import { typeProductEnum } from "../../enum/typeProduct.enum.js";
 
 
 export const Product = sequelize.define('product', {

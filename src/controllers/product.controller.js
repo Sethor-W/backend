@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import { sendResponse, validateRequiredFields } from "../helpers/utils.js";
-import { Branch } from "../models/branch.js";
-import { Product } from "../models/product.js";
+import { Branch } from "../models/common/branch.js";
+import { Product } from "../models/client/product.js";
 
 
 export class ProductController {

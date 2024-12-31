@@ -1,7 +1,7 @@
 import { rolesEnum } from "../enum/roles.enum.js";
 import { sendResponse } from "../helpers/utils.js";
-import { Business } from "../models/business.js";
-import { EmployeesAssociatedBusinesses } from "../models/employeesAssocitedBusiness.js";
+import { Business } from "../models/common/business.js";
+import { EmployeesAssociatedBusinesses } from "../models/business/employeesAssocitedBusiness.js";
 
 export const verifyAssociatedUserMiddleware = async (req, res, next) => {
     const { userId, role } = req.user;
