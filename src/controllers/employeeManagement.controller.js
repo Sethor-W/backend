@@ -2,12 +2,12 @@ import bcrypt from "bcrypt";
 import { Op } from "sequelize";
 import { generateUniqueCode, sendResponse, validateEmailFormat, validateRequiredFields } from "../helpers/utils.js";
 
-import { UserBusinessRole } from "../models/userBusinessRoles.js";
-import { UserBusiness } from "../models/usersBusiness.js";
-import { ProfileBusiness } from "../models/profileBusiness.js";
-import { Branch } from "../models/branch.js";
-import { EmployeesAssociatedBusinesses } from "../models/employeesAssocitedBusiness.js";
-import { BusinessFunction } from "../models/businessFunction.js";
+import { UserBusinessRole } from "../models/business/userBusinessRoles.js";
+import { UserBusiness } from "../models/business/usersBusiness.js";
+import { ProfileBusiness } from "../models/business/profileBusiness.js";
+import { Branch } from "../models/common/branch.js";
+import { EmployeesAssociatedBusinesses } from "../models/business/employeesAssocitedBusiness.js";
+import { BusinessFunction } from "../models/business/businessFunction.js";
 import { AssignedUserFunction } from "../models/assignedUserFunction.js";
 import { rolesEnum } from "../enum/roles.enum.js";
 

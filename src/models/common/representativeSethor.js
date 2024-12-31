@@ -1,8 +1,7 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../config/database.config.js";
-import { typeUserEnum } from "../enum/typeUser.enum.js";
+import { sequelize } from "../../config/database.config.js";
 
-export const Help = sequelize.define('help', {
+export const RepresentativeSethor = sequelize.define('representative_sethor', {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
@@ -18,10 +17,6 @@ export const Help = sequelize.define('help', {
     },
     docs: {
         type: DataTypes.TEXT
-    },
-    userType: {
-        type: DataTypes.ENUM(typeUserEnum.USER_BUSINESS, typeUserEnum.USER_CLIENT),
-        allowNull: false
     },
     userId: {
         type: DataTypes.UUID,

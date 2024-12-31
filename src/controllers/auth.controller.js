@@ -3,8 +3,8 @@ import { generateUniqueCode, sendResponse, validateEmailFormat, validateRequired
 import { signJWT } from "../helpers/jwt.helper.js"
 
 // Models
-import { Profile } from "../models/profile.js";
-import { User } from "../models/users.js";
+import { Profile } from "../models/client/profile.js";
+import { User } from "../models/client/users.js";
 
 
 export class AuthController {

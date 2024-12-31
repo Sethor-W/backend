@@ -4,8 +4,8 @@ import {
 } from "../helpers/utils.js";
 
 // Models
-import { Business } from "../models/business.js";
-import { Branch } from "../models/branch.js";
+import { Business } from "../models/common/business.js";
+import { Branch } from "../models/common/branch.js";
 
 export class BranchController {
 

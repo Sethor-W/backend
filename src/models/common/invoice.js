@@ -1,9 +1,9 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../config/database.config.js";
-import { invoiceStatusEnum } from "../enum/invoiceStatus.enum.js";
+import { sequelize } from "../../config/database.config.js";
+import { invoiceStatusEnum } from "../../enum/invoiceStatus.enum.js";
 import { Business } from "./business.js";
-import { UserBusiness } from "./usersBusiness.js";
-import { User } from "./users.js";
+import { UserBusiness } from "../business/usersBusiness.js";
+import { User } from "../client/users.js";
 import { Branch } from "./branch.js";
 
 export const Invoice = sequelize.define('invoice', {

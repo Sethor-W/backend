@@ -11,7 +11,7 @@ import {
 // Models
 import {
     User
-} from "../models/users.js";
+} from "../models/client/users.js";
 import { transporter } from '../config/email.config.js';
 import { Op } from 'sequelize';
 

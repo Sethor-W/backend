@@ -1,8 +1,8 @@
 import { sendResponse, validateRequiredFields } from "../helpers/utils.js";
 
-import { Help } from "../models/help.js";
-import { OpinionOrSuggestion } from "../models/opinionOrSuggestion.js";
-import { RepresentativeSethor } from "../models/representativeSethor.js";
+import { Help } from "../models/common/help.js";
+import { OpinionOrSuggestion } from "../models/common/opinionOrSuggestion.js";
+import { RepresentativeSethor } from "../models/common/representativeSethor.js";
 
 
 export class OtherController {

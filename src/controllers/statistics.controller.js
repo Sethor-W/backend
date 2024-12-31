@@ -5,13 +5,13 @@ import {
 } from "../helpers/utils.js";
 import {
     SoldProductStatistic
-} from "../models/soldProductStatistic.js";
+} from "../models/business/soldProductStatistic.js";
 import {
     BuyingUserStatistic
-} from "../models/buyingUserStatistic.js";
+} from "../models/business/buyingUserStatistic.js";
 import {
     EarningsStatistic
-} from "../models/earningsStatistic.js";
+} from "../models/business/earningsStatistic.js";
 import {
     Sequelize
 } from "sequelize";
@@ -23,7 +23,7 @@ import {
 } from "../enum/invoiceStatus.enum.js";
 import {
     Invoice
-} from "../models/invoice.js";
+} from "../models/common/invoice.js";
 
 export class StatisticsController {
 

@@ -5,9 +5,9 @@ import {
 
 // Models
 import { Op } from "sequelize";
-import { Business } from "../models/business.js";
-import { ProfileBusiness } from "../models/profileBusiness.js";
-import { EmployeesAssociatedBusinesses } from "../models/employeesAssocitedBusiness.js";
+import { Business } from "../models/common/business.js";
+import { ProfileBusiness } from "../models/business/profileBusiness.js";
+import { EmployeesAssociatedBusinesses } from "../models/business/employeesAssocitedBusiness.js";
 
 export class BusinessController {
 

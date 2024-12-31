@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../config/database.config.js";
+import { sequelize } from "../../config/database.config.js";
 import { UserBusinessRole } from "./userBusinessRoles.js";
-import { actuveAccountEnum } from "../enum/activeAccount.enum.js";
+import { actuveAccountEnum } from "../../enum/activeAccount.enum.js";
 
 
 export const UserBusiness = sequelize.define('users_business', {

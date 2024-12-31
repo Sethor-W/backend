@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.config.js";
-import { User } from "./users.js";
+import { User } from "./client/users.js";
 
 
 export const IdentityDocument = sequelize.define('IdentityDocuments', {

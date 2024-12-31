@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../config/database.config.js";
-import { functionsBusinessEnum } from "../enum/functionsBusiness.enum.js";
+import { sequelize } from "../../config/database.config.js";
+import { functionsBusinessEnum } from "../../enum/functionsBusiness.enum.js";
 
 
 export const BusinessFunction  = sequelize.define('business_function', {

@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.config.js";
 
-import { BusinessFunction } from "./businessFunction.js";
-import { UserBusiness } from "./usersBusiness.js";
+import { BusinessFunction } from "./business/businessFunction.js";
+import { UserBusiness } from "./business/usersBusiness.js";
 
 
 export const AssignedUserFunction  = sequelize.define('assigned_user_function', {

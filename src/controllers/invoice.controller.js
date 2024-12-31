@@ -1,41 +1,19 @@
-import {
-  Op
-} from "sequelize";
-import {
-  invoiceStatusEnum
-} from "../enum/invoiceStatus.enum.js";
+import { Op } from "sequelize";
+import { invoiceStatusEnum } from "../enum/invoiceStatus.enum.js";
 import {
   calculateExpirationDate,
   sendResponse,
   validateRequiredFields
 } from "../helpers/utils.js";
-import {
-  Business
-} from "../models/business.js";
-import {
-  Invoice
-} from "../models/invoice.js";
-import {
-  User
-} from "../models/users.js";
-import {
-  UserBusiness
-} from "../models/usersBusiness.js";
-import {
-  Profile
-} from "../models/profile.js";
-import {
-  ProfileBusiness
-} from "../models/profileBusiness.js";
-import {
-  Branch
-} from "../models/branch.js";
-import {
-  EmployeesAssociatedBusinesses
-} from "../models/employeesAssocitedBusiness.js";
-import {
-  PaymentController
-} from "./payment.controller.js";
+import { Business } from "../models/common/business.js";
+import { Invoice } from "../models/common/invoice.js";
+import { User } from "../models/client/users.js";
+import { UserBusiness } from "../models/business/usersBusiness.js";
+import { Profile } from "../models/client/profile.js";
+import { ProfileBusiness } from "../models/business/profileBusiness.js";
+import { Branch } from "../models/common/branch.js";
+import { EmployeesAssociatedBusinesses } from "../models/business/employeesAssocitedBusiness.js";
+import { PaymentController } from "./payment.controller.js";
 
 export class InvoiceController {
   /** *********************************************************************************
@@ -49,9 +27,21 @@ export class InvoiceController {
    */
   // POST invoices/:businessId/create
   static async createInvoice(req, res) {
-    const { businessId } = req.params;
-    const { userId } = req.user;
-    const { name, subtotal, sth, totalIVA, totalGeneral, products, note } = req.body;
+    const {
+      businessId
+    } = req.params;
+    const {
+      userId
+    } = req.user;
+    const {
+      name,
+      subtotal,
+      sth,
+      totalIVA,
+      totalGeneral,
+      products,
+      note
+    } = req.body;
 
     try {
       // Validar la presencia de los campos requeridos
@@ -62,8 +52,10 @@ export class InvoiceController {
       }
 
       const profile = await UserBusiness.findByPk(userId, {
-          include: [{ model: ProfileBusiness, attributes: ['additionalData'] }
-        ]
+        include: [{
+          model: ProfileBusiness,
+          attributes: ['additionalData']
+        }]
       });
       if (!profile) {
         return sendResponse(res, 404, true, "Perfil del cobrador no encontrado");
@@ -109,10 +101,10 @@ export class InvoiceController {
           totalGeneral,
           currency: currencyCode,
         });
-  
+
         // Parsea los productos de cadena JSON a objeto
         newInvoice.products = JSON.parse(newInvoice.products);
-        
+
         // Enviar respuesta exitosa
         return sendResponse(res, 201, false, "Factura creada exitosamente", newInvoice);
 
@@ -145,23 +137,19 @@ export class InvoiceController {
       const offset = (page - 1) * pageSize;
 
       // Configurar la condición de consulta para incluir todas las facturas si no se proporciona un estado
-      const whereCondition = status ?
-        {
-          collectorId: userId,
-          status: status,
-        } :
-        {
-          collectorId: userId,
-        };
+      const whereCondition = status ? {
+        collectorId: userId,
+        status: status,
+      } : {
+        collectorId: userId,
+      };
 
       // Determina el orden basado en el status
-      const orderCondition = status === invoiceStatusEnum.PAID ?
-        [
-          ["dateTimePayment", "DESC"]
-        ] :
-        [
-          ["createdAt", "DESC"]
-        ];
+      const orderCondition = status === invoiceStatusEnum.PAID ? [
+        ["dateTimePayment", "DESC"]
+      ] : [
+        ["createdAt", "DESC"]
+      ];
 
       // Consultar las facturas del cobrador
       const invoices = await Invoice.findAndCountAll({
@@ -392,14 +380,12 @@ export class InvoiceController {
       const offset = (page - 1) * pageSize;
 
       // Configurar la condición de consulta para incluir todas las facturas si no se proporciona un estado
-      const whereCondition = status ?
-        {
-          status: status,
-          businessId,
-        } :
-        {
-          businessId,
-        };
+      const whereCondition = status ? {
+        status: status,
+        businessId,
+      } : {
+        businessId,
+      };
       // Consultar las facturas del cobrador
       const invoices = await Invoice.findAndCountAll({
         where: whereCondition,
@@ -684,24 +670,45 @@ export class InvoiceController {
    * POST invoices/:businessId/collector/pay/:invoiceId
    */
   static async payInvoiceByCollector(req, res) {
-    const { invoiceId, businessId } = req.params;
-    const { userId } = req.user;
-    const { clientId, dateTimePayment, ...bodyReq } = req.body;
-    const { action_type = "payment", buy_currency = "USD", fixed_side = "sell", ...params } = req.query;
+    const {
+      invoiceId,
+      businessId
+    } = req.params;
+    const {
+      userId
+    } = req.user;
+    const {
+      clientId,
+      dateTimePayment,
+      ...bodyReq
+    } = req.body;
+    const {
+      action_type = "payment", buy_currency = "USD", fixed_side = "sell", ...params
+    } = req.query;
 
     try {
       // Verificar existencia del usuario y empresa
       const [user, business, invoice, userProfile] = await Promise.all([
         User.findByPk(clientId), // Buscar el usuario
-        Business.findOne({ where: { id: businessId } }), // Buscar la empresa
+        Business.findOne({
+          where: {
+            id: businessId
+          }
+        }), // Buscar la empresa
         Invoice.findOne({
           where: {
             id: invoiceId,
             collectorId: userId,
-            status: { [Op.ne]: invoiceStatusEnum.PAID }
+            status: {
+              [Op.ne]: invoiceStatusEnum.PAID
+            }
           }
         }), // Buscar la factura
-        Profile.findOne({ where: { userId: clientId } }) // Buscar el perfil del usuario
+        Profile.findOne({
+          where: {
+            userId: clientId
+          }
+        }) // Buscar el perfil del usuario
       ]);
 
       if (!user) return sendResponse(res, 404, true, "Usuario no encontrado"); // Factura no encontrada o no tienes permiso para actualizarla
@@ -710,7 +717,14 @@ export class InvoiceController {
       if (!userProfile) return sendResponse(res, 404, true, "Perfil del usuario pagador no existe");
 
 
-      const bodyFXRate = {...params, action_type, buy_currency, fixed_side, sell_currency: invoice.currency, amount: invoice.totalGeneral }
+      const bodyFXRate = {
+        ...params,
+        action_type,
+        buy_currency,
+        fixed_side,
+        sell_currency: invoice.currency,
+        amount: invoice.totalGeneral
+      }
       const responseFXRate = await PaymentController.getFXRateHandleFuntion(bodyFXRate)
       const FXRate = responseFXRate.body.data;
 
@@ -732,12 +746,10 @@ export class InvoiceController {
         capture: true,
         receipt_email: user.email,
         customer: userProfile.PSPCustomerId,
-        ewallets: [
-          {
-            ewallet: business.PSPWalletId, // Wallet de la empresa
-            percentage: 85 // Porcentaje enviado a la empresa
-          }
-        ],
+        ewallets: [{
+          ewallet: business.PSPWalletId, // Wallet de la empresa
+          percentage: 85 // Porcentaje enviado a la empresa
+        }],
         fixed_side: "sell",
         expiration: calculateExpirationDate('card', true),
         requested_currency: invoice.currency, // Moneda recibida en la billetera Rapyd.

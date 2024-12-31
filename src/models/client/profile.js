@@ -1,16 +1,21 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../config/database.config.js";
-import { UserBusiness } from "./usersBusiness.js";
+import { sequelize } from "../../config/database.config.js";
+import { User } from "./users.js";
 
 
-export const ProfileBusiness = sequelize.define('profiles_business', {
+export const Profile = sequelize.define('profiles', {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4
     },
-    codeEmployee: {
+    codeUser: {
         type: DataTypes.STRING,
+        allowNull: false,
+    },
+    PSPCustomerId: {
+        type: DataTypes.STRING,
+        allowNull: true
     },
     name: {
         type: DataTypes.STRING,
@@ -28,17 +33,14 @@ export const ProfileBusiness = sequelize.define('profiles_business', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    additionalData: {
-        type: DataTypes.JSON,
-    },
     profilePicture: {
         type: DataTypes.STRING,
     },
 });
 
-UserBusiness.hasOne(ProfileBusiness, {
+User.hasOne(Profile, {
     foreignKey: {
         allowNull: false,
     },
 })
-ProfileBusiness.belongsTo(UserBusiness)
+Profile.belongsTo(User)

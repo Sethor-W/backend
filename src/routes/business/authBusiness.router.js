@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import { AuthBusinessController } from '../controllers/authBusiness.controller.js';
-import { verifyTokenMiddleware } from '../middlewares/verifyToken.middleware.js';
+import { AuthBusinessController } from '../../controllers/business/auth.controller.js';
+import { verifyTokenMiddleware } from '../../middlewares/verifyToken.middleware.js';
 
 export const routerAuthBusiness = Router();
 
