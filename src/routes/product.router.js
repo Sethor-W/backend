@@ -6,28 +6,16 @@ import { verifyAssociatedUserMiddleware } from '../middlewares/verifyAssociatedU
 
 import { ProductController } from '../controllers/product.controller.js';
 import { rolesEnum } from '../enum/roles.enum.js';
+import { ProductBusinessController } from '../controllers/business/product.controller.js';
 
 export const routerProduct = Router();
 
-routerProduct.post('/:businessId/branch/:branchId', [
-    verifyTokenMiddleware,
-    checkRoleMiddleware([
-        rolesEnum.OWNER,
-        rolesEnum.MANAGER,
-        rolesEnum.ADMIN
-    ]),
-    verifyAssociatedUserMiddleware,
-], ProductController.registerProduct);
 
-routerProduct.get('/by-business/:businessId', [
-    verifyTokenMiddleware,
-], ProductController.getProductsByBusiness);
-
-routerProduct.get('/by-id/:productId', [
+routerProduct.get('/:productId', [
     verifyTokenMiddleware,
 ], ProductController.getProductById);
 
-routerProduct.put('/by-id/:businessId/:productId', [
+routerProduct.put('/:productId', [
     verifyTokenMiddleware,
     checkRoleMiddleware([
         rolesEnum.OWNER,

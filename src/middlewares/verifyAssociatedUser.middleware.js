@@ -4,8 +4,8 @@ import { Business } from "../models/common/business.js";
 import { EmployeesAssociatedBusinesses } from "../models/business/employeesAssocitedBusiness.js";
 
 export const verifyAssociatedUserMiddleware = async (req, res, next) => {
-    const { userId, role } = req.user;
-    const { businessId } = req.params;
+    const { userId, roles } = req.user;
+    const businessId = req.params.businessId || req.query.businessId || req.body.businessId || req?.locales?.businessId;
 
     try {
         if (!businessId) {
@@ -13,7 +13,7 @@ export const verifyAssociatedUserMiddleware = async (req, res, next) => {
         }
 
         // Si el usuario tiene el rol de "owner", verificar el campo ownerId en la tabla Business
-        if (role === rolesEnum.OWNER) {
+        if (roles.includes(rolesEnum.OWNER)) {
             const business = await Business.findByPk(businessId);
             if (!business || business.ownerId !== userId) {
                 return sendResponse(res, 403, true, 'No autorizado. No estás asociado con este negocio.');
