@@ -5,6 +5,7 @@ import { Business } from "./business.js";
 import { UserBusiness } from "../business/usersBusiness.js";
 import { User } from "../client/users.js";
 import { Branch } from "./branch.js";
+import { discountTypeEnum } from "../../enum/discountType.enum.js";
 
 export const Invoice = sequelize.define('invoice', {
     id: {
@@ -34,6 +35,13 @@ export const Invoice = sequelize.define('invoice', {
     products: {
         type: DataTypes.TEXT,
     },
+    discountValue: {
+        type: DataTypes.FLOAT,
+    },
+    discountType: {
+        type: DataTypes.ENUM(discountTypeEnum.FIXED, discountTypeEnum.PERCENTAGE),
+        allowNull: false,
+    },
     subtotal: {
         type: DataTypes.FLOAT,
     },
@@ -58,6 +66,9 @@ Invoice.belongsTo(UserBusiness, {
     allowNull: false
 });
 Invoice.belongsTo(Business, {
+    allowNull: false
+});
+Invoice.belongsTo(Branch, {
     allowNull: false
 });
 Invoice.belongsTo(User, {

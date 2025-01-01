@@ -1,21 +1,25 @@
 import { Op } from "sequelize";
-import { invoiceStatusEnum } from "../enum/invoiceStatus.enum.js";
+import { invoiceStatusEnum } from "../../enum/invoiceStatus.enum.js";
 import {
   calculateExpirationDate,
   sendResponse,
   validateRequiredFields
-} from "../helpers/utils.js";
-import { Business } from "../models/common/business.js";
-import { Invoice } from "../models/common/invoice.js";
-import { User } from "../models/client/users.js";
-import { UserBusiness } from "../models/business/usersBusiness.js";
-import { Profile } from "../models/client/profile.js";
-import { ProfileBusiness } from "../models/business/profileBusiness.js";
-import { Branch } from "../models/common/branch.js";
-import { EmployeesAssociatedBusinesses } from "../models/business/employeesAssocitedBusiness.js";
-import { PaymentController } from "./payment.controller.js";
+} from "../../helpers/utils.js";
+import { Business } from "../../models/common/business.js";
+import { Invoice } from "../../models/common/invoice.js";
+import { User } from "../../models/client/users.js";
+import { UserBusiness } from "../../models/business/usersBusiness.js";
+import { Profile } from "../../models/client/profile.js";
+import { ProfileBusiness } from "../../models/business/profileBusiness.js";
+import { Branch } from "../../models/common/branch.js";
+import { EmployeesAssociatedBusinesses } from "../../models/business/employeesAssocitedBusiness.js";
+import { PaymentController } from "../payment.controller.js";
+import { InvoiceService } from "../../services/business/invoice.service.js";
+import { body, validationResult } from "express-validator";
+import { discountTypeEnum } from "../../enum/discountType.enum.js";
 
-export class InvoiceController {
+export class InvoiceBusinessController {
+
   /** *********************************************************************************
    ************************************************************************************
    * COLLECTORS
@@ -27,96 +31,78 @@ export class InvoiceController {
    */
   // POST invoices/:businessId/create
   static async createInvoice(req, res) {
-    const {
-      businessId
-    } = req.params;
-    const {
-      userId
-    } = req.user;
-    const {
-      name,
-      subtotal,
-      sth,
-      totalIVA,
-      totalGeneral,
-      products,
-      note
-    } = req.body;
+    await body('name').notEmpty().withMessage('El campo "name" es obligatorio.');
+    await body('subtotal').isNumeric().withMessage('El campo "subtotal" debe ser un número.');
+    await body('sth').isNumeric().withMessage('El campo "sth" debe ser un número.');
+    await body('totalIVA').isNumeric().withMessage('El campo "totalIVA" debe ser un número.');
+    await body('totalGeneral').isNumeric().withMessage('El campo "totalGeneral" debe ser un número.');
+    await body('products').isArray({ min: 1 }).withMessage('El campo "products" debe ser un arreglo no vacío.');
+    await body('discountType').optional().isIn(Object.values(discountTypeEnum)).withMessage('El tipo de descuento no es válido.');
+    await body('discountValue').optional().isNumeric().withMessage('El valor del descuento debe ser un número.');
+    await body('note').optional().isString().withMessage('El campo "note" debe ser una cadena de texto.');
 
-    try {
-      // Validar la presencia de los campos requeridos
-      const requiredFields = ["name", "products"];
-      const missingFields = validateRequiredFields(req.body, requiredFields);
-      if (missingFields.length > 0) {
-        return sendResponse(res, 400, true, `Los campos son obligatorios: ${missingFields.join(", ")}`);
-      }
-
-      const profile = await UserBusiness.findByPk(userId, {
-        include: [{
-          model: ProfileBusiness,
-          attributes: ['additionalData']
-        }]
-      });
-      if (!profile) {
-        return sendResponse(res, 404, true, "Perfil del cobrador no encontrado");
-      }
-
-      if (profile.profiles_business.additionalData) {
-
-        // Convertir la cadena JSON de productos en un objeto
-        profile.profiles_business.additionalData = await JSON.parse(profile.profiles_business.additionalData);
-
-        // Obtener la sucursal usando el ID de la sucursal
-        const branchId = profile.profiles_business.additionalData.branch.id;
-        const branch = await Branch.findByPk(branchId);
-
-        // Hacer una solicitud a la API para obtener datos del país
-        const response = await fetch(`https://restcountries.com/v3.1/alpha?codes=${branch.country_cca2}`);
-        if (response.status !== 200) {
-          throw new Error(`Error: ${response.status}`);
-        }
-
-        // Parsear la respuesta JSON
-        const data = await response.json();
-
-        // Obtener la divisa
-        const currency = data[0]?.currencies;
-        const currencyCode = Object.keys(currency)[0]; // Obtener el código de la divisa (DOP)
-        const currencyDetails = currency[currencyCode]; // Obtener detalles de la divisa
-
-        console.log(`Divisa: ${currencyDetails.name} (${currencyCode}), Símbolo: ${currencyDetails.symbol}`);
-
-        // Crear una nueva factura
-        const newInvoice = await Invoice.create({
-          name,
-          note,
-          status: invoiceStatusEnum.DRAFT,
-          collectorId: userId,
-          businessId,
-          clientId: null,
-          products: JSON.stringify(products),
-          subtotal,
-          sth,
-          totalIVA,
-          totalGeneral,
-          currency: currencyCode,
-        });
-
-        // Parsea los productos de cadena JSON a objeto
-        newInvoice.products = JSON.parse(newInvoice.products);
-
-        // Enviar respuesta exitosa
-        return sendResponse(res, 201, false, "Factura creada exitosamente", newInvoice);
-
-      } else {
-        return sendResponse(res, 400, true, "El cobrador no tiene una sucursal asignadad");
-      }
-
-    } catch (error) {
-      console.error("Error al enviar:", error);
-      return sendResponse(res, 500, true, "Error al enviar");
+    // Validación de campos con express-validator
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return sendResponse(res, 400, true, 'Errores de validación', errors.array());
     }
+    const result = await InvoiceService.createInvoice(req.param, req.body, req.user)
+    return sendResponse(res, result.statusCode, result.error, result.message, result.data);
   }
+
+
+  /** *********************************************************************************
+   ************************************************************************************
+   * MANGERS and OWNERS
+   **********************************************************************************
+   **********************************************************************************/
+
+  /**
+   * Get invoices by collector sorted by status (draft or paid) and paginated
+   */
+  // GET invoices/:businessId/getAll?page=1&status=draft
+  static async getAllInvoices(req, res) {
+    const result = await InvoiceService.getAllInvoices(req.params, req.query);
+    return sendResponse(res, result.statusCode, result.error, result.message, result.data);
+  }
+
+  /**
+   * Get details of a specific invoice
+   * GET invoices/:businessId/details/:invoiceId
+   */
+  static async getInvoiceDetails(req, res) {
+    const result = await InvoiceService.getInvoicesDetails(req.params);
+    return sendResponse(res, result.statusCode, result.error, result.message, result.data);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /**
    * Get invoices by collector sorted by status (draft or paid) and paginated
@@ -156,18 +142,18 @@ export class InvoiceController {
         where: whereCondition,
         order: orderCondition,
         include: [{
-            model: User,
-            as: "client",
-            attributes: ["id", "email"],
-          },
-          {
-            model: Business,
-          },
-          {
-            model: UserBusiness,
-            as: "collector",
-            attributes: ["id", "email"],
-          },
+          model: User,
+          as: "client",
+          attributes: ["id", "email"],
+        },
+        {
+          model: Business,
+        },
+        {
+          model: UserBusiness,
+          as: "collector",
+          attributes: ["id", "email"],
+        },
         ],
         limit: pageSize,
         offset: offset,
@@ -210,34 +196,34 @@ export class InvoiceController {
           id: invoiceId,
           [Op.or]: [{
             collectorId: userId,
-          }, ],
+          },],
         },
         include: [{
-            model: User,
-            as: "client",
-            attributes: ["id", "email"],
-            include: [{
-              model: Profile,
-              attributes: ["codeUser", "name", "lastName"],
-            }, ],
-          },
-          {
-            model: Business,
-          },
-          {
-            model: UserBusiness,
-            as: "collector",
-            attributes: ["id", "email"],
-            include: [{
-              model: ProfileBusiness,
-              attributes: [
-                "codeEmployee",
-                "name",
-                "lastName",
-                "additionalData",
-              ],
-            }, ],
-          },
+          model: User,
+          as: "client",
+          attributes: ["id", "email"],
+          include: [{
+            model: Profile,
+            attributes: ["codeUser", "name", "lastName"],
+          },],
+        },
+        {
+          model: Business,
+        },
+        {
+          model: UserBusiness,
+          as: "collector",
+          attributes: ["id", "email"],
+          include: [{
+            model: ProfileBusiness,
+            attributes: [
+              "codeEmployee",
+              "name",
+              "lastName",
+              "additionalData",
+            ],
+          },],
+        },
         ],
       });
 
@@ -257,7 +243,7 @@ export class InvoiceController {
       invoice.collector.profiles_business.additionalData.branch.operatingHours =
         await JSON.parse(
           invoice.collector.profiles_business.additionalData.branch
-          .operatingHours
+            .operatingHours
         );
 
       // Elimnar llaves inecesarias
@@ -269,7 +255,7 @@ export class InvoiceController {
         res,
         200,
         false,
-        "Detalles de la factura recuperados exitosamente, no",
+        "Detalles de la factura recuperados exitosamente, controller",
         invoice
       );
     } catch (error) {
@@ -355,160 +341,7 @@ export class InvoiceController {
     }
   }
 
-  /** *********************************************************************************
-   ************************************************************************************
-   * MANGERS and OWNERS
-   **********************************************************************************
-   **********************************************************************************/
 
-  /**
-   * Get invoices by collector sorted by status (draft or paid) and paginated
-   */
-  // GET invoices/:businessId/getAll?page=1&status=draft
-  static async getAllInvoices(req, res) {
-    const {
-      businessId
-    } = req.params;
-    const {
-      status,
-      page
-    } = req.query;
-
-    try {
-      // Configurar opciones de paginación
-      const pageSize = 15;
-      const offset = (page - 1) * pageSize;
-
-      // Configurar la condición de consulta para incluir todas las facturas si no se proporciona un estado
-      const whereCondition = status ? {
-        status: status,
-        businessId,
-      } : {
-        businessId,
-      };
-      // Consultar las facturas del cobrador
-      const invoices = await Invoice.findAndCountAll({
-        where: whereCondition,
-        order: [
-          ["dateTimePayment", "DESC"]
-        ],
-        include: [{
-            model: User,
-            as: "client",
-            attributes: ["id", "email"],
-            include: [{
-              model: Profile,
-              attributes: ["name", "lastName"],
-            }, ],
-          },
-          {
-            model: Business,
-          },
-          {
-            model: UserBusiness,
-            as: "collector",
-            attributes: ["id", "email"],
-            include: [{
-              model: ProfileBusiness,
-              attributes: ["codeEmployee", "name", "lastName"],
-            }, ],
-          },
-        ],
-        limit: pageSize,
-        offset: offset,
-      });
-
-      invoices.rows.forEach((invoice) => {
-        invoice.products = JSON.parse(invoice.products);
-      });
-
-      // Enviar la respuesta con las facturas obtenidas
-      return sendResponse(
-        res,
-        200,
-        false,
-        "Facturas recuperadas exitosamente",
-        invoices
-      );
-    } catch (error) {
-      console.error("Error al recuperar facturas:", error);
-      return sendResponse(res, 500, true, "Error al recuperar facturas");
-    }
-  }
-
-  /**
-   * Get details of a specific invoice
-   * GET invoices/:businessId/details/:invoiceId
-   */
-  // static async getInvoiceDetails(req, res) {
-  //   const {
-  //     invoiceId
-  //   } = req.params;
-
-  //   try {
-  //     // Buscar la factura por su ID
-  //     const invoice = await Invoice.findByPk(invoiceId, {
-  //       include: [{
-  //           model: User,
-  //           as: "client",
-  //           attributes: ["id", "email"],
-  //           include: [{
-  //             model: Profile,
-  //             attributes: ["codeUser", "name", "lastName"],
-  //           }, ],
-  //         },
-  //         {
-  //           model: Business,
-  //         },
-  //         {
-  //           model: UserBusiness,
-  //           as: "collector",
-  //           attributes: ["id", "email"],
-  //           include: [{
-  //             model: ProfileBusiness,
-  //             attributes: [
-  //               "codeEmployee",
-  //               "name",
-  //               "lastName",
-  //               "additionalData",
-  //             ],
-  //           }, ],
-  //         },
-  //       ],
-  //     });
-
-  //     if (!invoice) {
-  //       return sendResponse(res, 404, true, "Factura no encontrada");
-  //     }
-
-  //     // Convertir la cadena JSON de productos en un objeto
-  //     invoice.products = await JSON.parse(invoice.products);
-  //     invoice.collector.profiles_business.additionalData = await JSON.parse(
-  //       invoice.collector.profiles_business.additionalData
-  //     );
-  //     invoice.collector.profiles_business.additionalData.branch.operatingHours =
-  //       await JSON.parse(
-  //         invoice.collector.profiles_business.additionalData.branch
-  //         .operatingHours
-  //       );
-
-  //     // Elimnar llaves inecesarias
-  //     delete invoice.collector.profiles_business.additionalData
-  //       .employeeSchedule;
-
-  //     // Enviar la respuesta con los detalles de la factura
-  //     return sendResponse(
-  //       res,
-  //       200,
-  //       false,
-  //       "Detalles de la factura recuperados exitosamente",
-  //       invoice
-  //     );
-  //   } catch (error) {
-  //     console.error("Error al recuperar los detalles de la factura:", error);
-  //     return sendResponse(res, 500, true, "Error al recuperar los detalles de la factura");
-  //   }
-  // }
 
   /** *********************************************************************************
    ************************************************************************************
@@ -543,22 +376,22 @@ export class InvoiceController {
           ["dateTimePayment", "DESC"]
         ],
         include: [{
-            model: User,
-            as: "client",
-            attributes: ["id", "email"],
-            include: [{
-              model: Profile,
-              attributes: ["codeUser", "name", "lastName"],
-            }, ],
-          },
-          {
-            model: Business,
-          },
-          {
-            model: UserBusiness,
-            as: "collector",
-            attributes: ["id", "email"],
-          },
+          model: User,
+          as: "client",
+          attributes: ["id", "email"],
+          include: [{
+            model: Profile,
+            attributes: ["codeUser", "name", "lastName"],
+          },],
+        },
+        {
+          model: Business,
+        },
+        {
+          model: UserBusiness,
+          as: "collector",
+          attributes: ["id", "email"],
+        },
         ],
         limit: pageSize,
         offset: offset,
@@ -602,31 +435,31 @@ export class InvoiceController {
           clientId: userId,
         },
         include: [{
-            model: User,
-            as: "client",
-            attributes: ["id", "email"],
-            include: [{
-              model: Profile,
-              attributes: ["codeUser", "name", "lastName"],
-            }, ],
-          },
-          {
-            model: Business,
-          },
-          {
-            model: UserBusiness,
-            as: "collector",
-            attributes: ["id", "email"],
-            include: [{
-              model: ProfileBusiness,
-              attributes: [
-                "codeEmployee",
-                "name",
-                "lastName",
-                "additionalData",
-              ],
-            }, ],
-          },
+          model: User,
+          as: "client",
+          attributes: ["id", "email"],
+          include: [{
+            model: Profile,
+            attributes: ["codeUser", "name", "lastName"],
+          },],
+        },
+        {
+          model: Business,
+        },
+        {
+          model: UserBusiness,
+          as: "collector",
+          attributes: ["id", "email"],
+          include: [{
+            model: ProfileBusiness,
+            attributes: [
+              "codeEmployee",
+              "name",
+              "lastName",
+              "additionalData",
+            ],
+          },],
+        },
         ],
       });
 
@@ -642,7 +475,7 @@ export class InvoiceController {
       invoice.collector.profiles_business.additionalData.branch.operatingHours =
         await JSON.parse(
           invoice.collector.profiles_business.additionalData.branch
-          .operatingHours
+            .operatingHours
         );
 
       // Elimnar llaves inecesarias

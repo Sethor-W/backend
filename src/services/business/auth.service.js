@@ -5,7 +5,6 @@ import { UserBusinessRole } from "../../models/business/userBusinessRoles.js";
 import { ProfileBusiness } from "../../models/business/profileBusiness.js";
 import { rolesEnum } from "../../enum/roles.enum.js";
 import { signJWT } from "../../helpers/jwt.helper.js";
-import { validateEmailFormat } from "../../helpers/utils.js";
 import { Op } from "sequelize";
 import { sequelize } from "../../config/database.config.js";
 
@@ -87,34 +86,70 @@ export class AuthService {
         }
     }
 
-    // Iniciar sesión de un usuario
-    static async login({ credential, password }) {
-        // Verificar si el usuario existe
-        const user = await UserBusiness.findOne({ where: { credential } });
-        if (!user) {
-            throw new Error("Credenciales no válidas");
+    /**
+     * Login a user
+     * @param {string} credential - The user's credential (e.g., email or username)
+     * @param {string} password - The user's password
+     * @returns {Promise<object>} - Authentication result
+     */
+    static async login({ userCode, password }) {
+
+        try {
+            // Verificar si el usuario existe
+            const user = await UserBusiness.findOne({ where: { credential: userCode } });
+            if (!user) {
+                return {
+                    error: true,
+                    statusCode: 401,
+                    message: "Invalid credentials",
+                };
+            }
+
+            // Verificar la contraseña
+            const passwordMatch = await bcrypt.compare(password, user.password);
+            if (!passwordMatch) {
+                return {
+                    error: true,
+                    statusCode: 401,
+                    message: "Invalid credentials",
+                };
+            }
+
+            // Obtener rol del usuario
+            const roles = await UserBusinessRole.findOne({
+                where: { id: user.userBusinessRoleId },
+            });
+
+            const roleNames = [roles.role]
+
+            // Generar token de autenticación
+            const token = signJWT({ userId: user.id, roles: roleNames });
+            const expiresIn = 3600;
+
+            // Respuesta exitosa
+            return {
+                error: false,
+                statusCode: 200,
+                message: "Authentication successful",
+                data: {
+                    user: {
+                        id: user.id,
+                        name: user.name,
+                        roles: roleNames,
+                    },
+                    token,
+                    expiresIn,
+                },
+            };
+
+        } catch (error) {
+            console.error("Error during login:", error);
+            return {
+                error: true,
+                statusCode: 500,
+                message: "An error occurred during authentication",
+            };
         }
-
-        // Verificar la contraseña
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch) {
-            throw new Error("Credenciales no válidas");
-        }
-
-        // Obtener rol del usuario
-        const role = await UserBusinessRole.findOne({
-            where: { id: user.userBusinessRoleId },
-        });
-
-        // Generar token de autenticación
-        const token = signJWT({ userId: user.id, role: role.role });
-
-        return { role: role.role, token };
     }
 
-    // Obtener los datos del JWT
-    static getDataJWT(user) {
-        return { role: user.role, userId: user.userId };
-    }
-    
 }

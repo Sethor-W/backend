@@ -6,7 +6,8 @@ export function checkRoleMiddleware(roles) {
         const { user } = req;
 
         // Verificar si el usuario tiene alguno de los roles necesarios
-        if (!roles.includes(user.role)) {
+        const hasRole = user.roles.some(role => roles.includes(role));
+        if (!hasRole) {
             return sendResponse(res, 403, true, `Sólo ${roles.join(' o ')} puede realizar esta acción`, user);
         }
 

@@ -18,6 +18,10 @@ import { routerProfile } from './profile.router.js';
 import { routerStatistics } from './statistics.router.js';
 import { routerStorage } from './storage.router.js';
 import { routerPayment } from './payment.router.js';
+import { sendResponse } from '../helpers/utils.js';
+import { routerProductBusiness } from './business/productBusiness.router.js';
+import { routerReportBusiness } from './business/reportBusiness.router.js';
+import { routerCategoryProduct } from './common/categoryProduct.router.js';
 
 // Crear el router principal
 const router = Router();
@@ -32,12 +36,35 @@ router.use('/users/profile', routerProfile);
 router.use('/statistics', routerStatistics);
 
 router.use('/business/auth', routerAuthBusiness);
-router.use('/business/', routerBusiness);
+
 router.use('/business/branches', routerBranch);
-router.use('/business/products', routerProduct);
 router.use('/business/employees', routerEmployeeManagement);
 router.use('/business/functions', routerBusinessFunction);
 router.use('/business/users/profile', routerProfileBusiness);
+
+
+router.use('/business/:businessId/products', (req, res, next) => {
+    req.locales = req.locales || {};
+    req.locales.businessId = req.params.businessId;
+    next();
+}, routerProduct, routerProductBusiness);
+
+router.use('/business/:businessId/reports', (req, res, next) => {
+    req.locales = req.locales || {};
+    req.locales.businessId = req.params.businessId;
+    next();
+}, routerReportBusiness);
+
+router.use('/business/:businessId/category-product', (req, res, next) => {
+    req.locales = req.locales || {};
+    req.locales.businessId = req.params.businessId;
+    console.log(req.params.idCategoryProduct)
+    console.log(req.locales.businessId)
+    next();
+}, routerCategoryProduct);
+
+router.use('/business', routerBusiness);
+
 
 router.use('/invoices', routerInvoice);
 

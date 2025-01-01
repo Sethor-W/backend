@@ -6,6 +6,7 @@ import { verifyAssociatedUserMiddleware } from '../middlewares/verifyAssociatedU
 
 import { InvoiceController } from '../controllers/invoice.controller.js';
 import { rolesEnum } from '../enum/roles.enum.js';
+import { InvoiceBusinessController } from '../controllers/business/invoice.controller.js';
 
 export const routerInvoice = Router();
 
@@ -30,7 +31,13 @@ routerInvoice.post('/:businessId/create', [
         rolesEnum.COLLECTOR,
     ]),
     verifyAssociatedUserMiddleware,
-], InvoiceController.createInvoice);
+], InvoiceBusinessController.createInvoice);
+
+
+
+
+
+
 
 routerInvoice.get('/:businessId/collector/getAll', [
     verifyTokenMiddleware,
@@ -77,7 +84,7 @@ routerInvoice.get('/:businessId/getAll', [
         rolesEnum.ADMIN,
     ]),
     verifyAssociatedUserMiddleware,
-], InvoiceController.getAllInvoices);
+], InvoiceBusinessController.getAllInvoices);
 
 routerInvoice.get('/:businessId/details/:invoiceId', [
     verifyTokenMiddleware,
@@ -87,6 +94,6 @@ routerInvoice.get('/:businessId/details/:invoiceId', [
         rolesEnum.ADMIN,
     ]),
     verifyAssociatedUserMiddleware,
-], InvoiceController.getInvoiceDetails);
+], InvoiceBusinessController.getInvoiceDetails);
 
 
