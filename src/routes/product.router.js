@@ -15,15 +15,15 @@ routerProduct.get('/:productId', [
     verifyTokenMiddleware,
 ], ProductController.getProductById);
 
-routerProduct.put('/:productId', [
-    verifyTokenMiddleware,
-    checkRoleMiddleware([
-        rolesEnum.OWNER,
-        rolesEnum.MANAGER,
-        rolesEnum.ADMIN
-    ]),
-    verifyAssociatedUserMiddleware,
-], ProductController.updateProduct);
+// routerProduct.put('/:productId', [
+//     verifyTokenMiddleware,
+//     checkRoleMiddleware([
+//         rolesEnum.OWNER,
+//         rolesEnum.MANAGER,
+//         rolesEnum.ADMIN
+//     ]),
+//     verifyAssociatedUserMiddleware,
+// ], ProductController.updateProduct);
 
 routerProduct.delete('/by-id/:businessId/:productId', [
     verifyTokenMiddleware,

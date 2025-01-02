@@ -11,6 +11,8 @@ import { User } from "../../models/client/users.js";
 import { Profile } from "../../models/client/profile.js";
 import { ProfileBusiness } from "../../models/business/profileBusiness.js";
 import { Op } from "sequelize";
+import { calculateInvoiceValues } from "../../helpers/invoice.helper.js";
+import { rolesEnum } from "../../enum/roles.enum.js";
 
 export class InvoiceService {
 
@@ -19,74 +21,73 @@ export class InvoiceService {
     static async createInvoice(params, body, user) {
         const { businessId } = params;
         const { userId } = user;
-        const { name, subtotal, sth, totalIVA, totalGeneral, products, note, discountType, discountValue } = body;
-
-        // Obtener perfil del cobrador
-        const profile = await ProfileService.getCollectorProfile(userId);
-        // Obtener la sucursal
-        const branch = await BranchService.getBranchFromProfile(profile);
-        // Obtener la moneda del país
-        const { currencyCode, currencyDetails } = await CurrencyService.getCurrencyFromCountry(branch.country_cca2);
+        const { name, products, note, discountType, discountValue } = body;
 
         try {
+            // Llamar a la función de cálculo modularizada
+            const { subtotal, generalDiscount, sth, totalIVA, totalGeneral } = calculateInvoiceValues(products, discountType, discountValue);
 
-            if (profile.profiles_business.additionalData) {
-                // Crear la factura
-                const newInvoice = await Invoice.create({
-                    name,
-                    note,
-                    status: invoiceStatusEnum.DRAFT,
-                    collectorId: userId,
-                    businessId,
-                    clientId: null,
-                    products: JSON.stringify(products),
-                    subtotal,
-                    sth,
-                    discountType: discountType || discountTypeEnum.FIXED,
-                    discountValue: discountValue,
-                    totalIVA,
-                    totalGeneral,
-                    currency: currencyCode,
-                });
+            // Validar si el cobrador tiene una sucursal asignada
+            const profile = await ProfileService.getCollectorProfile(userId);
+            const branch = await BranchService.getBranchFromProfile(profile);
+            const { currencyCode, currencyDetails } = await CurrencyService.getCurrencyFromCountry(branch.country_cca2);
 
-                // Parsea los productos de cadena JSON a objeto
-                newInvoice.products = JSON.parse(newInvoice.products);
-
-
-                // Respuesta exitosa
-                return {
-                    error: false,
-                    statusCode: 201,
-                    message: "Factura creada exitosamente",
-                    data: {
-                        id: newInvoice.id,
-                        name: newInvoice.name,
-                        note: newInvoice.note,
-                        status: newInvoice.status,
-                        collectorId: newInvoice.collectorId,
-                        businessId: newInvoice.businessId,
-                        clientId: newInvoice.clientId,
-                        products: newInvoice.products,
-                        subtotal: newInvoice.subtotal,
-                        sth: newInvoice.sth,
-                        totalIVA: newInvoice.totalIVA,
-                        totalGeneral: newInvoice.totalGeneral,
-                        currency: newInvoice.currency,
-                        discountValue: newInvoice.discountValue || 0,
-                        discountType: newInvoice.discountType,
-                        branchId: newInvoice.branchId,
-                        createdAt: newInvoice.createdAt,
-                        updatedAt: newInvoice.updatedAt,
-                    },
-                };
-
-            } else {
+            if (!profile.profiles_business.additionalData) {
                 return {
                     error: true,
                     statusCode: 400,
                     message: "El cobrador no tiene una sucursal asignada",
                 };
             }
+
+            // Crear la factura
+            const newInvoice = await Invoice.create({
+                name,
+                note,
+                status: invoiceStatusEnum.DRAFT,
+                collectorId: userId,
+                businessId,
+                clientId: null,
+                products: JSON.stringify(products),
+                subtotal,
+                sth,
+                discountType: discountType || discountTypeEnum.FIXED,
+                discountValue: discountValue,
+                totalIVA,
+                totalGeneral,
+                currency: currencyCode,
+                branchId: branch.id
+            });
+
+            // Parsea los productos de cadena JSON a objeto
+            newInvoice.products = JSON.parse(newInvoice.products);
+
+            // Respuesta exitosa
+            return {
+                error: false,
+                statusCode: 201,
+                message: "Factura creada exitosamente",
+                data: {
+                    id: newInvoice.id,
+                    name: newInvoice.name,
+                    note: newInvoice.note,
+                    status: newInvoice.status,
+                    collectorId: newInvoice.collectorId,
+                    businessId: newInvoice.businessId,
+                    clientId: newInvoice.clientId,
+                    products: newInvoice.products,
+                    subtotal: newInvoice.subtotal,
+                    sth: newInvoice.sth,
+                    totalIVA: newInvoice.totalIVA,
+                    totalGeneral: newInvoice.totalGeneral,
+                    currency: newInvoice.currency,
+                    discountValue: newInvoice.discountValue || 0,
+                    discountType: newInvoice.discountType,
+                    branchId: newInvoice.branchId,
+                    createdAt: newInvoice.createdAt,
+                    updatedAt: newInvoice.updatedAt,
+                },
+            };
 
         } catch (error) {
             console.error("Error al enviar:", error);
@@ -274,6 +275,106 @@ export class InvoiceService {
             };
         }
     }
+
+
+    
+    static async updatedInvoice(params, body, user) {
+        const { invoiceId } = params;
+        const { userId } = user;
+        const { name, products, note, discountType, discountValue } = body;
+
+        try {
+
+            let whereClause = {
+                id: invoiceId,
+                status: {
+                    [Op.ne]: invoiceStatusEnum.PAID,
+                },
+            };
+        
+            // Si el usuario no es admin ni owner, agregamos la validación por collectorId
+            if (!(user.roles.includes(rolesEnum.OWNER) || user.roles.includes(rolesEnum.ADMIN))) {
+                whereClause.collectorId = userId;
+            }
+            
+            const invoice = await Invoice.findOne({ where: whereClause });
+
+            if (!invoice) {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Factura no encontrada o no tienes permiso para actualizarla",
+                };
+            }
+
+
+            // Calcular los valores solo si se actualizan los productos o los descuentos
+            let subtotal = invoice?.subtotal;
+            let generalDiscount = invoice?.generalDiscount;
+            let sth = invoice?.sth;
+            let totalIVA = invoice?.totalIVA;
+            let totalGeneral = invoice?.totalGeneral;
+
+            if (products || discountType || discountValue) {
+                // Llamar a la función de cálculo modularizada si hay cambios en los productos o descuentos
+                const { 
+                    subtotal: newSubtotal,
+                    generalDiscount: newGeneralDiscount,
+                    sth: newSth,
+                    totalIVA: newTotalIVA,
+                    totalGeneral: newTotalGeneral
+                } = calculateInvoiceValues(
+                    products || JSON.parse(invoice.products),
+                    discountType || invoice.discountType,
+                    discountValue || invoice.discountValue
+                );
+                
+                subtotal = newSubtotal;
+                generalDiscount = newGeneralDiscount;
+                sth = newSth;
+                totalIVA = newTotalIVA;
+                totalGeneral = newTotalGeneral;
+            }
+
+            // Actualizar la factura utilizando el método update
+            await Invoice.update({
+                name: name || invoice.name,
+                note: note || invoice.note,
+                products: JSON.stringify(products) || invoice.products,
+                subtotal,
+                sth,
+                discountType: discountType || invoice.discountType,
+                discountValue: discountValue || invoice.discountValue,
+                totalIVA,
+                totalGeneral,
+            }, {
+                where: {
+                    id: invoiceId,
+                },
+            });
+
+            // Recuperar la factura actualizada
+            const updatedInvoice = await Invoice.findByPk(invoiceId);
+            updatedInvoice.products = JSON.parse(invoice.products);
+
+            // Enviar la respuesta con la factura actualizada
+            return {
+                error: false,
+                statusCode: 200,
+                message: "Factura actualizada exitosament",
+                data: updatedInvoice,
+            }
+
+        } catch (error) {
+            console.error("Error al enviar:", error);
+            return {
+                error: true,
+                statusCode: 500,
+                message: "Error al enviar",
+            };
+        }
+    }
+
 
 
 

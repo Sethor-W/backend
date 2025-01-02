@@ -1,26 +1,68 @@
 // src/services/auth.service.js
-import { ProfileService } from "./profile.service.js";
-import { BranchService } from "./branch.service.js";
-import { CurrencyService } from "../common/currency.service.js";
-import { discountTypeEnum } from "../../enum/discountType.enum.js";
-import { Invoice } from "../../models/common/invoice.js";
-import { invoiceStatusEnum } from "../../enum/invoiceStatus.enum.js";
-import { Business } from "../../models/common/business.js";
-import { UserBusiness } from "../../models/business/usersBusiness.js";
-import { User } from "../../models/client/users.js";
-import { Profile } from "../../models/client/profile.js";
-import { ProfileBusiness } from "../../models/business/profileBusiness.js";
-import { Op } from "sequelize";
-import { Branch } from "../../models/common/branch.js";
-import { Product } from "../../models/client/product.js";
+import {
+    ProfileService
+} from "./profile.service.js";
+import {
+    BranchService
+} from "./branch.service.js";
+import {
+    CurrencyService
+} from "../common/currency.service.js";
+import {
+    discountTypeEnum
+} from "../../enum/discountType.enum.js";
+import {
+    Invoice
+} from "../../models/common/invoice.js";
+import {
+    invoiceStatusEnum
+} from "../../enum/invoiceStatus.enum.js";
+import {
+    Business
+} from "../../models/common/business.js";
+import {
+    UserBusiness
+} from "../../models/business/usersBusiness.js";
+import {
+    User
+} from "../../models/client/users.js";
+import {
+    Profile
+} from "../../models/client/profile.js";
+import {
+    ProfileBusiness
+} from "../../models/business/profileBusiness.js";
+import {
+    Op
+} from "sequelize";
+import {
+    Branch
+} from "../../models/common/branch.js";
+import {
+    Product
+} from "../../models/client/product.js";
 
 export class ProductBusinessService {
 
 
 
     static async createProduct(params, body, locales) {
-        const { businessId } = locales;
-        const { photos, profilePicture, name, description, price, discountType, discountValue, category, branchId, offer, type } = body;
+        const {
+            businessId
+        } = locales;
+        const {
+            photos,
+            profilePicture,
+            name,
+            description,
+            price,
+            discountType,
+            discountValue,
+            category,
+            branchId,
+            offer,
+            type
+        } = body;
 
         try {
             // Check if the specified branch exists
@@ -74,28 +116,42 @@ export class ProductBusinessService {
 
 
     static async getAllProducts(params, query, locales) {
-        const { businessId } = locales;
-        let { type, page, search, branchId, category } = query;
+        const {
+            businessId
+        } = locales;
+        let {
+            type,
+            page,
+            search,
+            branchId,
+            category
+        } = query;
 
         try {
-            page = parseInt(page, 10) || 1;  // Si `page` no es válido, asignar 1 como valor predeterminado
+            page = parseInt(page, 10) || 1; // Si `page` no es válido, asignar 1 como valor predeterminado
             const pageSize = 15;
             const offset = (page - 1) * pageSize;
 
             // Configurar la condición de consulta para incluir todas las facturas si no se proporciona un estado
-            const whereCondition = { businessId };
-            
+            const whereCondition = {
+                businessId
+            };
+
             if (type) whereCondition.type = type;
             if (branchId) whereCondition.branchId = branchId;
             if (category) whereCondition.category = category;
             if (search) {
-                whereCondition[Op.or] = [
-                    { '$name$': { [Op.like]: `%${search}%` } },
-                ];
+                whereCondition[Op.or] = [{
+                    '$name$': {
+                        [Op.like]: `%${search}%`
+                    }
+                },];
             }
 
             // Ordenar las facturas según el estado de pago
-            const order = [["createdAt", "DESC"]]
+            const order = [
+                ["createdAt", "DESC"]
+            ]
 
 
             // Consultar las facturas
@@ -130,32 +186,102 @@ export class ProductBusinessService {
     }
 
 
+    static async updateProduct(params, body, locales) {
+        const { businessId } = locales;
+        const { productId } = params;
+        const { photos, profilePicture, name, description, price, discountType, discountValue, category, branchId, offer, type } = body;
+
+        try {
+
+            // Check if the specified branch exists
+            if (branchId && branchId !== 'all') {
+                const branch = await Branch.findByPk(branchId);
+                if (!branch) {
+                    return {
+                        error: true,
+                        statusCode: 404,
+                        message: "Sucursal no encontrada",
+                    }
+                }
+            }
+
+            let product = await Product.findByPk(productId);
+            if (!product) {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Producto no encontrada",
+                }
+            }
+
+            // Actualizar el producto con los nuevos datos
+            product = await product.update({
+                photos: Array.isArray(photos) ? photos.join(', ') : product.photos,
+                profilePicture,
+                name,
+                description,
+                price,
+                discountType: discountType || discountTypeEnum.FIXED,
+                discountValue: discountValue,
+                category,
+                branchId: branchId === 'all' ? null : branchId,
+
+                // offer,
+                // type,
+            });
+
+            // Respuesta exitosa
+            return {
+                error: false,
+                statusCode: 200,
+                message: "Producto actualizado exitosamente",
+                data: product,
+            };
+
+        } catch (error) {
+            console.error("Error al actualizar el producto:", error);
+            return {
+                error: true,
+                statusCode: 500,
+                message: "Error al actualizar el producto",
+            };
+        }
+    }
 
 
 
-    
+
+
+
     static async getInvoicesDetails(params) {
-        const { invoiceId } = params;
+        const {
+            invoiceId
+        } = params;
 
         try {
             // Buscar la factura por su ID
             const invoice = await Invoice.findByPk(invoiceId, {
-                include: [
-                    {
-                        model: User,
-                        as: "client",
-                        attributes: ["id", "email"],
-                        include: [{ model: Profile, attributes: ["codeUser", "name", "lastName"] }],
-                    },
-                    {
-                        model: Business,
-                    },
-                    {
-                        model: UserBusiness,
-                        as: "collector",
-                        attributes: ["id", "email"],
-                        include: [{ model: ProfileBusiness, attributes: ["codeEmployee", "name", "lastName"] }],
-                    },
+                include: [{
+                    model: User,
+                    as: "client",
+                    attributes: ["id", "email"],
+                    include: [{
+                        model: Profile,
+                        attributes: ["codeUser", "name", "lastName"]
+                    }],
+                },
+                {
+                    model: Business,
+                },
+                {
+                    model: UserBusiness,
+                    as: "collector",
+                    attributes: ["id", "email"],
+                    include: [{
+                        model: ProfileBusiness,
+                        attributes: ["codeEmployee", "name", "lastName"]
+                    }],
+                },
                 ],
             });
 

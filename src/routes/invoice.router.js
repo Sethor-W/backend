@@ -23,6 +23,31 @@ routerInvoice.get('/client/details/:invoiceId', [
 
 
 /** *********************************************************************************
+ * MANGERS and OWNERS
+ **********************************************************************************/
+routerInvoice.get('/:businessId/getAll', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.MANAGER,
+        rolesEnum.OWNER,
+        rolesEnum.ADMIN,
+    ]),
+    verifyAssociatedUserMiddleware,
+], InvoiceBusinessController.getAllInvoices);
+
+routerInvoice.get('/:businessId/details/:invoiceId', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.MANAGER,
+        rolesEnum.OWNER,
+        rolesEnum.ADMIN,
+    ]),
+    verifyAssociatedUserMiddleware,
+], InvoiceBusinessController.getInvoiceDetails);
+
+
+
+/** *********************************************************************************
  * COLLECTOR
  **********************************************************************************/
 routerInvoice.post('/:businessId/create', [
@@ -32,6 +57,18 @@ routerInvoice.post('/:businessId/create', [
     ]),
     verifyAssociatedUserMiddleware,
 ], InvoiceBusinessController.createInvoice);
+
+
+routerInvoice.put('/:businessId/collector/update/:invoiceId', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.COLLECTOR,
+        rolesEnum.OWNER,
+        rolesEnum.ADMIN,
+    ]),
+    verifyAssociatedUserMiddleware,
+], InvoiceBusinessController.updateInvoice);
+
 
 
 
@@ -55,13 +92,6 @@ routerInvoice.get('/:businessId/collector/details/:invoiceId', [
     verifyAssociatedUserMiddleware,
 ], InvoiceController.getInvoiceDetailsByCollector);
 
-routerInvoice.put('/:businessId/collector/update/:invoiceId', [
-    verifyTokenMiddleware,
-    checkRoleMiddleware([
-        rolesEnum.COLLECTOR,
-    ]),
-    verifyAssociatedUserMiddleware,
-], InvoiceController.updateInvoiceByCollector);
 
 routerInvoice.post('/:businessId/collector/pay/:invoiceId', [
     verifyTokenMiddleware,
@@ -72,28 +102,5 @@ routerInvoice.post('/:businessId/collector/pay/:invoiceId', [
 ], InvoiceController.payInvoiceByCollector);
 
 
-
-/** *********************************************************************************
- * MANGERS and OWNERS
- **********************************************************************************/
-routerInvoice.get('/:businessId/getAll', [
-    verifyTokenMiddleware,
-    checkRoleMiddleware([
-        rolesEnum.MANAGER,
-        rolesEnum.OWNER,
-        rolesEnum.ADMIN,
-    ]),
-    verifyAssociatedUserMiddleware,
-], InvoiceBusinessController.getAllInvoices);
-
-routerInvoice.get('/:businessId/details/:invoiceId', [
-    verifyTokenMiddleware,
-    checkRoleMiddleware([
-        rolesEnum.MANAGER,
-        rolesEnum.OWNER,
-        rolesEnum.ADMIN,
-    ]),
-    verifyAssociatedUserMiddleware,
-], InvoiceBusinessController.getInvoiceDetails);
 
 

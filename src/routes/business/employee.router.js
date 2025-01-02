@@ -1,11 +1,11 @@
 import { Router } from 'express';
 
-import { verifyTokenMiddleware } from '../middlewares/verifyToken.middleware.js';
-import { checkRoleMiddleware } from '../middlewares/checkRole.middleware.js';
-import { verifyAssociatedUserMiddleware } from '../middlewares/verifyAssociatedUser.middleware.js';
+import { verifyTokenMiddleware } from '../../middlewares/verifyToken.middleware.js';
+import { checkRoleMiddleware } from '../../middlewares/checkRole.middleware.js';
+import { verifyAssociatedUserMiddleware } from '../../middlewares/verifyAssociatedUser.middleware.js';
 
-import { EmployeeManagementController } from '../controllers/employeeManagement.controller.js';
-import { rolesEnum } from '../enum/roles.enum.js';
+import { EmployeeManagementController } from '../../controllers/business/employeeManagement.controller.js';
+import { rolesEnum } from '../../enum/roles.enum.js';
 
 export const routerEmployeeManagement = Router();
 

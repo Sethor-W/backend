@@ -8,6 +8,7 @@ import { Op } from "sequelize";
 import { Business } from "../models/common/business.js";
 import { ProfileBusiness } from "../models/business/profileBusiness.js";
 import { EmployeesAssociatedBusinesses } from "../models/business/employeesAssocitedBusiness.js";
+import { BusinessCommonService } from "../services/common/business.service.js";
 
 export class BusinessController {
 
@@ -47,17 +48,8 @@ export class BusinessController {
     // GET business/all/:id
     static async getBusinessAllDetailsById(req, res) {
         const { id } = req.params;
-        try {
-            const business = await Business.findByPk(id);
-            if (!business) {
-                return sendResponse(res, 404, true, 'Negocio no encontrado');
-            }
-
-            return sendResponse(res, 200, false, "Detalles comerciales recuperados exitosamente", business);
-        } catch (error) {
-            console.error('Error getting business by ID:', error);
-            return sendResponse(res, 500, true, 'No se pudo recuperar el negocio');
-        }
+        const result = await BusinessCommonService.getBusinessDetailsById({id})
+        return sendResponse(res, result.statusCode, result.error, result.message, result.data);
     };
 
     /**

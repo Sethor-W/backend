@@ -57,35 +57,36 @@ export class ProductBusinessController {
      */
     // PUT business/products/by-id/:businessId/:productId
     static async updateProduct(req, res) {
-        const { productId } = req.params;
-        const { name, category, offer, type, description, photos, price, profilePicture, branchId } = req.body;
-        try {
+        const result = await ProductBusinessService.updateProduct(req.params, req.body, req.locales);
+        return sendResponse(res, result.statusCode, result.error, result.message, result.data);
+
+        // try {
 
 
-            if (branchId) {
-                // Check if the specified branch exists
-                const branch = await Branch.findByPk(branchId);
-                if (!branch) {
-                    return sendResponse(res, 404, true, 'Sucursal no encontrado');
-                }
-            }
+        //     if (branchId) {
+        //         // Check if the specified branch exists
+        //         const branch = await Branch.findByPk(branchId);
+        //         if (!branch) {
+        //             return sendResponse(res, 404, true, 'Sucursal no encontrado');
+        //         }
+        //     }
 
-            // Buscar el producto por su ID
-            let product = await Product.findByPk(productId);
-            if (!product) {
-                return sendResponse(res, 404, true, 'Producto no encontrado');
-            }
+        //     // Buscar el producto por su ID
+        //     let product = await Product.findByPk(productId);
+        //     if (!product) {
+        //         return sendResponse(res, 404, true, 'Producto no encontrado');
+        //     }
 
-            const photosString = Array.isArray(photos) ? photos.join(', ') : product.photos;
+        //     const photosString = Array.isArray(photos) ? photos.join(', ') : product.photos;
 
-            // Actualizar el producto con los nuevos datos
-            product = await product.update({ name, category, offer, type, description, photos: photosString, price, profilePicture, branchId });
+        //     // Actualizar el producto con los nuevos datos
+        //     product = await product.update({ name, category, offer, type, description, photos: photosString, price, profilePicture, branchId });
 
-            return sendResponse(res, 200, false, 'Producto actualizado exitosamente', product);
-        } catch (error) {
-            console.error('Error al actualizar el producto por ID:', error);
-            return sendResponse(res, 500, true, 'No se pudo actualizar el producto');
-        }
+        //     return sendResponse(res, 200, false, 'Producto actualizado exitosamente', product);
+        // } catch (error) {
+        //     console.error('Error al actualizar el producto por ID:', error);
+        //     return sendResponse(res, 500, true, 'No se pudo actualizar el producto');
+        // }
     }
 
     /**

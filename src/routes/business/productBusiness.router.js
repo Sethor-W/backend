@@ -24,3 +24,14 @@ routerProductBusiness.post('/', [
 routerProductBusiness.get('/', [
     verifyTokenMiddleware,
 ], ProductBusinessController.getProductsByBusiness);
+
+
+routerProductBusiness.put('/:productId', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.OWNER,
+        rolesEnum.MANAGER,
+        rolesEnum.ADMIN
+    ]),
+    verifyAssociatedUserMiddleware,
+], ProductBusinessController.updateProduct);
