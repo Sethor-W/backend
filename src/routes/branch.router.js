@@ -6,6 +6,7 @@ import { verifyAssociatedUserMiddleware } from '../middlewares/verifyAssociatedU
 
 import { BranchController } from '../controllers/branch.controller.js';
 import { rolesEnum } from '../enum/roles.enum.js';
+import { BranchBusinessController } from '../controllers/business/branch.controller.js';
 
 export const routerBranch = Router();
 
@@ -17,15 +18,22 @@ routerBranch.post('/:businessId', [
         rolesEnum.ADMIN
     ]),
     verifyAssociatedUserMiddleware,
-], BranchController.registerBranch);
+], BranchBusinessController.registerBranch);
+
+
+routerBranch.get('/by-id/:branchId', [
+    verifyTokenMiddleware,
+], BranchBusinessController.getBrancheById);
+
+
+
+
+
 
 routerBranch.get('/:businessId', [
     verifyTokenMiddleware,
 ], BranchController.getBranchesByBusiness);
 
-routerBranch.get('/by-id/:branchId', [
-    verifyTokenMiddleware,
-], BranchController.getBrancheById);
 
 routerBranch.put('/:businessId/:branchId', [
     verifyTokenMiddleware,

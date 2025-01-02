@@ -12,6 +12,9 @@ export const Branch = sequelize.define('branch', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    photo: {
+        type: DataTypes.STRING,
+    },
     country_cca2: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -23,6 +26,20 @@ export const Branch = sequelize.define('branch', {
     googleMap: {
         type: DataTypes.STRING,
         allowNull: false,
+    },
+    main: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        validate: {
+            async isUniqueMainBranch(value) {
+                if (value === true) {
+                    const existingMainBranch = await Branch.findOne({ where: { businessId: this.businessId, main: true } });
+                    if (existingMainBranch) {
+                        throw new Error('Ya existe una sucursal principal para este negocio.');
+                    }
+                }
+            }
+        }
     },
     operatingHours: {
         type: DataTypes.JSON,

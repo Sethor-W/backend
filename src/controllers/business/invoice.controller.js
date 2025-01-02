@@ -31,15 +31,21 @@ export class InvoiceBusinessController {
    */
   // POST invoices/:businessId/create
   static async createInvoice(req, res) {
-    await body('name').notEmpty().withMessage('El campo "name" es obligatorio.');
-    await body('subtotal').isNumeric().withMessage('El campo "subtotal" debe ser un número.');
-    await body('sth').isNumeric().withMessage('El campo "sth" debe ser un número.');
-    await body('totalIVA').isNumeric().withMessage('El campo "totalIVA" debe ser un número.');
-    await body('totalGeneral').isNumeric().withMessage('El campo "totalGeneral" debe ser un número.');
-    await body('products').isArray({ min: 1 }).withMessage('El campo "products" debe ser un arreglo no vacío.');
-    await body('discountType').optional().isIn(Object.values(discountTypeEnum)).withMessage('El tipo de descuento no es válido.');
-    await body('discountValue').optional().isNumeric().withMessage('El valor del descuento debe ser un número.');
-    await body('note').optional().isString().withMessage('El campo "note" debe ser una cadena de texto.');
+    body('name').notEmpty().withMessage('El campo "name" es obligatorio.');
+    body('subtotal').isNumeric().withMessage('El campo "subtotal" debe ser un número.');
+    // body('sth').isNumeric().withMessage('El campo "sth" debe ser un número.');
+    // body('totalIVA').isNumeric().withMessage('El campo "totalIVA" debe ser un número.');
+    // body('totalGeneral').isNumeric().withMessage('El campo "totalGeneral" debe ser un número.');
+    body('products').isArray({ min: 1 }).withMessage('El campo "products" debe ser un arreglo no vacío.');
+    body('products.*.id').notEmpty().withMessage('Cada producto debe tener un "id".');
+    body('products.*.name').notEmpty().isString().withMessage('Cada producto debe tener un "name" válido.');
+    body('products.*.price').notEmpty().isFloat({ min: 0 }).withMessage('Cada producto debe tener un "price" válido y positivo.');
+    body('products.*.quantity').notEmpty().isNumeric({ min: 1 }).withMessage('Cada producto debe tener un "quantity" válido y positivo.');
+    body('products.*.discountType').notEmpty().isString().withMessage('Cada producto debe tener un "discountType" válido.');
+    body('products.*.discountValue').notEmpty().isFloat({ min: 0 }).withMessage('Cada producto debe tener un "discountValue" válido y positivo.');
+    body('discountType').optional().isIn(Object.values(discountTypeEnum)).withMessage('El tipo de descuento no es válido.');
+    body('discountValue').optional().isNumeric().withMessage('El valor del descuento debe ser un número.');
+    body('note').optional().isString().withMessage('El campo "note" debe ser una cadena de texto.');
 
     // Validación de campos con express-validator
     const errors = validationResult(req);
@@ -73,6 +79,90 @@ export class InvoiceBusinessController {
   static async getInvoiceDetails(req, res) {
     const result = await InvoiceService.getInvoicesDetails(req.params);
     return sendResponse(res, result.statusCode, result.error, result.message, result.data);
+  }
+
+
+
+
+  /**
+   * Update invoice by collector
+   * PUT invoices/:businessId/collector/update/:invoiceId
+   */
+  static async updateInvoice(req, res) {
+    // const {
+    //   invoiceId
+    // } = req.params;
+    // const {
+    //   userId
+    // } = req.user;
+    // const {
+    //   name,
+    //   status,
+    //   subtotal,
+    //   sth,
+    //   totalIVA,
+    //   totalGeneral,
+    //   products,
+    //   note,
+    // } = req.body;
+
+    const result = await InvoiceService.updatedInvoice(req.params, req.body, req.user)
+    return sendResponse(res, result.statusCode, result.error, result.message, result.data);
+
+
+    try {
+      // // Verificar si la factura existe y pertenece al collector
+      // const invoice = await Invoice.findOne({
+      //   where: {
+      //     id: invoiceId,
+      //     collectorId: userId,
+      //     status: {
+      //       [Op.ne]: invoiceStatusEnum.PAID,
+      //     },
+      //   },
+      // });
+
+      // if (!invoice) {
+      //   return sendResponse(
+      //     res,
+      //     404,
+      //     true,
+      //     "Factura no encontrada o no tienes permiso para actualizarla"
+      //   );
+      // }
+
+      // // Actualizar la factura utilizando el método update
+      // await Invoice.update({
+      //   name: name || invoice.name,
+      //   note: note || invoice.note,
+      //   status: status || invoice.status,
+      //   subtotal: subtotal || invoice.subtotal,
+      //   sth: sth || invoice.sth,
+      //   totalIVA: totalIVA || invoice.totalIVA,
+      //   totalGeneral: totalGeneral || invoice.totalGeneral,
+      //   products: JSON.stringify(products) || invoice.products,
+      // }, {
+      //   where: {
+      //     id: invoiceId,
+      //   },
+      // });
+
+      // // Recuperar la factura actualizada
+      // const updatedInvoice = await Invoice.findByPk(invoiceId);
+      // updatedInvoice.products = JSON.parse(invoice.products);
+
+      // // Enviar la respuesta con la factura actualizada
+      // return sendResponse(
+      //   res,
+      //   200,
+      //   false,
+      //   "Factura actualizada exitosamente",
+      //   updatedInvoice
+      // );
+    } catch (error) {
+      console.error("Error al actualizar la factura:", error);
+      return sendResponse(res, 500, true, "Error al actualizar la factura");
+    }
   }
 
 

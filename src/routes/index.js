@@ -10,7 +10,7 @@ import { routerBusiness } from './business.router.js';
 import { routerBranch } from './branch.router.js';
 import { routerProduct } from './product.router.js';
 import { routerOther } from './other.router.js';
-import { routerEmployeeManagement } from './employee.router.js';
+import { routerEmployeeManagement } from './business/employee.router.js';
 import { routerBusinessFunction } from './businessFunction.router.js';
 import { routerInvoice } from './invoice.router.js';
 import { routerProfileBusiness } from './profileBusiness.router.js';
