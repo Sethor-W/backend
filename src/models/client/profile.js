@@ -15,7 +15,6 @@ export const Profile = sequelize.define('profiles', {
     },
     PSPCustomerId: {
         type: DataTypes.STRING,
-        allowNull: true
     },
     name: {
         type: DataTypes.STRING,
@@ -26,10 +25,6 @@ export const Profile = sequelize.define('profiles', {
         allowNull: false,
     },
     rut: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    phone: {
         type: DataTypes.STRING,
         allowNull: false,
     },
