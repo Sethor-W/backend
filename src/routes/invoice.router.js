@@ -7,19 +7,20 @@ import { verifyAssociatedUserMiddleware } from '../middlewares/verifyAssociatedU
 import { InvoiceController } from '../controllers/invoice.controller.js';
 import { rolesEnum } from '../enum/roles.enum.js';
 import { InvoiceBusinessController } from '../controllers/business/invoice.controller.js';
+import { InvoiceClientController } from '../controllers/client/invoice.controller.js';
 
 export const routerInvoice = Router();
 
 /** *********************************************************************************
  * CLIENTS
  **********************************************************************************/
-routerInvoice.get('/client/getAll', [
+routerInvoice.get('/client', [
     verifyTokenMiddleware,
-], InvoiceController.getAllInvoicesByClient);
+], InvoiceClientController.getAllInvoices);
 
-routerInvoice.get('/client/details/:invoiceId', [
+routerInvoice.get('/client/:invoiceId', [
     verifyTokenMiddleware,
-], InvoiceController.getInvoiceDetailsByClient);
+], InvoiceClientController.getInvoiceDetails);
 
 
 /** *********************************************************************************

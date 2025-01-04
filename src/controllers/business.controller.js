@@ -42,15 +42,6 @@ export class BusinessController {
         }
     }
 
-    /**
-      * Obtener todos los detalles de la empresa
-      */
-    // GET business/all/:id
-    static async getBusinessAllDetailsById(req, res) {
-        const { businessId } = req.params;
-        const result = await BusinessCommonService.getBusinessDetailsById({businessId})
-        return sendResponse(res, result.statusCode, result.error, result.message, result.data);
-    };
 
     /**
       * Obtener detalles publicos de la empresa por nombre
@@ -138,85 +129,6 @@ export class BusinessController {
             return sendResponse(res, 500, true, 'No se pudo eliminar el negocio');
         }
     }
-
-     /** ********************************
-     * PUBLIC
-     ******************************** */
-    
-    /**
-      * Obtener detalles publicos de la empresa
-      */
-    // GET business/:id
-    static async getBusinessPublicDetailsById(req, res) {
-        const { id } = req.params;
-        try {
-            const business = await Business.findByPk(id, {
-                attributes: {
-                    exclude: ['ownerId', 'createdAt', 'updatedAt', 'validated_business', 'rut_business', 'tax_code']
-                }
-            });
-            if (!business) {
-                return sendResponse(res, 404, true, 'Negocio no encontrado');
-            }
-
-            return sendResponse(res, 200, false, "Detalles comerciales recuperados exitosamente", business);
-        } catch (error) {
-            console.error('Error getting business by ID:', error);
-            return sendResponse(res, 500, true, 'No se pudo recuperar el negocio');
-        }
-    };
-
-    /**
-      * Obtener listado de empresas registradas
-      */
-    // GET business/public/all?page=1&search=puerto
-    static async getAllBusinessPublic(req, res) {
-        const { page, search } = req.query;
-
-        try {
-            // Configurar la condición de búsqueda si se proporciona el parámetro `search`
-            const whereCondition = {
-                ...(search && { name: { [Op.like]: `%${search}%` } })
-            };
-
-            
-            // Configurar opciones de paginación
-            const pageSize = 15;
-            const pageNumber = page || 1;  // Establece el número de página en 1 si no se proporciona
-            const offset = (pageNumber - 1) * pageSize;
-
-            const optionsPagination = {
-                limit: pageSize,
-                offset: offset,
-            };
-
-
-            const businesses = await Business.findAndCountAll({
-                where: whereCondition,
-                // attributes: {
-                //     exclude: ['ownerId', 'createdAt', 'updatedAt', 'validated_business', 'rut_business', 'tax_code']
-                // },
-                order: [['name', 'DESC']],
-                ...optionsPagination
-            });
-
-            // Verificar si se encontraron empresas
-            if (!businesses.rows.length) {
-                return sendResponse(res, 404, true, 'No se encontraron negocios');
-            }
-
-            return sendResponse(res, 200, false, "Empresas recuperadas con éxito", {
-                count: businesses.count,
-                total: businesses.count,
-                page: pageNumber,
-                pageSize,
-                businesses: businesses.rows,
-            });
-        } catch (error) {
-            console.error('Error getting business by ID:', error);
-            return sendResponse(res, 500, true, 'No se pudo recuperar el negocio');
-        }
-    };
 
 
      /** ********************************

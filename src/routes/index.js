@@ -1,14 +1,14 @@
 import { Router } from 'express';
 
 // Importar todos los routers
-import { routerAuth } from './auth.router.js';
+import { routerAuth } from './client/auth.router.js';
 import { routerSecurityAccount } from './securityAccount.router.js';
 import { routerIdentityDocument } from './identityDocument.router.js';
 import { routerCode } from './code.router.js';
 import { routerAuthBusiness } from './business/authBusiness.router.js';
 import { routerBusiness } from './business.router.js';
 import { routerBranch } from './branch.router.js';
-import { routerProduct } from './product.router.js';
+import { routerProductCommon } from './common/product.router.js';
 import { routerOther } from './other.router.js';
 import { routerEmployeeManagement } from './business/employee.router.js';
 import { routerBusinessFunction } from './businessFunction.router.js';
@@ -28,6 +28,8 @@ const router = Router();
 
 // Registrar las rutas con sus respectivos paths
 router.use('/auth', routerAuth);
+
+
 router.use('/security', routerSecurityAccount);
 router.use('/identity-documents', routerIdentityDocument);
 router.use('/code', routerCode);
@@ -56,7 +58,7 @@ router.use('/business/:businessId/products', (req, res, next) => {
     req.locales = req.locales || {};
     req.locales.businessId = req.params.businessId;
     next();
-}, routerProduct, routerProductBusiness);
+}, routerProductBusiness, routerProductCommon);
 
 router.use('/business/:businessId/reports', (req, res, next) => {
     req.locales = req.locales || {};

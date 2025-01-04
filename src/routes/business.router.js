@@ -6,6 +6,8 @@ import { checkRoleMiddleware } from '../middlewares/checkRole.middleware.js';
 import { BusinessController } from '../controllers/business.controller.js';
 import { rolesEnum } from '../enum/roles.enum.js';
 import { verifyAssociatedUserMiddleware } from '../middlewares/verifyAssociatedUser.middleware.js';
+import { BusinessCommonController } from '../controllers/common/business.controller.js';
+import { BusinessClientController } from '../controllers/client/business.controller.js';
 
 export const routerBusiness = Router();
 
@@ -19,11 +21,7 @@ routerBusiness.post('/', [
 
 routerBusiness.get('/:businessId', [
     verifyTokenMiddleware,
-    // checkRoleMiddleware([
-    //     rolesEnum.OWNER,
-    //     rolesEnum.ADMIN
-    // ])
-], BusinessController.getBusinessAllDetailsById);
+], BusinessCommonController.getBusinessAllDetailsById);
 
 
 
@@ -50,13 +48,11 @@ routerBusiness.delete('/:id', [
 /**
  * PUBLIC
  */
-routerBusiness.get('/:id', [
-    verifyTokenMiddleware,
-], BusinessController.getBusinessPublicDetailsById);
 
-routerBusiness.get('/public/all', [
+// Todas las empresas
+routerBusiness.get('/', [
     verifyTokenMiddleware,
-], BusinessController.getAllBusinessPublic);
+], BusinessClientController.getAllBusiness);
 
 /**
  * EMPLOYEE

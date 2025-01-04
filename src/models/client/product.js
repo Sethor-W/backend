@@ -50,5 +50,7 @@ export const Product = sequelize.define('product', {
 });
 
 Branch.hasMany(Product, { onDelete: 'CASCADE' });
-Product.belongsTo(Business);
 Product.belongsTo(Branch);
+
+Business.hasMany(Product, { as: 'products' });
+Product.belongsTo(Business);
