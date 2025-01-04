@@ -89,80 +89,8 @@ export class InvoiceBusinessController {
    * PUT invoices/:businessId/collector/update/:invoiceId
    */
   static async updateInvoice(req, res) {
-    // const {
-    //   invoiceId
-    // } = req.params;
-    // const {
-    //   userId
-    // } = req.user;
-    // const {
-    //   name,
-    //   status,
-    //   subtotal,
-    //   sth,
-    //   totalIVA,
-    //   totalGeneral,
-    //   products,
-    //   note,
-    // } = req.body;
-
     const result = await InvoiceService.updatedInvoice(req.params, req.body, req.user)
     return sendResponse(res, result.statusCode, result.error, result.message, result.data);
-
-
-    try {
-      // // Verificar si la factura existe y pertenece al collector
-      // const invoice = await Invoice.findOne({
-      //   where: {
-      //     id: invoiceId,
-      //     collectorId: userId,
-      //     status: {
-      //       [Op.ne]: invoiceStatusEnum.PAID,
-      //     },
-      //   },
-      // });
-
-      // if (!invoice) {
-      //   return sendResponse(
-      //     res,
-      //     404,
-      //     true,
-      //     "Factura no encontrada o no tienes permiso para actualizarla"
-      //   );
-      // }
-
-      // // Actualizar la factura utilizando el método update
-      // await Invoice.update({
-      //   name: name || invoice.name,
-      //   note: note || invoice.note,
-      //   status: status || invoice.status,
-      //   subtotal: subtotal || invoice.subtotal,
-      //   sth: sth || invoice.sth,
-      //   totalIVA: totalIVA || invoice.totalIVA,
-      //   totalGeneral: totalGeneral || invoice.totalGeneral,
-      //   products: JSON.stringify(products) || invoice.products,
-      // }, {
-      //   where: {
-      //     id: invoiceId,
-      //   },
-      // });
-
-      // // Recuperar la factura actualizada
-      // const updatedInvoice = await Invoice.findByPk(invoiceId);
-      // updatedInvoice.products = JSON.parse(invoice.products);
-
-      // // Enviar la respuesta con la factura actualizada
-      // return sendResponse(
-      //   res,
-      //   200,
-      //   false,
-      //   "Factura actualizada exitosamente",
-      //   updatedInvoice
-      // );
-    } catch (error) {
-      console.error("Error al actualizar la factura:", error);
-      return sendResponse(res, 500, true, "Error al actualizar la factura");
-    }
   }
 
 

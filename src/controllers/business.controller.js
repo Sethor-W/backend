@@ -47,8 +47,8 @@ export class BusinessController {
       */
     // GET business/all/:id
     static async getBusinessAllDetailsById(req, res) {
-        const { id } = req.params;
-        const result = await BusinessCommonService.getBusinessDetailsById({id})
+        const { businessId } = req.params;
+        const result = await BusinessCommonService.getBusinessDetailsById({businessId})
         return sendResponse(res, result.statusCode, result.error, result.message, result.data);
     };
 

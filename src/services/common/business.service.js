@@ -4,10 +4,10 @@ import { Business } from "../../models/common/business.js";
 
 export class BusinessCommonService {
 
-    static async getBusinessDetailsById({id}) {
+    static async getBusinessDetailsById({businessId}) {
 
         try {
-            const business = await Business.findByPk(id, {
+            const business = await Business.findByPk(businessId, {
                 include: [
                     {
                         model: Branch,
@@ -34,11 +34,11 @@ export class BusinessCommonService {
             };
 
         } catch (error) {
-            console.error("Error al actualizar el producto:", error);
+            console.error("Error al recuperar detalles de la empresa:", error);
             return {
                 error: true,
                 statusCode: 500,
-                message: "Error al actualizar el producto",
+                message: "Error al recuperar detalles de la empresa",
             };
         }
     }

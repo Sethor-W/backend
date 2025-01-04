@@ -47,7 +47,7 @@ export class BranchController {
       */
     // GET business/branches/:businessId
     static async getBranchesByBusiness(req, res) {
-        const { businessId } = req.params;
+        const { businessId } = req.locales;
 
         try {
             // Verificar si la empresa existe

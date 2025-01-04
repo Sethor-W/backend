@@ -10,7 +10,7 @@ import { BranchBusinessController } from '../controllers/business/branch.control
 
 export const routerBranch = Router();
 
-routerBranch.post('/:businessId', [
+routerBranch.post('/', [
     verifyTokenMiddleware,
     checkRoleMiddleware([
         rolesEnum.OWNER,
@@ -21,8 +21,14 @@ routerBranch.post('/:businessId', [
 ], BranchBusinessController.registerBranch);
 
 
-routerBranch.get('/by-id/:branchId', [
+routerBranch.get('/:branchId', [
     verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.OWNER,
+        rolesEnum.MANAGER,
+        rolesEnum.ADMIN
+    ]),
+    verifyAssociatedUserMiddleware,
 ], BranchBusinessController.getBrancheById);
 
 
@@ -30,7 +36,7 @@ routerBranch.get('/by-id/:branchId', [
 
 
 
-routerBranch.get('/:businessId', [
+routerBranch.get('/', [
     verifyTokenMiddleware,
 ], BranchController.getBranchesByBusiness);
 
