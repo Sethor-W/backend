@@ -9,6 +9,51 @@ import { rolesEnum } from '../../enum/roles.enum.js';
 
 export const routerEmployeeManagement = Router();
 
+
+// Crear a new employee collector
+routerEmployeeManagement.post('/collector', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.OWNER,
+        rolesEnum.MANAGER,
+        rolesEnum.ADMIN
+    ]),
+    verifyAssociatedUserMiddleware,
+], EmployeeManagementController.createCollectorEmployeeCredentials);
+
+
+
+// Obtiene los empleados asociados a una empresa
+routerEmployeeManagement.get('/collector/:employeeId', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.OWNER,
+        rolesEnum.MANAGER,
+        rolesEnum.COLLECTOR,
+        rolesEnum.ADMIN
+    ]),
+    verifyAssociatedUserMiddleware,
+], EmployeeManagementController.getEmployeeCollectorDetails);
+
+
+// Obtiene los empleados asociados a una empresa
+routerEmployeeManagement.get('/', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.OWNER,
+        rolesEnum.MANAGER,
+        rolesEnum.ADMIN
+    ]),
+    verifyAssociatedUserMiddleware,
+], EmployeeManagementController.getEmployeesByBusiness);
+
+
+
+
+
+
+
+
 // Crear a new employee manager
 routerEmployeeManagement.post('/manager/create/:businessId', [
     verifyTokenMiddleware,
@@ -19,45 +64,14 @@ routerEmployeeManagement.post('/manager/create/:businessId', [
     verifyAssociatedUserMiddleware,
 ], EmployeeManagementController.createManagerEmployeeCredentials);
 
-// Crear a new employee collector
-routerEmployeeManagement.post('/collector/create/:businessId', [
-    verifyTokenMiddleware,
-    checkRoleMiddleware([
-        rolesEnum.OWNER,
-        rolesEnum.MANAGER,
-        rolesEnum.ADMIN
-    ]),
-    verifyAssociatedUserMiddleware,
-], EmployeeManagementController.createCollectorEmployeeCredentials);
 
 /**
  * MANAGER
  */
 
-// Obtiene los empleados asociados a una empresa
-routerEmployeeManagement.get('/getDetails/:businessId/employeeID/:userId', [
-    verifyTokenMiddleware,
-    checkRoleMiddleware([
-        rolesEnum.OWNER,
-        rolesEnum.MANAGER,
-        rolesEnum.COLLECTOR,
-        rolesEnum.ADMIN
-    ]),
-    verifyAssociatedUserMiddleware,
-], EmployeeManagementController.getEmployeesDetails);
 
 /**
  * OWNER
  */
 
-// Obtiene los empleados asociados a una empresa
-routerEmployeeManagement.get('/all/:businessId', [
-    verifyTokenMiddleware,
-    checkRoleMiddleware([
-        rolesEnum.OWNER,
-        rolesEnum.MANAGER,
-        rolesEnum.ADMIN
-    ]),
-    verifyAssociatedUserMiddleware,
-], EmployeeManagementController.getEmployeesByBusiness);
 

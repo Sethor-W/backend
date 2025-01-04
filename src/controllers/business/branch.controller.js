@@ -15,7 +15,7 @@ export class BranchBusinessController {
      */
     // POST business/branches/:businessId
     static async registerBranch(req, res) {
-        const result = await BranchService.registerBranch(req.params, req.body)
+        const result = await BranchService.registerBranch(req.locales, req.body)
         return sendResponse(res, result.statusCode, result.error, result.message, result.data);
     }
 

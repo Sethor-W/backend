@@ -37,11 +37,20 @@ router.use('/statistics', routerStatistics);
 
 router.use('/business/auth', routerAuthBusiness);
 
-router.use('/business/branches', routerBranch);
-router.use('/business/employees', routerEmployeeManagement);
 router.use('/business/functions', routerBusinessFunction);
 router.use('/business/users/profile', routerProfileBusiness);
 
+router.use('/business/:businessId/branches', (req, res, next) => {
+    req.locales = req.locales || {};
+    req.locales.businessId = req.params.businessId;
+    next();
+}, routerBranch);
+
+router.use('/business/:businessId/employees', (req, res, next) => {
+    req.locales = req.locales || {};
+    req.locales.businessId = req.params.businessId;
+    next();
+}, routerEmployeeManagement);
 
 router.use('/business/:businessId/products', (req, res, next) => {
     req.locales = req.locales || {};

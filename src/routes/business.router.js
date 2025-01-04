@@ -17,12 +17,12 @@ routerBusiness.post('/', [
     ])
 ], BusinessController.registerBusiness);
 
-routerBusiness.get('/all/:id', [
+routerBusiness.get('/:businessId', [
     verifyTokenMiddleware,
-    checkRoleMiddleware([
-        rolesEnum.OWNER,
-        rolesEnum.ADMIN
-    ])
+    // checkRoleMiddleware([
+    //     rolesEnum.OWNER,
+    //     rolesEnum.ADMIN
+    // ])
 ], BusinessController.getBusinessAllDetailsById);
 
 
@@ -67,6 +67,8 @@ routerBusiness.get('/employee/getBusiness', [
     checkRoleMiddleware([
         rolesEnum.MANAGER,
         rolesEnum.COLLECTOR,
+        rolesEnum.OWNER,
+        rolesEnum.ADMIN,
     ]),
 ], BusinessController.getBusinessDetailsToEmployeeWithJWT)
 
