@@ -173,6 +173,7 @@ export class InvoiceService {
                             name: invoice.client?.profile?.name || null,
                             lastName: invoice.client?.profile?.lastName || invoice.client?.profile?.dataValues?.lastName || null, // Acceso alternativo a lastName
                         },
+                        business: invoice?.business,
                         products: invoice?.products,
                         status: invoice.status, // O "pending"
                         branchId: invoice.branchId || null,
