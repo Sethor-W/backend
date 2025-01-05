@@ -83,8 +83,7 @@ export class AuthBusinessController {
   // GET business/auth/jwt
   static async getDataJWT(req, res) {
     try {
-      const { role, userId } = req.user;
-      return sendResponse(res, 201, false, 'Datos obtenidos exitosamente', { role, userId });
+      return sendResponse(res, 201, false, 'Datos obtenidos exitosamente', req.user);
     } catch (error) {
       console.error("Error al intentar obtener los datos del JWT:", error);
       return sendResponse(res, 500, true, "Error interno del servidor. Intente nuevamente más tarde.");
