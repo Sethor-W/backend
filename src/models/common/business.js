@@ -45,6 +45,11 @@ export const Business = sequelize.define('business', {
     },
     PSPWalletId: {
         type: DataTypes.STRING,
+    },
+    typeCompany: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "TB001"
     }
 });
 
