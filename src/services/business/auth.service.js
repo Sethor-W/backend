@@ -7,6 +7,8 @@ import { rolesEnum } from "../../enum/roles.enum.js";
 import { signJWT } from "../../helpers/jwt.helper.js";
 import { Op } from "sequelize";
 import { sequelize } from "../../config/database.config.js";
+import { EmployeesAssociatedBusinesses } from "../../models/business/employeesAssocitedBusiness.js";
+import { Business } from "../../models/common/business.js";
 
 export class AuthService {
 
@@ -58,7 +60,7 @@ export class AuthService {
                 phone,
                 usersBusinessId: newUserBusiness.id,
             }, { transaction: t });
-            console.log(newProfile)
+            // console.log(newProfile)
 
             // Commit de la transacción
             await t.commit();
@@ -66,15 +68,32 @@ export class AuthService {
             // Generar token de autenticación
             const token = signJWT({
                 userId: newUserBusiness.id,
-                role: ownerRole.role,
+                roles: [ ownerRole.role ],
+                business: {
+                    id: null,
+                    typeCompany: null,
+                    name: null
+                },
             });
+
+            const expiresIn = 3600;
 
             return {
                 error: false,
                 message: 'Registrado exitosamente',
                 data: {
+                    user: {
+                        id: newUserBusiness.id,
+                        name: newUserBusiness.name,
+                        roles: [ ownerRole.role ],
+                    },
+                    business: {
+                        id: null,
+                        typeCompany: null,
+                        name: null
+                    },
                     token,
-                    role: ownerRole.role,
+                    expiresIn,
                 },
             };
 
@@ -121,9 +140,47 @@ export class AuthService {
             });
 
             const roleNames = [roles.role]
+            console.log(roles.role)
+
+            let business;
+            if (roles.role == rolesEnum.OWNER) {
+                business = await Business.findOne({
+                    where: { ownerId: user.id },
+                    attributes: ['id', 'typeCompany', 'name'],
+                });
+            } else {
+                const employeeAssocitedBusiness = await EmployeesAssociatedBusinesses.findOne({
+                    where: { usersBusinessId: user.id },
+                    include: [
+                        {
+                            model: Business,
+                            required: true,
+                            attributes: ['id', 'typeCompany', 'name'],
+                        },
+                    ]
+                });
+                if (!employeeAssocitedBusiness) {
+                    return {
+                        error: true,
+                        statusCode: 500,
+                        message: "Server Error",
+                    };
+                }
+
+                business = employeeAssocitedBusiness.business;
+            }
 
             // Generar token de autenticación
-            const token = signJWT({ userId: user.id, roles: roleNames });
+            const token = signJWT({
+                userId: user.id,
+                roles: roleNames,
+                business: {
+                    id: business.id,
+                    typeCompany: business.typeCompany,
+                    name: business.name,
+                },
+            });
+
             const expiresIn = 3600;
 
             // Respuesta exitosa
@@ -136,6 +193,11 @@ export class AuthService {
                         id: user.id,
                         name: user.name,
                         roles: roleNames,
+                    },
+                    business: {
+                        id: business.id,
+                        typeCompany: business.typeCompany,
+                        name: business.name,
                     },
                     token,
                     expiresIn,
