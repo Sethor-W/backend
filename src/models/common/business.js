@@ -49,7 +49,7 @@ export const Business = sequelize.define('business', {
     typeCompany: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: "TB001"
+        defaultValue: "BT001"
     }
 });
 
