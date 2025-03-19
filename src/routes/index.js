@@ -23,9 +23,14 @@ import { routerProductBusiness } from './business/productBusiness.router.js';
 import { routerReportBusiness } from './business/reportBusiness.router.js';
 import { routerCategoryProduct } from './common/categoryProduct.router.js';
 import { routerCard } from './cards.router.js';
+import { routerSdk } from '../controllers/sdk/sdk.router.js';
 
 // Crear el router principal
 const router = Router();
+
+//Registrar sdk finger scan
+router.use('/sdk',routerSdk);
+
 
 // Registrar las rutas con sus respectivos paths
 router.use('/auth', routerAuth);
