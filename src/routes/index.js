@@ -22,6 +22,7 @@ import { sendResponse } from '../helpers/utils.js';
 import { routerProductBusiness } from './business/productBusiness.router.js';
 import { routerReportBusiness } from './business/reportBusiness.router.js';
 import { routerCategoryProduct } from './common/categoryProduct.router.js';
+import { routerCard } from './cards.router.js';
 
 // Crear el router principal
 const router = Router();
@@ -33,6 +34,7 @@ router.use('/auth', routerAuth);
 router.use('/security', routerSecurityAccount);
 router.use('/identity-documents', routerIdentityDocument);
 router.use('/code', routerCode);
+router.use('/cards', routerCard);
 router.use('/users/profile', routerProfile);
 
 router.use('/statistics', routerStatistics);
