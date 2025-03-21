@@ -24,12 +24,16 @@ import { routerReportBusiness } from './business/reportBusiness.router.js';
 import { routerCategoryProduct } from './common/categoryProduct.router.js';
 import { routerCard } from './cards.router.js';
 import { routerSdk } from '../controllers/sdk/sdk.router.js';
+import { routerTransbank } from './payment/transbank.route.js';
 
 // Crear el router principal
 const router = Router();
 
 //Registrar sdk finger scan
 router.use('/sdk',routerSdk);
+
+// Registrar rutas de Transbank
+router.use('/payment/transbank', routerTransbank    );
 
 
 // Registrar las rutas con sus respectivos paths
