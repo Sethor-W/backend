@@ -4,9 +4,9 @@ export class SdkController {
     /**
      * Capturar y extraer datos de una huella dactilar
      */
-    static async validateFingerprint(req, res) {
-        const { scanResult } = req.body;
-    
+    static async validateFinger(req, res) {
+        const { scanResult, rut } = req.body;
+        console.log('***rut:',rut)
         const url = "https://abis.tech5.tech/T5CloudService/1.0/processRequest";
         const username = "jeycoradames@gmail.com";
         const password = "j@yc0r@d@#T5";
@@ -86,17 +86,21 @@ export class SdkController {
                 score
             }));
 
-            if (matchedFingerprints.length > 0) {
-                console.log("Identificación exitosa:", matchedFingerprints);
-                return sendResponse(res, 200, false, "Identificación exitosa", {
-                    status_code: "MATCH_FOUND",
-                    matches: matchedFingerprints
-                });
-            }
+            console.log('matchedFingerprints',matchedFingerprints)
 
-            // 4. Si "finger" está vacío, significa que no hay coincidencias
-            console.log("No se encontraron coincidencias en la base de datos.");
-            return sendResponse(res, 200, false, "No se encontraron coincidencias en la base de datos", { status_code: "NO_MATCH" });
+            //Validar si el rut enviado está entre los IDs
+            const matchFound = matchedFingerprints.some(fp => fp.id === rut);
+
+            console.log('matchFound',matchFound)
+            if (matchFound) {
+            return sendResponse(res, 200, false, "Identificación exitosa (RUT coincide con la huella)", {
+                status_code: "MATCH_FOUND"
+            });
+            } else {
+            return sendResponse(res, 200, false, "No se encontraron coincidencias para el RUT", {
+                status_code: "NO_MATCH"
+            });
+            }
 
         } catch (error) {
             console.error("Error al procesar la captura de huella:", error);
@@ -106,7 +110,6 @@ export class SdkController {
     
     static async validateTemplate(req,res){
         const { scanResult,rut } = req.body;
-        console.log('***rut:',rut)
         const url = "https://abis.tech5.tech/T5CloudService/1.0/processRequest";
         const username = "jeycoradames@gmail.com";
         const password = "j@yc0r@d@#T5";
