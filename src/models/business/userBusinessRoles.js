@@ -16,9 +16,22 @@ export const UserBusinessRole = sequelize.define('user_business_roles', {
 });
 
 // Hook para autorellenar la tabla de roles
-UserBusinessRole.afterSync(() => {
+// UserBusinessRole.afterSync(() => {
+//     const roles = [rolesEnum.OWNER, rolesEnum.MANAGER, rolesEnum.COLLECTOR, rolesEnum.ADMIN];
+//     roles.forEach(async (role) => {
+//         await UserBusinessRole.findOrCreate({ where: { role } });
+//     });
+// });
+
+UserBusinessRole.afterSync(async () => {
     const roles = [rolesEnum.OWNER, rolesEnum.MANAGER, rolesEnum.COLLECTOR, rolesEnum.ADMIN];
-    roles.forEach(async (role) => {
-        await UserBusinessRole.findOrCreate({ where: { role } });
-    });
+
+    for (const role of roles) {
+        try {
+            await UserBusinessRole.findOrCreate({ where: { role } });
+            console.log(`Rol ${role} insertado o ya existente.`);
+        } catch (error) {
+            console.error(`❌ Error al insertar el rol ${role}:`, error);
+        }
+    }
 });

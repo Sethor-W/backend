@@ -104,8 +104,8 @@ class Server {
 
 
   connectionDB() {
-    sequelize.sync({ alter: true })
-    //sequelize.sync()
+    // sequelize.sync({ alter: true })
+    sequelize.sync()
             .then(() => console.log('Conexión a la base de datos establecida'))
             .catch((err) => console.error('Error al conectar la base de datos:', err));
   }
