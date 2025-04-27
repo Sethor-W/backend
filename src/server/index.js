@@ -6,48 +6,7 @@ import { sequelize } from '../config/database.config.js';
 import { sendResponse } from '../helpers/utils.js';
 
 // Models
-// import '../models/client/users.js'
-// import '../models/identityDocuments.js'
-// import '../models/client/profile.js'
-// import '../models/code.js'
-// import '../models/client/profile.js'
-// import '../models/business/profileBusiness.js'
-// import '../models/business/userBusinessRoles.js'
-// import '../models/business/employeesAssocitedBusiness.js'
-// import '../models/common/business.js'
-// import '../models/common/business.js'
-// import '../models/client/product.js'
-// import '../models/common/help.js'
-// import '../models/common/opinionOrSuggestion.js'
-// import '../models/common/representativeSethor.js'
-// import '../models/business/businessFunction.js'
-// import '../models/assignedUserFunction.js'
-// import '../models/common/invoice.js'
-// import '../models/business/soldProductStatistic.js'
-// import '../models/business/buyingUserStatistic.js'
-// import '../models/business/earningsStatistic.js'
-// import '../models/common/availableCountry.js'
-
 import '../models/index.js';
-
-// Routes
-// import { routerAuth } from '../routes/auth.router.js';
-// import { routerSecurityAccount } from '../routes/securityAccount.router.js';
-// import { routerIdentityDocument } from '../routes/identityDocument.router.js';
-// import { routerCode } from '../routes/code.router.js';
-// import { routerAuthBusiness } from '../routes/authBusiness.router.js';
-// import { routerBusiness } from '../routes/business.router.js';
-// import { routerBranch } from '../routes/branch.router.js';
-// import { routerProduct } from '../routes/product.router.js';
-// import { routerOther } from '../routes/other.router.js';
-// import { routerEmployeeManagement } from '../routes/employee.router.js';
-// import { routerBusinessFunction } from '../routes/businessFunction.router.js';
-// import { routerInvoice } from '../routes/invoice.router.js';
-// import { routerProfileBusiness } from '../routes/profileBusiness.router.js';
-// import { routerProfile } from '../routes/profile.router.js';
-// import { routerStatistics } from '../routes/statistics.router.js';
-// import { routerStorage } from '../routes/storage.router.js';
-// import { routerPayment } from '../routes/payment.router.js';
 
 // Routes
 import { configureRoutes } from '../routes/index.js';

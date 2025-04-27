@@ -70,8 +70,6 @@ export class EmployeeManagementController {
 
 
 
-
-
     /**
      * Crea las credenciales del empleado gerente
      */

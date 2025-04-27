@@ -168,7 +168,7 @@ export class BusinessController {
      ******************************** */
 
     /**
-     * Obtener empresa por el empleado
+     * Obtener listado empresa por el empleado
      */
     // Get business/employee/getAllBusiness/:businessId
     static async getBusinessDetailsToEmployee(req, res) {
