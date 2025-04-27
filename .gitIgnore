@@ -44,3 +44,7 @@ yarn-error.*
 .env
 .env*.local
 .vercel
+
+
+# Firebase
+src/config/sethor-7e29f-firebase-adminsdk-by1dk-e5d2aaac84.json

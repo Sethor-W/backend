@@ -6,10 +6,7 @@ import {
     validateRequiredFields,
 } from "../../helpers/utils.js";
 import { signJWT } from "../../helpers/jwt.helper.js";
-
-// Models
-import { Profile } from "../../models/client/profile.js";
-import { User } from "../../models/client/users.js";
+import admin from "../../config/firebase.config.js";
 
 export class AuthController {
     /**
@@ -33,26 +30,34 @@ export class AuthController {
             }
 
             // Verificar si el nombre de usuario ya existe
-            const existingUser = await User.findOne({ where: { email } });
-            if (existingUser) {
+            const usersRef = admin.firestore().collection('users');
+            const snapshot = await usersRef.where('email', '==', email).get();
+            if (!snapshot.empty) {
                 return sendResponse(res, 400, true, "Correo electrónico ya está en uso");
             }
 
-            // Crear un nuevo usuario
+            // Crear un nuevo usuario en Firestore
             const hashedPassword = await bcrypt.hash(password, 10);
-            const newUser = await User.create({ email, password: hashedPassword });
+            const newUserRef = await usersRef.add({ 
+                email, 
+                password: hashedPassword,
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
 
             // Registrar perfil del usuario
-            const newProfile = await Profile.create({
+            const profilesRef = admin.firestore().collection('profiles');
+            const profileData = {
                 name,
                 codeUser: generateUniqueCode(),
                 lastname,
                 rut,
-                userId: newUser.id,
-            });
+                userId: newUserRef.id,
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            };
+            await profilesRef.doc(newUserRef.id).set(profileData);
 
             // Generar token de autenticación
-            const token = signJWT({ userId: newUser.id });
+            const token = signJWT({ userId: newUserRef.id });
 
             return sendResponse(
                 res,
@@ -61,11 +66,11 @@ export class AuthController {
                 "Registrado",
                 {
                     user: {
-                        id: newUser.id,
-                        emial: newUser.email,
+                        id: newUserRef.id,
+                        email: email
                     },
                 },
-                { token: token }
+                { token }
             );
         } catch (error) {
             console.error("Error al registrar usuario:", error);
@@ -82,46 +87,41 @@ export class AuthController {
             const { email, password } = req.body;
 
             // Verificar si el usuario existe
-            const user = await User.findOne({ where: { email } });
-            if (!user) {
+            const usersRef = admin.firestore().collection('users');
+            const snapshot = await usersRef.where('email', '==', email).get();
+            if (snapshot.empty) {
                 return sendResponse(res, 401, true, "Credenciales no válidas");
             }
 
+            const userDoc = snapshot.docs[0];
+            const userData = userDoc.data();
+
             // Verificar la contraseña
-            const passwordMatch = await bcrypt.compare(password, user.password);
+            const passwordMatch = await bcrypt.compare(password, userData.password);
             if (!passwordMatch) {
                 return sendResponse(res, 401, true, "Credenciales no válidas");
             }
 
             // Generar token de autenticación
-            const token = signJWT({ userId: user.id });
+            const token = signJWT({ userId: userDoc.id });
 
             return sendResponse(
                 res,
-                201,
+                200,
                 false,
                 "Acceso exitoso",
                 {
                     user: {
-                        id: user.id,
-                        emial: user.email,
+                        id: userDoc.id,
+                        email: userData.email
                     },
                 },
-                { token: token }
+                { token }
             );
         } catch (error) {
             console.error("Error al iniciar sesión:", error);
-            res.status(500).json({ error: "Error al iniciar sesión" });
+            return sendResponse(res, 500, true, "Error al iniciar sesión");
         }
-    }
-
-
-    /**
-    * Auth
-    */
-    // POST auth/google
-    static async authGoogle(req, res) {
-
     }
 
 }
