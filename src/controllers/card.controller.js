@@ -3,6 +3,53 @@ import { blobServiceClient } from '../config/azure.config';
 
 export class CardController {
     
+    /**
+     * @swagger
+     * /api/v1/cards:
+     *   post:
+     *     summary: Store a credit/debit card securely
+     *     tags: [Cards]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - cardNumber
+     *               - expiryDate
+     *               - cvv
+     *             properties:
+     *               cardNumber:
+     *                 type: string
+     *                 description: Card number (will be tokenized)
+     *               expiryDate:
+     *                 type: string
+     *                 description: Card expiry date (MM/YY format)
+     *               cvv:
+     *                 type: string
+     *                 description: Card CVV/security code
+     *     responses:
+     *       200:
+     *         description: Card stored successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 message:
+     *                   type: string
+     *                   example: Tarjeta guardada exitosamente
+     *                 cardId:
+     *                   type: string
+     *                   description: Token representing the stored card
+     *       400:
+     *         description: Invalid card data
+     *       500:
+     *         description: Server error
+     */
     static async storeCard(req, res) {
         try {
             const { cardNumber, expiryDate, cvv } = req.body;

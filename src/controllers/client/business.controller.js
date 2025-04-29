@@ -14,8 +14,61 @@ import { Branch } from "../../models/common/branch.js";
 export class BusinessClientController {
 
     /**
-      * Obtener listado de empresas registradas
-      */
+     * @swagger
+     * /api/v1/client/business:
+     *   get:
+     *     summary: Get list of registered businesses
+     *     tags: [Client Business]
+     *     parameters:
+     *       - in: query
+     *         name: page
+     *         schema:
+     *           type: integer
+     *           default: 1
+     *         description: Page number for pagination
+     *       - in: query
+     *         name: search
+     *         schema:
+     *           type: string
+     *         description: Search term to filter businesses by name
+     *     responses:
+     *       200:
+     *         description: Businesses retrieved successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 statusCode:
+     *                   type: integer
+     *                   example: 200
+     *                 error:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: Empresas recuperadas con éxito
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     businesses:
+     *                       type: array
+     *                       items:
+     *                         type: object
+     *                     pagination:
+     *                       type: object
+     *                       properties:
+     *                         count:
+     *                           type: integer
+     *                         currentPage:
+     *                           type: integer
+     *                         totalPages:
+     *                           type: integer
+     *       404:
+     *         description: No businesses found
+     *       500:
+     *         description: Server error
+     */
     // GET business?page=1&search=puerto
     static async getAllBusiness(req, res) {
         let { page, search } = req.query;

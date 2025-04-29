@@ -10,7 +10,37 @@ const BASE_URL = process.env.TRANSBANK_BASE_URL;
 export class OneClickTransbankController {
 
     /**
-     * Crear una inscripción de usuario en OneClick de Transbank
+     * @swagger
+     * /api/v1/payment/transbank/oneclick/inscriptions:
+     *   post:
+     *     summary: Create a OneClick inscription in Transbank
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - username
+     *               - email
+     *             properties:
+     *               username:
+     *                 type: string
+     *                 description: User identifier
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: User email
+     *     responses:
+     *       200:
+     *         description: Inscription created successfully
+     *       400:
+     *         description: Validation errors
+     *       500:
+     *         description: Server error
      */
     // POST payment/transbank/oneclick/inscriptions
     static async createInscription(req, res) {
@@ -62,8 +92,28 @@ export class OneClickTransbankController {
     }
 
     /**
-     * Confirmar una inscripción de usuario en OneClick de Transbank
-    */
+     * @swagger
+     * /api/v1/payment/transbank/oneclick/inscriptions/{token}:
+     *   put:
+     *     summary: Confirm a OneClick inscription in Transbank
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: token
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Inscription token provided by Transbank
+     *     responses:
+     *       200:
+     *         description: Inscription confirmed successfully
+     *       400:
+     *         description: Token is required
+     *       500:
+     *         description: Server error
+     */
     // PUT payment/transbank/oneclick/inscriptions/{token}
     static async confirmInscription(req, res) {
         try {
@@ -112,8 +162,37 @@ export class OneClickTransbankController {
     }
 
     /**
-     * Eliminar una inscripción de usuario en OneClick de Transbank
-    */
+     * @swagger
+     * /api/v1/payment/transbank/oneclick/inscriptions:
+     *   delete:
+     *     summary: Delete a OneClick inscription in Transbank
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - tbk_user
+     *               - username
+     *             properties:
+     *               tbk_user:
+     *                 type: string
+     *                 description: Transbank user identifier
+     *               username:
+     *                 type: string
+     *                 description: User identifier
+     *     responses:
+     *       200:
+     *         description: Inscription deleted successfully
+     *       400:
+     *         description: Validation errors
+     *       500:
+     *         description: Server error
+     */
     // DELETE payment/transbank/oneclick/inscriptions
     static async deleteInscription(req, res) {
         try {
@@ -171,8 +250,65 @@ export class OneClickTransbankController {
     }
 
     /**
-     * Autorizar una transacción con OneClick de Transbank
-    */
+     * @swagger
+     * /api/v1/payment/transbank/oneclick/authorize:
+     *   post:
+     *     summary: Authorize a transaction with OneClick in Transbank
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - username
+     *               - tbk_user
+     *               - buy_order
+     *               - details
+     *             properties:
+     *               username:
+     *                 type: string
+     *                 description: User identifier
+     *               tbk_user:
+     *                 type: string
+     *                 description: Transbank user identifier
+     *               buy_order:
+     *                 type: string
+     *                 description: Order identifier
+     *               details:
+     *                 type: array
+     *                 description: Transaction details
+     *                 items:
+     *                   type: object
+     *                   required:
+     *                     - commerce_code
+     *                     - buy_order
+     *                     - amount
+     *                     - installments_number
+     *                   properties:
+     *                     commerce_code:
+     *                       type: string
+     *                       description: Commerce code
+     *                     buy_order:
+     *                       type: string
+     *                       description: Order identifier for this detail
+     *                     amount:
+     *                       type: number
+     *                       description: Amount to charge
+     *                     installments_number:
+     *                       type: integer
+     *                       description: Number of installments
+     *     responses:
+     *       200:
+     *         description: Transaction authorized successfully
+     *       400:
+     *         description: Validation errors
+     *       500:
+     *         description: Server error
+     */
     // POST payment/transbank/oneclick/authorize
     static async authorizeTransaction(req, res) {
         try {

@@ -13,7 +13,71 @@ import { User } from "../../models/client/users.js";
 
 export class AuthController {
     /**
-     * Register a user
+     * @swagger
+     * /api/v1/auth/register:
+     *   post:
+     *     summary: Register a new user
+     *     tags: [Authentication]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - email
+     *               - password
+     *               - name
+     *               - lastname
+     *               - rut
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: User email
+     *               password:
+     *                 type: string
+     *                 format: password
+     *                 description: User password
+     *               name:
+     *                 type: string
+     *                 description: User's first name
+     *               lastname:
+     *                 type: string
+     *                 description: User's last name
+     *               rut:
+     *                 type: string
+     *                 description: User's identification number
+     *     responses:
+     *       201:
+     *         description: Registration successful
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 error:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: Registrado
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     user:
+     *                       type: object
+     *                       properties:
+     *                         id:
+     *                           type: integer
+     *                         email:
+     *                           type: string
+     *                 token:
+     *                   type: string
+     *       400:
+     *         description: Bad request - Missing fields or email already in use
+     *       500:
+     *         description: Server error
      */
     // POST auth/register
     static async register(req, res) {
@@ -74,7 +138,59 @@ export class AuthController {
     }
 
     /**
-     * Login a user
+     * @swagger
+     * /api/v1/auth/login:
+     *   post:
+     *     summary: Login user
+     *     tags: [Authentication]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - email
+     *               - password
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: User email
+     *               password:
+     *                 type: string
+     *                 format: password
+     *                 description: User password
+     *     responses:
+     *       201:
+     *         description: Login successful
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 error:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: Acceso exitoso
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     user:
+     *                       type: object
+     *                       properties:
+     *                         id:
+     *                           type: integer
+     *                         email:
+     *                           type: string
+     *                 token:
+     *                   type: string
+     *       401:
+     *         description: Invalid credentials
+     *       500:
+     *         description: Server error
      */
     // POST auth/login
     static async login(req, res) {
@@ -117,8 +233,39 @@ export class AuthController {
 
 
     /**
-    * Auth
-    */
+     * @swagger
+     * /api/v1/auth/google:
+     *   post:
+     *     summary: Authenticate with Google
+     *     tags: [Authentication]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - token
+     *             properties:
+     *               token:
+     *                 type: string
+     *                 description: Google authentication token
+     *     responses:
+     *       200:
+     *         description: Authentication successful
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 token:
+     *                   type: string
+     *                   description: JWT authentication token
+     *       401:
+     *         description: Invalid token
+     *       500:
+     *         description: Server error
+     */
     // POST auth/google
     static async authGoogle(req, res) {
 

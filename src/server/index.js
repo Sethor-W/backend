@@ -11,6 +11,8 @@ import '../models/index.js';
 // Routes
 import { configureRoutes } from '../routes/index.js';
 import { configureMiddlewares } from '../middlewares/index.js';
+// Swagger
+import { configureSwagger } from '../config/swagger.config.js';
 
 
 class Server {
@@ -21,6 +23,8 @@ class Server {
     console.log("Pruerto:", this.port);
     
     configureMiddlewares(this.app);
+    // Configure Swagger
+    configureSwagger(this.app);
     configureRoutes(this.app);
 
     // Direcciones de las rutas

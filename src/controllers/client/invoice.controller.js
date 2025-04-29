@@ -17,9 +17,54 @@ import { PaymentController } from "../payment.controller.js";
 
 export class InvoiceClientController {
 
-
   /**
-   * Get invoices by client with paginated
+   * @swagger
+   * /api/v1/invoices/client/getAll:
+   *   get:
+   *     summary: Get all paid invoices for a client with pagination
+   *     tags: [Client Invoices]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: query
+   *         name: page
+   *         schema:
+   *           type: integer
+   *           default: 1
+   *         description: Page number for pagination
+   *     responses:
+   *       200:
+   *         description: Invoices retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 statusCode:
+   *                   type: integer
+   *                   example: 200
+   *                 error:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: Facturas recuperadas exitosamente
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     rows:
+   *                       type: array
+   *                       items:
+   *                         type: object
+   *                     pagination:
+   *                       type: object
+   *                       properties:
+   *                         currentPage:
+   *                           type: integer
+   *                         totalPages:
+   *                           type: integer
+   *       500:
+   *         description: Server error
    */
   // GET invoices/client/getAll?page=1
   static async getAllInvoices(req, res) {
@@ -93,11 +138,47 @@ export class InvoiceClientController {
   }
 
 
-
   /**
-   * Get details of a specific invoice by client
-   * GET invoices/client/details/:invoiceId
+   * @swagger
+   * /api/v1/invoices/client/details/{invoiceId}:
+   *   get:
+   *     summary: Get details of a specific invoice for a client
+   *     tags: [Client Invoices]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: invoiceId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the invoice to retrieve
+   *     responses:
+   *       200:
+   *         description: Invoice details retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 statusCode:
+   *                   type: integer
+   *                   example: 200
+   *                 error:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: Detalles de la factura recuperados exitosamente
+   *                 data:
+   *                   type: object
+   *                   description: Invoice details including client, business and collector information
+   *       404:
+   *         description: Invoice not found
+   *       500:
+   *         description: Server error
    */
+  // GET invoices/client/details/:invoiceId
   static async getInvoiceDetails(req, res) {
     const {
       invoiceId

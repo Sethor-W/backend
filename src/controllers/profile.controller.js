@@ -1,4 +1,3 @@
-
 import { sendResponse } from "../helpers/utils.js";
 import { Profile } from "../models/client/profile.js";
 import { User } from "../models/client/users.js";
@@ -8,7 +7,25 @@ export class ProfileController {
 
 
     /**
-     * Obtener el perfil del usuario
+     * @swagger
+     * /api/v1/users/profile/{id}:
+     *   get:
+     *     summary: Get user profile by ID
+     *     tags: [User Profile]
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: User ID
+     *     responses:
+     *       200:
+     *         description: Profile retrieved successfully
+     *       404:
+     *         description: Profile not found
+     *       500:
+     *         description: Server error
      */
     // GET users/profile/:id
     static async getUserProfileById(req, res) {
@@ -38,7 +55,20 @@ export class ProfileController {
 
 
     /**
-     * Obtener el perfil del usuario
+     * @swagger
+     * /api/v1/users/profile:
+     *   get:
+     *     summary: Get profile of authenticated user
+     *     tags: [User Profile]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Profile retrieved successfully
+     *       404:
+     *         description: Profile not found
+     *       500:
+     *         description: Server error
      */
     // GET users/profile
     static async getUserProfile(req, res) {
@@ -68,7 +98,32 @@ export class ProfileController {
 
 
     /**
-     * Actualizar el perfil del usuario
+     * @swagger
+     * /api/v1/users/profile:
+     *   put:
+     *     summary: Update user profile
+     *     tags: [User Profile]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               phone:
+     *                 type: string
+     *                 description: User phone number
+     *               profilePicture:
+     *                 type: string
+     *                 description: URL to profile picture
+     *     responses:
+     *       200:
+     *         description: Profile updated successfully
+     *       404:
+     *         description: Profile not found
+     *       500:
+     *         description: Server error
      */
     // PUT /users/profile
     static async updateUserProfile(req, res) {

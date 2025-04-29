@@ -8,7 +8,73 @@ import { ProductBusinessService } from "../../services/business/product.service.
 export class ProductBusinessController {
 
     /**
-     * Crear un producto
+     * @swagger
+     * /api/v1/business/products/{businessId}/branch/{branchId}:
+     *   post:
+     *     summary: Create a new product
+     *     tags: [Business Products]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: branchId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the branch or 'all' for all branches
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - name
+     *               - type
+     *               - price
+     *               - description
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: Product name
+     *               category:
+     *                 type: string
+     *                 description: Product category
+     *               offer:
+     *                 type: boolean
+     *                 description: Whether the product is on offer
+     *               type:
+     *                 type: string
+     *                 description: Product type
+     *               description:
+     *                 type: string
+     *                 description: Product description
+     *               photos:
+     *                 type: array
+     *                 items:
+     *                   type: string
+     *                 description: Array of photo URLs
+     *               price:
+     *                 type: number
+     *                 description: Product price
+     *               profilePicture:
+     *                 type: string
+     *                 description: URL to product profile picture
+     *     responses:
+     *       201:
+     *         description: Product created successfully
+     *       400:
+     *         description: Missing required fields
+     *       404:
+     *         description: Branch not found
+     *       500:
+     *         description: Server error
      */
     // POST business/products/:businessId/branch/:branchId
     static async registerProduct(req, res) {
@@ -17,7 +83,68 @@ export class ProductBusinessController {
     }
 
     /**
-     * Actualizar un producto por su ID
+     * @swagger
+     * /api/v1/business/products/by-id/{businessId}/{productId}:
+     *   put:
+     *     summary: Update a product
+     *     tags: [Business Products]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: productId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the product
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: Product name
+     *               category:
+     *                 type: string
+     *                 description: Product category
+     *               offer:
+     *                 type: boolean
+     *                 description: Whether the product is on offer
+     *               type:
+     *                 type: string
+     *                 description: Product type
+     *               description:
+     *                 type: string
+     *                 description: Product description
+     *               photos:
+     *                 type: array
+     *                 items:
+     *                   type: string
+     *                 description: Array of photo URLs
+     *               price:
+     *                 type: number
+     *                 description: Product price
+     *               profilePicture:
+     *                 type: string
+     *                 description: URL to product profile picture
+     *               branchId:
+     *                 type: string
+     *                 description: ID of the branch
+     *     responses:
+     *       200:
+     *         description: Product updated successfully
+     *       404:
+     *         description: Product or branch not found
+     *       500:
+     *         description: Server error
      */
     // PUT business/products/by-id/:businessId/:productId
     static async updateProduct(req, res) {
@@ -54,7 +181,33 @@ export class ProductBusinessController {
     }
 
     /**
-     * Eliminar un producto por su ID
+     * @swagger
+     * /api/v1/business/products/by-id/{businessId}/{productId}:
+     *   delete:
+     *     summary: Delete a product
+     *     tags: [Business Products]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: productId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the product to delete
+     *     responses:
+     *       200:
+     *         description: Product deleted successfully
+     *       404:
+     *         description: Product not found
+     *       500:
+     *         description: Server error
      */
     // DELETE business/products/by-id/:businessId/:productId
     static async deleteProduct(req, res) {

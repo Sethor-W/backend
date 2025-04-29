@@ -14,7 +14,54 @@ import { AuthService } from "../../services/business/auth.service.js";
 export class AuthBusinessController {
 
   /**
-   * Register a user
+   * @swagger
+   * /api/v1/business/auth/register:
+   *   post:
+   *     summary: Register a new business user
+   *     tags: [Business Auth]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - email
+   *               - password
+   *               - name
+   *               - lastname
+   *               - rut
+   *               - phone
+   *             properties:
+   *               email:
+   *                 type: string
+   *                 format: email
+   *                 description: User email
+   *               password:
+   *                 type: string
+   *                 description: User password
+   *               keyword:
+   *                 type: string
+   *                 description: Keyword for the user
+   *               name:
+   *                 type: string
+   *                 description: User first name
+   *               lastname:
+   *                 type: string
+   *                 description: User last name
+   *               rut:
+   *                 type: string
+   *                 description: User RUT identification
+   *               phone:
+   *                 type: string
+   *                 description: User phone number
+   *     responses:
+   *       201:
+   *         description: User registered successfully
+   *       400:
+   *         description: Validation errors or invalid data
+   *       500:
+   *         description: Server error
    */
   // POST business/auth/register
   static async register(req, res) {
@@ -52,7 +99,51 @@ export class AuthBusinessController {
 
 
   /**
-   * Login a user
+   * @swagger
+   * /api/v1/business/auth/login:
+   *   post:
+   *     summary: Login a business user
+   *     tags: [Business Auth]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - userCode
+   *               - password
+   *             properties:
+   *               userCode:
+   *                 type: string
+   *                 description: User code or keyword
+   *               password:
+   *                 type: string
+   *                 description: User password
+   *     responses:
+   *       200:
+   *         description: Login successful
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: Login exitoso
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     token:
+   *                       type: string
+   *                       description: JWT token for authentication
+   *       400:
+   *         description: Validation errors or invalid credentials
+   *       500:
+   *         description: Server error
    */
   // POST business/auth/login
   static async login(req, res) {
@@ -78,8 +169,21 @@ export class AuthBusinessController {
 
 
   /**
-   * Get data of JWT
-  */
+   * @swagger
+   * /api/v1/business/auth/jwt:
+   *   get:
+   *     summary: Get JWT token data
+   *     tags: [Business Auth]
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       201:
+   *         description: JWT data retrieved successfully
+   *       401:
+   *         description: Unauthorized - Invalid or missing token
+   *       500:
+   *         description: Server error
+   */
   // GET business/auth/jwt
   static async getDataJWT(req, res) {
     try {

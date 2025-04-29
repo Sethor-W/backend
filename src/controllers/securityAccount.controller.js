@@ -19,7 +19,33 @@ import { Op } from 'sequelize';
 export class SecurityAccountController {
 
     /**
-     * Generate code to change the password
+     * @swagger
+     * /api/v1/security/send-reset-password-code:
+     *   post:
+     *     summary: Send reset password code to email
+     *     tags: [Security]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - email
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: User email
+     *     responses:
+     *       200:
+     *         description: Reset code sent successfully
+     *       400:
+     *         description: Missing required fields
+     *       404:
+     *         description: User not found
+     *       500:
+     *         description: Server error
      */
     // POST security/send-reset-password-code
     static async sendResetPasswordCode(req, res) {
@@ -69,7 +95,42 @@ export class SecurityAccountController {
     }
 
     /**
-     * Reset password
+     * @swagger
+     * /api/v1/security/reset-password:
+     *   put:
+     *     summary: Reset password using code
+     *     tags: [Security]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - email
+     *               - code
+     *               - newPassword
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: User email
+     *               code:
+     *                 type: string
+     *                 description: Reset password code
+     *               newPassword:
+     *                 type: string
+     *                 format: password
+     *                 description: New password
+     *     responses:
+     *       200:
+     *         description: Password reset successfully
+     *       400:
+     *         description: Missing required fields
+     *       404:
+     *         description: Invalid or expired reset code
+     *       500:
+     *         description: Server error
      */
     // PUT security/reset-password
     static async resetPassword(req, res) {
@@ -112,7 +173,46 @@ export class SecurityAccountController {
 
 
     /**
-     * Change password
+     * @swagger
+     * /api/v1/security/change-password:
+     *   put:
+     *     summary: Change password for authenticated user
+     *     tags: [Security]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - currentPassword
+     *               - newPassword
+     *               - code
+     *             properties:
+     *               currentPassword:
+     *                 type: string
+     *                 format: password
+     *                 description: Current password
+     *               newPassword:
+     *                 type: string
+     *                 format: password
+     *                 description: New password
+     *               code:
+     *                 type: string
+     *                 description: Verification code
+     *     responses:
+     *       201:
+     *         description: Password changed successfully
+     *       400:
+     *         description: Missing required fields
+     *       401:
+     *         description: Current password incorrect or new password same as current password
+     *       404:
+     *         description: User not found or invalid code
+     *       500:
+     *         description: Server error
      */
     // PUT security/change-password
     static async changePassword(req, res) {

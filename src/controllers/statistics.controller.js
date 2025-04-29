@@ -112,7 +112,64 @@ export class StatisticsController {
     }
 
     /**
-     * Obtener todas las estadisticas
+     * @swagger
+     * /api/v1/statistics/business/{businessId}/getAll:
+     *   get:
+     *     summary: Get all statistics for a business
+     *     tags: [Statistics]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *     responses:
+     *       200:
+     *         description: Statistics retrieved successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 error:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: Estadísticas recuperadas exitosamente
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     income:
+     *                       type: object
+     *                       properties:
+     *                         current:
+     *                           type: number
+     *                         percentageChange:
+     *                           type: number
+     *                     uniqueClients:
+     *                       type: object
+     *                       properties:
+     *                         current:
+     *                           type: number
+     *                         percentageChange:
+     *                           type: number
+     *                     totalClients:
+     *                       type: object
+     *                       properties:
+     *                         current:
+     *                           type: number
+     *                         percentageChange:
+     *                           type: number
+     *                     topProducts:
+     *                       type: array
+     *                       items:
+     *                         type: object
+     *       500:
+     *         description: Server error
      */
     // GET /statistics/business/:businessId/getAll
     static async getAllStatistics(req, res) {
@@ -318,7 +375,25 @@ export class StatisticsController {
     // }
 
     /**
-     * Obtener todas las estadisticas de productos vendidos
+     * @swagger
+     * /api/v1/statistics/business/{businessId}/sold-products:
+     *   get:
+     *     summary: Get sold products statistics
+     *     tags: [Statistics]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *     responses:
+     *       200:
+     *         description: Statistics retrieved successfully
+     *       500:
+     *         description: Server error
      */
     // GET /statistics/business/:businessId/sold-products
     static async getSoldProducts(req, res) {
@@ -334,7 +409,25 @@ export class StatisticsController {
     }
 
     /**
-     * Obtener todas las estadisticas de usuarios que han comprado
+     * @swagger
+     * /api/v1/statistics/business/{businessId}/buying-users:
+     *   get:
+     *     summary: Get buying users statistics
+     *     tags: [Statistics]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *     responses:
+     *       200:
+     *         description: Statistics retrieved successfully
+     *       500:
+     *         description: Server error
      */
     // GET /statistics/business/:businessId/buying-users
     static async getBuyingUsers(req, res) {
@@ -350,7 +443,38 @@ export class StatisticsController {
     }
 
     /**
-     * Obtener todas las estadisticas de compra del usuario
+     * @swagger
+     * /api/v1/statistics/user/buying-users:
+     *   get:
+     *     summary: Get authenticated user's buying statistics
+     *     tags: [Statistics]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Statistics retrieved successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 error:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: Estadísticas recuperadas exitosamente
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     currentMonthSpent:
+     *                       type: number
+     *                     lastMonthSpent:
+     *                       type: number
+     *                     percentageChange:
+     *                       type: number
+     *       500:
+     *         description: Server error
      */
     // GET /statistics/user/buying-users
     static async getBuyingUserStatistics(req, res) {
@@ -404,7 +528,25 @@ export class StatisticsController {
     }
 
     /**
-     * Obtener todas las estadisticas ganancias mensuales
+     * @swagger
+     * /api/v1/statistics/business/{businessId}/monthly-earnings:
+     *   get:
+     *     summary: Get monthly earnings statistics
+     *     tags: [Statistics]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *     responses:
+     *       200:
+     *         description: Statistics retrieved successfully
+     *       500:
+     *         description: Server error
      */
     // GET /statistics/business/:businessId/monthly-earnings
     static async getMonthlyEarnings(req, res) {

@@ -8,9 +8,55 @@ export class ProfileBusinessController {
 
 
     /**
-     * Obtener el perfil del usuario
+     * @swagger
+     * /api/v1/business/users/profile:
+     *   get:
+     *     summary: Get business user profile
+     *     tags: [Business Profile]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Profile retrieved successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 error:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: Perfil recuperado exitosamente
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     id:
+     *                       type: string
+     *                     email:
+     *                       type: string
+     *                     status:
+     *                       type: string
+     *                     profiles_business:
+     *                       type: object
+     *                       properties:
+     *                         id:
+     *                           type: string
+     *                         name:
+     *                           type: string
+     *                         lastname:
+     *                           type: string
+     *                         phone:
+     *                           type: string
+     *                         additionalData:
+     *                           type: object
+     *       404:
+     *         description: Profile not found
+     *       500:
+     *         description: Server error
      */
-    // PUT business/users/profile
+    // GET business/users/profile
     static async getUserProfile(req, res) {
         const { userId } = req.user;
         try {
@@ -47,9 +93,47 @@ export class ProfileBusinessController {
     }
 
     /**
-     * Actualizar el perfil del usuario
+     * @swagger
+     * /api/v1/business/users/profile:
+     *   put:
+     *     summary: Update business user profile
+     *     tags: [Business Profile]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               phone:
+     *                 type: string
+     *                 description: User phone number
+     *               profilePicture:
+     *                 type: string
+     *                 description: URL to profile picture
+     *     responses:
+     *       200:
+     *         description: Profile updated successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 error:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: Perfil actualizado exitosamente
+     *                 data:
+     *                   type: object
+     *       404:
+     *         description: Profile not found
+     *       500:
+     *         description: Server error
      */
-    // PUT /users/profile
+    // PUT /business/users/profile
     static async updateUserProfile(req, res) {
         const { userId } = req.user;
         const { phone, profilePicture } = req.body;

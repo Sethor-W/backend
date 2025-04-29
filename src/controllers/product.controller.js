@@ -7,8 +7,74 @@ import { Product } from "../models/client/product.js";
 export class ProductController {
 
     /**
-      * Crear un producto
-      */
+     * @swagger
+     * /api/v1/business/{businessId}/products/branch/{branchId}:
+     *   post:
+     *     summary: Register a new product
+     *     tags: [Products]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: branchId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the branch or 'all' for all branches
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - name
+     *               - type
+     *               - price
+     *               - description
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: Product name
+     *               category:
+     *                 type: string
+     *                 description: Product category
+     *               offer:
+     *                 type: boolean
+     *                 description: Whether the product is on offer
+     *               type:
+     *                 type: string
+     *                 description: Product type
+     *               description:
+     *                 type: string
+     *                 description: Product description
+     *               photos:
+     *                 type: array
+     *                 items:
+     *                   type: string
+     *                 description: Array of photo URLs
+     *               price:
+     *                 type: number
+     *                 description: Product price
+     *               profilePicture:
+     *                 type: string
+     *                 description: URL to product profile picture
+     *     responses:
+     *       201:
+     *         description: Product created successfully
+     *       400:
+     *         description: Missing required fields
+     *       404:
+     *         description: Branch not found
+     *       500:
+     *         description: Server error
+     */
     // POST business/products/:businessId/branch/:branchId
     static async registerProduct(req, res) {
         const { branchId, businessId } = req.params;
@@ -55,7 +121,38 @@ export class ProductController {
     }
 
     /**
-     * Obtener todos los productos de un negocio ordenados por sucursales
+     * @swagger
+     * /api/v1/business/products/by-business/{businessId}:
+     *   get:
+     *     summary: Get all products for a business with optional filtering
+     *     tags: [Products]
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: query
+     *         name: type
+     *         schema:
+     *           type: string
+     *         description: Filter by product type
+     *       - in: query
+     *         name: page
+     *         schema:
+     *           type: integer
+     *         description: Page number for pagination
+     *       - in: query
+     *         name: search
+     *         schema:
+     *           type: string
+     *         description: Search products by name
+     *     responses:
+     *       200:
+     *         description: Products retrieved successfully
+     *       500:
+     *         description: Server error
      */
     // GET business/products/by-business/:businessId?page=1&type=combo&search=nombredelProducto
     static async getProductsByBusiness(req, res) {
@@ -96,7 +193,25 @@ export class ProductController {
     }
 
     /**
-     * Obtener todos los productos de un negocio ordenados por sucursales
+     * @swagger
+     * /api/v1/business/products/by-id/{productId}:
+     *   get:
+     *     summary: Get a product by ID
+     *     tags: [Products]
+     *     parameters:
+     *       - in: path
+     *         name: productId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the product
+     *     responses:
+     *       200:
+     *         description: Product retrieved successfully
+     *       404:
+     *         description: Product not found
+     *       500:
+     *         description: Server error
      */
     // GET business/products/by-id/:productId
     static async getProductById(req, res) {
@@ -123,7 +238,68 @@ export class ProductController {
     }
 
     /**
-     * Actualizar un producto por su ID
+     * @swagger
+     * /api/v1/business/products/by-id/{businessId}/{productId}:
+     *   put:
+     *     summary: Update a product
+     *     tags: [Products]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: productId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the product
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: Product name
+     *               category:
+     *                 type: string
+     *                 description: Product category
+     *               offer:
+     *                 type: boolean
+     *                 description: Whether the product is on offer
+     *               type:
+     *                 type: string
+     *                 description: Product type
+     *               description:
+     *                 type: string
+     *                 description: Product description
+     *               photos:
+     *                 type: array
+     *                 items:
+     *                   type: string
+     *                 description: Array of photo URLs
+     *               price:
+     *                 type: number
+     *                 description: Product price
+     *               profilePicture:
+     *                 type: string
+     *                 description: URL to product profile picture
+     *               branchId:
+     *                 type: string
+     *                 description: ID of the branch
+     *     responses:
+     *       200:
+     *         description: Product updated successfully
+     *       404:
+     *         description: Product or branch not found
+     *       500:
+     *         description: Server error
      */
     // PUT business/products/by-id/:businessId/:productId
     static async updateProduct(req, res) {
@@ -159,7 +335,33 @@ export class ProductController {
     }
 
     /**
-     * Eliminar un producto por su ID
+     * @swagger
+     * /api/v1/business/products/by-id/{businessId}/{productId}:
+     *   delete:
+     *     summary: Delete a product
+     *     tags: [Products]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: productId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the product to delete
+     *     responses:
+     *       200:
+     *         description: Product deleted successfully
+     *       404:
+     *         description: Product not found
+     *       500:
+     *         description: Server error
      */
     // DELETE business/products/by-id/:businessId/:productId
     static async deleteProduct(req, res) {

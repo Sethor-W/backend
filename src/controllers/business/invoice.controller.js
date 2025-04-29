@@ -27,7 +27,85 @@ export class InvoiceBusinessController {
    **********************************************************************************/
 
   /**
-   * Create a new invoice (status: draft)
+   * @swagger
+   * /api/v1/invoices/{businessId}/create:
+   *   post:
+   *     summary: Create a new invoice with draft status
+   *     tags: [Business Invoices]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: businessId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the business
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - name
+   *               - products
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Invoice name or description
+   *               subtotal:
+   *                 type: number
+   *                 description: Subtotal amount
+   *               sth:
+   *                 type: number
+   *                 description: STH amount
+   *               totalIVA:
+   *                 type: number
+   *                 description: Total VAT amount
+   *               totalGeneral:
+   *                 type: number
+   *                 description: Total amount including taxes
+   *               products:
+   *                 type: array
+   *                 description: List of products in the invoice
+   *                 items:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                       description: Product ID
+   *                     name:
+   *                       type: string
+   *                       description: Product name
+   *                     quantity:
+   *                       type: number
+   *                       description: Quantity of product
+   *                     price:
+   *                       type: number
+   *                       description: Unit price
+   *                     discountType:
+   *                       type: string
+   *                       description: Type of discount
+   *                     discountValue:
+   *                       type: number
+   *                       description: Value of discount
+   *               discountType:
+   *                 type: string
+   *                 description: Type of discount for the entire invoice
+   *               discountValue:
+   *                 type: number
+   *                 description: Value of discount for the entire invoice
+   *               note:
+   *                 type: string
+   *                 description: Additional notes for the invoice
+   *     responses:
+   *       201:
+   *         description: Invoice created successfully
+   *       400:
+   *         description: Validation errors or missing required fields
+   *       500:
+   *         description: Server error
    */
   // POST invoices/:businessId/create
   static async createInvoice(req, res) {
@@ -64,7 +142,37 @@ export class InvoiceBusinessController {
    **********************************************************************************/
 
   /**
-   * Get invoices by collector sorted by status (draft or paid) and paginated
+   * @swagger
+   * /api/v1/invoices/{businessId}/getAll:
+   *   get:
+   *     summary: Get all invoices with optional filtering and pagination
+   *     tags: [Business Invoices]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: businessId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the business
+   *       - in: query
+   *         name: status
+   *         schema:
+   *           type: string
+   *           enum: [draft, paid, pending, cancelled]
+   *         description: Filter invoices by status
+   *       - in: query
+   *         name: page
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *         description: Page number for pagination
+   *     responses:
+   *       200:
+   *         description: Invoices retrieved successfully
+   *       500:
+   *         description: Server error
    */
   // GET invoices/:businessId/getAll?page=1&status=draft
   static async getAllInvoices(req, res) {
@@ -73,9 +181,35 @@ export class InvoiceBusinessController {
   }
 
   /**
-   * Get details of a specific invoice
-   * GET invoices/:businessId/details/:invoiceId
+   * @swagger
+   * /api/v1/invoices/{businessId}/details/{invoiceId}:
+   *   get:
+   *     summary: Get details of a specific invoice
+   *     tags: [Business Invoices]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: businessId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the business
+   *       - in: path
+   *         name: invoiceId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the invoice
+   *     responses:
+   *       200:
+   *         description: Invoice details retrieved successfully
+   *       404:
+   *         description: Invoice not found
+   *       500:
+   *         description: Server error
    */
+  // GET invoices/:businessId/details/:invoiceId
   static async getInvoiceDetails(req, res) {
     const result = await InvoiceService.getInvoicesDetails(req.params);
     return sendResponse(res, result.statusCode, result.error, result.message, result.data);
@@ -85,9 +219,67 @@ export class InvoiceBusinessController {
 
 
   /**
-   * Update invoice by collector
-   * PUT invoices/:businessId/collector/update/:invoiceId
+   * @swagger
+   * /api/v1/invoices/{businessId}/update/{invoiceId}:
+   *   put:
+   *     summary: Update an invoice
+   *     tags: [Business Invoices]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: businessId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the business
+   *       - in: path
+   *         name: invoiceId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the invoice to update
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Invoice name or description
+   *               status:
+   *                 type: string
+   *                 enum: [draft, paid, pending, cancelled]
+   *                 description: Invoice status
+   *               subtotal:
+   *                 type: number
+   *                 description: Subtotal amount
+   *               sth:
+   *                 type: number
+   *                 description: STH amount
+   *               totalIVA:
+   *                 type: number
+   *                 description: Total VAT amount
+   *               totalGeneral:
+   *                 type: number
+   *                 description: Total amount including taxes
+   *               products:
+   *                 type: array
+   *                 description: List of products in the invoice
+   *               note:
+   *                 type: string
+   *                 description: Additional notes for the invoice
+   *     responses:
+   *       200:
+   *         description: Invoice updated successfully
+   *       404:
+   *         description: Invoice not found or unauthorized
+   *       500:
+   *         description: Server error
    */
+  // PUT invoices/:businessId/update/:invoiceId
   static async updateInvoice(req, res) {
     const result = await InvoiceService.updatedInvoice(req.params, req.body, req.user)
     return sendResponse(res, result.statusCode, result.error, result.message, result.data);
@@ -123,7 +315,37 @@ export class InvoiceBusinessController {
 
 
   /**
-   * Get invoices by collector sorted by status (draft or paid) and paginated
+   * @swagger
+   * /api/v1/invoices/{businessId}/collector/getAll:
+   *   get:
+   *     summary: Get invoices by collector with optional filtering and pagination
+   *     tags: [Business Invoices]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: businessId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the business
+   *       - in: query
+   *         name: status
+   *         schema:
+   *           type: string
+   *           enum: [draft, paid, pending, cancelled]
+   *         description: Filter invoices by status
+   *       - in: query
+   *         name: page
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *         description: Page number for pagination
+   *     responses:
+   *       200:
+   *         description: Invoices retrieved successfully
+   *       500:
+   *         description: Server error
    */
   // GET invoices/:businessId/collector/getAll?page=1&status=draft
   static async getAllInvoicesByCollector(req, res) {
@@ -196,9 +418,35 @@ export class InvoiceBusinessController {
   }
 
   /**
-   * Get details of a specific invoice by collector
-   * GET invoices/:businessId/collector/details/:invoiceId
+   * @swagger
+   * /api/v1/invoices/{businessId}/collector/details/{invoiceId}:
+   *   get:
+   *     summary: Get details of a specific invoice by collector
+   *     tags: [Business Invoices]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: businessId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the business
+   *       - in: path
+   *         name: invoiceId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the invoice
+   *     responses:
+   *       200:
+   *         description: Invoice details retrieved successfully
+   *       404:
+   *         description: Invoice not found
+   *       500:
+   *         description: Server error
    */
+  // GET invoices/:businessId/collector/details/:invoiceId
   static async getInvoiceDetailsByCollector(req, res) {
     const {
       invoiceId

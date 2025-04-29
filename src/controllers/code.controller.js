@@ -13,7 +13,31 @@ export class CodeController {
 
 
     /**
-     * Send code to the email of user
+     * @swagger
+     * /api/v1/code/email/send:
+     *   post:
+     *     summary: Send verification code to email
+     *     tags: [Verification]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - email
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: Email to send verification code
+     *     responses:
+     *       200:
+     *         description: Code sent successfully
+     *       400:
+     *         description: Missing required fields or invalid email format
+     *       500:
+     *         description: Server error
      */
     // POST code/email/send
     static async sendCodeToEmail(req, res) {
@@ -64,7 +88,35 @@ export class CodeController {
 
 
     /**
-     * Verificar codigo enviado al email del usuario
+     * @swagger
+     * /api/v1/code/email/verify:
+     *   post:
+     *     summary: Verify email code
+     *     tags: [Verification]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - email
+     *               - code
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: Email to verify
+     *               code:
+     *                 type: string
+     *                 description: Verification code sent to email
+     *     responses:
+     *       200:
+     *         description: Code verified successfully
+     *       400:
+     *         description: Missing required fields, invalid email format, or invalid code
+     *       500:
+     *         description: Server error
      */
     // POST code/email/verify
     static async verifyCodeSentToEmail(req, res) {

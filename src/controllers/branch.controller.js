@@ -10,7 +10,55 @@ import { Branch } from "../models/common/branch.js";
 export class BranchController {
 
     /**
-     * Register a branch to a business
+     * @swagger
+     * /api/v1/business/{businessId}/branches:
+     *   post:
+     *     summary: Register a branch to a business
+     *     tags: [Branches]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - name
+     *               - address
+     *               - googleMap
+     *               - operatingHours
+     *               - country_cca2
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: Branch name
+     *               address:
+     *                 type: string
+     *                 description: Branch address
+     *               googleMap:
+     *                 type: string
+     *                 description: Google Maps location
+     *               operatingHours:
+     *                 type: string
+     *                 description: JSON string with operating hours
+     *               country_cca2:
+     *                 type: string
+     *                 description: Country code (2 characters)
+     *     responses:
+     *       201:
+     *         description: Branch registered successfully
+     *       400:
+     *         description: Missing required fields
+     *       500:
+     *         description: Server error
      */
     // POST business/branches/:businessId
     static async registerBranch(req, res) {
@@ -43,8 +91,26 @@ export class BranchController {
     }
 
     /**
-      * Obtener todas las sucursales de una empresa
-      */
+     * @swagger
+     * /api/v1/business/{businessId}/branches:
+     *   get:
+     *     summary: Get all branches of a business
+     *     tags: [Branches]
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *     responses:
+     *       200:
+     *         description: Branches retrieved successfully
+     *       404:
+     *         description: Business not found
+     *       500:
+     *         description: Server error
+     */
     // GET business/branches/:businessId
     static async getBranchesByBusiness(req, res) {
         const { businessId } = req.locales;
@@ -73,8 +139,32 @@ export class BranchController {
     };
 
     /**
-      * Obtener detalle de una sucursal
-      */
+     * @swagger
+     * /api/v1/business/{businessId}/branches/by-id/{branchId}:
+     *   get:
+     *     summary: Get details of a specific branch
+     *     tags: [Branches]
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: branchId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the branch
+     *     responses:
+     *       200:
+     *         description: Branch details retrieved successfully
+     *       404:
+     *         description: Branch not found
+     *       500:
+     *         description: Server error
+     */
     // GET business/branches/by-id/:branchId
     static async getBrancheById(req, res) {
         const { branchId } = req.params;
@@ -94,7 +184,52 @@ export class BranchController {
     };
 
     /**
-     * Actualizar una sucursal de una empresa
+     * @swagger
+     * /api/v1/business/{businessId}/branches/{branchId}:
+     *   put:
+     *     summary: Update a branch
+     *     tags: [Branches]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: branchId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the branch
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: Branch name
+     *               address:
+     *                 type: string
+     *                 description: Branch address
+     *               googleMap:
+     *                 type: string
+     *                 description: Google Maps location
+     *               operatingHours:
+     *                 type: string
+     *                 description: JSON string with operating hours
+     *     responses:
+     *       200:
+     *         description: Branch updated successfully
+     *       404:
+     *         description: Branch not found
+     *       500:
+     *         description: Server error
      */
     // PUT business/branches/:businessId/:branchId
     static async updateBranch(req, res) {
@@ -122,7 +257,33 @@ export class BranchController {
     };
 
     /**
-     * Eliminar una sucursal de una empresa
+     * @swagger
+     * /api/v1/business/{businessId}/branches/{branchId}:
+     *   delete:
+     *     summary: Delete a branch
+     *     tags: [Branches]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: branchId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the branch
+     *     responses:
+     *       200:
+     *         description: Branch deleted successfully
+     *       404:
+     *         description: Branch not found
+     *       500:
+     *         description: Server error
      */
     // DELETE business/branches/:businessId/:branchId
     static async deleteBranch(req, res) {

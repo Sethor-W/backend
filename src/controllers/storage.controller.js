@@ -9,7 +9,55 @@ export class StorageController {
 
 
     /**
-     * Upload file
+     * @swagger
+     * /api/v1/storage/upload/{nameFolder}:
+     *   put:
+     *     summary: Upload a file to cloud storage
+     *     tags: [Storage]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: nameFolder
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Folder name in cloud storage
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         multipart/form-data:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               file:
+     *                 type: string
+     *                 format: binary
+     *                 description: File to upload
+     *     responses:
+     *       201:
+     *         description: File uploaded successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 error:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: El archivo ha subido correctamente
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     url:
+     *                       type: string
+     *                       description: URL to access the uploaded file
+     *       400:
+     *         description: No file uploaded
+     *       500:
+     *         description: Server error
      */
     // PUT storage/upload/:nameFolder
     static async uploadFile(req, res) {

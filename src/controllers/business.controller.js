@@ -13,7 +13,40 @@ import { BusinessCommonService } from "../services/common/business.service.js";
 export class BusinessController {
 
     /**
-     * Register a business
+     * @swagger
+     * /api/v1/business:
+     *   post:
+     *     summary: Register a new business
+     *     tags: [Business]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - name
+     *               - rut_business
+     *               - tax_code
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: Business name
+     *               rut_business:
+     *                 type: string
+     *                 description: Business tax ID
+     *               tax_code:
+     *                 type: string
+     *                 description: Business tax code
+     *     responses:
+     *       201:
+     *         description: Business registered successfully
+     *       400:
+     *         description: Missing required fields
+     *       500:
+     *         description: Server error
      */
     // POST business/
     static async registerBusiness(req, res) {
@@ -44,8 +77,26 @@ export class BusinessController {
 
 
     /**
-      * Obtener detalles publicos de la empresa por nombre
-      */
+     * @swagger
+     * /api/v1/business/name/search:
+     *   get:
+     *     summary: Search businesses by name
+     *     tags: [Business]
+     *     parameters:
+     *       - in: query
+     *         name: name
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Name to search for
+     *     responses:
+     *       200:
+     *         description: Businesses retrieved successfully
+     *       404:
+     *         description: No businesses found for the search term
+     *       500:
+     *         description: Server error
+     */
     // GET business/name/search?name=search
     static async searchBusinessByName(req, res) {
         const { name } = req.query;
@@ -75,7 +126,45 @@ export class BusinessController {
     };
 
     /**
-     * Actualizar una empresa
+     * @swagger
+     * /api/v1/business/{id}:
+     *   put:
+     *     summary: Update a business
+     *     tags: [Business]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Business ID
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               description:
+     *                 type: string
+     *                 description: Business description
+     *               address:
+     *                 type: string
+     *                 description: Business address
+     *               profilePicture:
+     *                 type: string
+     *                 description: URL to business profile picture
+     *               coverPicture:
+     *                 type: string
+     *                 description: URL to business cover picture
+     *     responses:
+     *       200:
+     *         description: Business updated successfully
+     *       404:
+     *         description: Business not found
+     *       500:
+     *         description: Server error
      */
     // PUT business/:id
     static async updateBusiness(req, res) {
@@ -103,7 +192,29 @@ export class BusinessController {
     }
 
     /**
-     * Eliminar una empresa
+     * @swagger
+     * /api/v1/business/{id}:
+     *   delete:
+     *     summary: Delete a business
+     *     tags: [Business]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Business ID
+     *     responses:
+     *       200:
+     *         description: Business deleted successfully
+     *       403:
+     *         description: Only the owner can delete this business
+     *       404:
+     *         description: Business not found
+     *       500:
+     *         description: Server error
      */
     // DELETE business/:id
     static async deleteBusiness(req, res) {
@@ -136,7 +247,18 @@ export class BusinessController {
      ******************************** */
 
     /**
-     * Obtener empresa por el cobrador
+     * @swagger
+     * /api/v1/business/employee/getBusiness:
+     *   get:
+     *     summary: Get business details for the authenticated employee
+     *     tags: [Business - Employee]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Business details retrieved successfully
+     *       500:
+     *         description: Server error
      */
     // Get business/employee/getBusiness/
     static async getBusinessDetailsToEmployeeWithJWT(req, res) {
@@ -168,7 +290,25 @@ export class BusinessController {
      ******************************** */
 
     /**
-     * Obtener listado empresa por el empleado
+     * @swagger
+     * /api/v1/business/employee/getAllBusiness/{businessId}:
+     *   get:
+     *     summary: Get business details for an employee
+     *     tags: [Business - Employee]
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *     responses:
+     *       200:
+     *         description: Business details retrieved successfully
+     *       404:
+     *         description: Business or owner profile not found
+     *       500:
+     *         description: Server error
      */
     // Get business/employee/getAllBusiness/:businessId
     static async getBusinessDetailsToEmployee(req, res) {
@@ -211,7 +351,18 @@ export class BusinessController {
      ******************************** */
 
     /**
-     * Obtener listado de empresas por el propietario
+     * @swagger
+     * /api/v1/business/owner/getAllBusiness:
+     *   get:
+     *     summary: Get all businesses owned by the authenticated user
+     *     tags: [Business - Owner]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Businesses retrieved successfully
+     *       500:
+     *         description: Server error
      */
     // Get business/owner/getAllBusiness/
     static async getAllBusinessByOwner(req, res) {

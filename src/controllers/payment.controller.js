@@ -41,6 +41,41 @@ export class PaymentController {
 
 
     /**
+     * @swagger
+     * /api/v1/payment/customers:
+     *   post:
+     *     summary: Create a customer profile for payment methods
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - name
+     *               - email
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: Customer name
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: Customer email
+     *               invoice_prefix:
+     *                 type: string
+     *                 description: Optional prefix for invoices
+     *     responses:
+     *       200:
+     *         description: Customer created successfully
+     *       400:
+     *         description: Validation errors
+     *       500:
+     *         description: Server error
+     * 
      * Create Customer
      * Create a customer profile to save the payment methods a customer can use.
      * 
@@ -87,6 +122,45 @@ export class PaymentController {
     }
 
     /**
+     * @swagger
+     * /api/v1/payment/customers/{customer}:
+     *   post:
+     *     summary: Update a customer profile
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: customer
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Customer ID
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: Customer name
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: Customer email
+     *               default_payment_method:
+     *                 type: string
+     *                 description: Default payment method ID
+     *     responses:
+     *       200:
+     *         description: Customer updated successfully
+     *       400:
+     *         description: Validation errors
+     *       500:
+     *         description: Server error
+     * 
      * Update Customer
      * Change one or more fields in a customer profile.
      * To clear a field, set it to an empty string.
@@ -132,6 +206,26 @@ export class PaymentController {
     }
 
     /**
+     * @swagger
+     * /api/v1/payment/customers/{customer}:
+     *   get:
+     *     summary: Retrieve customer information
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: customer
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Customer ID
+     *     responses:
+     *       200:
+     *         description: Customer retrieved successfully
+     *       500:
+     *         description: Server error
+     * 
      * Retrieve Customer
      * Change one or more fields in a customer profile.
      * To clear a field, set it to an empty string.
@@ -171,10 +265,56 @@ export class PaymentController {
 
 
     /**
-     * Create Card Token
-     * Create a hosted page for a customer to save card details and manage cards.
+     * @swagger
+     * /api/v1/payment/cards/{customer}:
+     *   post:
+     *     summary: Creates a card token for a customer
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: customer
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Customer ID
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - number
+     *               - exp_month
+     *               - exp_year
+     *               - cvc
+     *             properties:
+     *               number:
+     *                 type: string
+     *                 description: Card number
+     *               exp_month:
+     *                 type: string
+     *                 description: Expiration month (MM)
+     *               exp_year:
+     *                 type: string
+     *                 description: Expiration year (YYYY)
+     *               cvc:
+     *                 type: string
+     *                 description: Card security code
+     *     responses:
+     *       200:
+     *         description: Card token created successfully
+     *       400:
+     *         description: Validation errors
+     *       500:
+     *         description: Server error
      * 
-     * POST /payment/hosted/collect/card
+     * Create Card Token
+     * Create a card token that we can use for future transactions for a customer.
+     * 
+     * POST /payment/cards/:customer
      */
     static async createCardToken(req, res) {
         const { userId } = req.user;
@@ -245,6 +385,58 @@ export class PaymentController {
     //     }
     // }
 
+
+    /**
+     * @swagger
+     * /api/v1/payment/cards/{customer}:
+     *   get:
+     *     summary: Retrieve customer's payment methods
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: customer
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Customer ID
+     *     responses:
+     *       200:
+     *         description: Payment methods retrieved successfully
+     *       500:
+     *         description: Server error
+     * 
+     * Retrieve payment methods
+     * Retrieves a list of all payment methods for a customer.
+     * 
+     * GET /payment/cards/:customer
+     */
+    static async retrievePaymentMethods(req, res) {
+        const { userId } = req.user;
+        const { customer } = req.params;
+
+        try {
+            const PSPCustomerId = await getInfoCustomerId(userId);
+
+            const httpMethod = 'GET';
+            // const urlPath = `/v1/customers/${customer}/payment_methods`;
+            const urlPath = `/v1/customers/${PSPCustomerId}/payment_methods`;
+            const body = {
+                // ...bodyReq,
+            };
+
+            // Realiza la solicitud con makeRequest
+            const response = await makeRequest(httpMethod, urlPath, body);
+
+            // Responde al cliente con la data obtenida
+            return sendResponse(res, 200, false, "Payment method get successfully", response.body.data, { status: response.body.status });
+
+        } catch (error) {
+            console.error("Error al obtener métodos de pago:", error);
+            return sendResponse(res, error.statusCode || 500, true, "Error al obtener métodos de pago", error.message || error.body || "Unknown error");
+        }
+    }
 
     /**
      * Add Payment Method to Customer
@@ -408,7 +600,47 @@ export class PaymentController {
      ************************************************************************************************/
 
     /**
+     * @swagger
+     * /api/v1/payment/payments:
+     *   post:
+     *     summary: Create a payment
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - amount
+     *               - currency
+     *               - payment_method
+     *               - customer
+     *             properties:
+     *               amount:
+     *                 type: integer
+     *                 description: Amount to charge (in cents)
+     *               currency:
+     *                 type: string
+     *                 description: Currency code (e.g., usd)
+     *               payment_method:
+     *                 type: string
+     *                 description: Payment method ID
+     *               customer:
+     *                 type: string
+     *                 description: Customer ID
+     *     responses:
+     *       200:
+     *         description: Payment created successfully
+     *       400:
+     *         description: Validation errors
+     *       500:
+     *         description: Server error
+     * 
      * Create Payment
+     * Charge a customer for service or product.
      * 
      * POST /payment/payments
      */
@@ -467,7 +699,28 @@ export class PaymentController {
 
 
     /**
+     * @swagger
+     * /api/v1/payment/payments/{payment}:
+     *   get:
+     *     summary: Retrieve payment information
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: payment
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Payment ID
+     *     responses:
+     *       200:
+     *         description: Payment retrieved successfully
+     *       500:
+     *         description: Server error
+     * 
      * Retrieve Payment
+     * Retrieves all details about a payment.
      * 
      * GET /payment/payments/:payment
      */
@@ -929,6 +1182,58 @@ export class PaymentController {
         return response;
     }
 
+    /**
+     * @swagger
+     * /api/v1/payment/payments/{payment}/refund:
+     *   post:
+     *     summary: Refund a payment
+     *     tags: [Payments]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: payment
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Payment ID to refund
+     *     requestBody:
+     *       required: false
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               amount:
+     *                 type: integer
+     *                 description: Amount to refund (in cents). If not provided, refunds the entire payment.
+     *     responses:
+     *       200:
+     *         description: Payment refunded successfully
+     *       400:
+     *         description: Invalid request
+     *       500:
+     *         description: Server error
+     */
+    static async refundPayment(req, res) {
+        const { payment } = req.params;
+        const { amount } = req.body;
+
+        try {
+            const httpMethod = 'POST';
+            const urlPath = `/v1/payments/${payment}/refund`;
+            const body = amount ? { amount } : {};
+            
+            // Realiza la solicitud con makeRequest
+            const response = await makeRequest(httpMethod, urlPath, body);
+            
+            // Responde al cliente con la data obtenida
+            return sendResponse(res, 200, false, "Payment refunded successfully", response.body, { status: response.body.status });
+        } catch (error) {
+            console.error("Error refunding payment:", error);
+            return sendResponse(res, error.statusCode || 500, true, "Error refunding payment", error.message || error.body || "Unknown error");
+        }
+    }
 
 }
 

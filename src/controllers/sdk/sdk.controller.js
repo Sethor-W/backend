@@ -2,7 +2,34 @@ import { sendResponse, validateRequiredFields } from "../../helpers/utils.js";
 
 export class SdkController {
     /**
-     * Capturar y extraer datos de una huella dactilar
+     * @swagger
+     * /api/v1/sdk/validate-finger:
+     *   post:
+     *     summary: Validate fingerprint against a RUT
+     *     tags: [SDK]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - scanResult
+     *               - rut
+     *             properties:
+     *               scanResult:
+     *                 type: object
+     *                 description: Fingerprint scan result data
+     *               rut:
+     *                 type: string
+     *                 description: RUT to validate against the fingerprint
+     *     responses:
+     *       200:
+     *         description: Validation successful
+     *       400:
+     *         description: Invalid input or ABIS error
+     *       500:
+     *         description: Server error
      */
     static async validateFinger(req, res) {
         const { scanResult, rut } = req.body;
@@ -108,6 +135,36 @@ export class SdkController {
         }
     }
     
+    /**
+     * @swagger
+     * /api/v1/sdk/validate-template:
+     *   post:
+     *     summary: Create and validate fingerprint templates
+     *     tags: [SDK]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - scanResult
+     *               - rut
+     *             properties:
+     *               scanResult:
+     *                 type: object
+     *                 description: Fingerprint scan result data
+     *               rut:
+     *                 type: string
+     *                 description: RUT to associate with the fingerprint template
+     *     responses:
+     *       200:
+     *         description: Template created and validated successfully
+     *       400:
+     *         description: Invalid input or ABIS error
+     *       500:
+     *         description: Server error
+     */
     static async validateTemplate(req,res){
         const { scanResult,rut } = req.body;
         const url = "https://abis.tech5.tech/T5CloudService/1.0/processRequest";
@@ -194,6 +251,36 @@ export class SdkController {
         }
     }
 
+    /**
+     * @swagger
+     * /api/v1/sdk/enroll-user:
+     *   post:
+     *     summary: Enroll a user with fingerprint templates
+     *     tags: [SDK]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - dataTemplate
+     *               - rut
+     *             properties:
+     *               dataTemplate:
+     *                 type: array
+     *                 description: Array of fingerprint templates
+     *               rut:
+     *                 type: string
+     *                 description: RUT to associate with the fingerprint
+     *     responses:
+     *       200:
+     *         description: User enrolled successfully
+     *       400:
+     *         description: Invalid input or ABIS error
+     *       500:
+     *         description: Server error
+     */
     static async enrollarUser(dataTemplate,rut) {
         const url = "https://abis.tech5.tech/T5CloudService/1.0/processRequest";
         const username = "jeycoradames@gmail.com";
@@ -255,7 +342,23 @@ export class SdkController {
     
     
     /**
-     * Método para procesar y extraer datos de la huella dactilar
+     * @swagger
+     * components:
+     *   schemas:
+     *     ScanResult:
+     *       type: object
+     *       properties:
+     *         fingers:
+     *           type: array
+     *           items:
+     *             type: object
+     *             properties:
+     *               pos:
+     *                 type: integer
+     *                 description: Position of the finger
+     *               image_base64:
+     *                 type: string
+     *                 description: Base64 encoded image of the fingerprint
      */
     static processScanResult(scanResult) {
         if (!scanResult || typeof scanResult !== "object" || !Array.isArray(scanResult.fingers)) {

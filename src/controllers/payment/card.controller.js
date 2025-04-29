@@ -5,7 +5,44 @@ import { EncryptionService } from '../../services/encryption.service.js';
 export class CardController {
 
   /**
-   * Save a card in the database
+   * @swagger
+   * /api/v1/payment/cards:
+   *   post:
+   *     summary: Save a new card
+   *     tags: [Cards]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - cardNumber
+   *               - expiryDate
+   *               - cardholderName
+   *               - cvv
+   *             properties:
+   *               cardNumber:
+   *                 type: string
+   *                 description: Card number
+   *               expiryDate:
+   *                 type: string
+   *                 description: Card expiry date (MM/YY)
+   *               cardholderName:
+   *                 type: string
+   *                 description: Name of the cardholder
+   *               cvv:
+   *                 type: string
+   *                 description: Card verification value
+   *     responses:
+   *       201:
+   *         description: Card saved successfully
+   *       400:
+   *         description: Invalid card data
+   *       500:
+   *         description: Server error
    */
   static async saveCard(req, res) {
     try {
@@ -58,6 +95,29 @@ export class CardController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/v1/payment/cards/{cardId}:
+   *   get:
+   *     summary: Get decrypted card details
+   *     tags: [Cards]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: cardId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the card to retrieve
+   *     responses:
+   *       200:
+   *         description: Card details retrieved successfully
+   *       404:
+   *         description: Card not found
+   *       500:
+   *         description: Server error
+   */
   static async getDecryptedCard(req, res) {
     try {
       const { cardId } = req.params;

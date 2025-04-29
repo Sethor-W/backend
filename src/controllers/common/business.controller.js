@@ -15,8 +15,43 @@ export class BusinessCommonController {
 
   
     /**
-      * Obtener todos los detalles de la empresa
-      */
+     * @swagger
+     * /api/v1/business/all/{businessId}:
+     *   get:
+     *     summary: Get all details of a business
+     *     tags: [Business]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *     responses:
+     *       200:
+     *         description: Business details retrieved successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 error:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: Business details retrieved successfully
+     *                 data:
+     *                   type: object
+     *       400:
+     *         description: Bad request
+     *       404:
+     *         description: Business not found
+     *       500:
+     *         description: Server error
+     */
     // GET business/all/:id
     static async getBusinessAllDetailsById(req, res) {
         const { businessId } = req.params;

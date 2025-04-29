@@ -9,7 +9,42 @@ export class ProductCommonController {
 
    
     /**
-     * Obtener todos los productos de un negocio ordenados por sucursales
+     * @swagger
+     * /api/v1/business/{businessId}/products:
+     *   get:
+     *     summary: Get all products of a business organized by branches
+     *     tags: [Products]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: query
+     *         name: page
+     *         schema:
+     *           type: integer
+     *         description: Page number for pagination
+     *       - in: query
+     *         name: category
+     *         schema:
+     *           type: string
+     *         description: Filter products by category
+     *       - in: query
+     *         name: search
+     *         schema:
+     *           type: string
+     *         description: Search term to filter products
+     *     responses:
+     *       200:
+     *         description: Products retrieved successfully
+     *       404:
+     *         description: No products found
+     *       500:
+     *         description: Server error
      */
     // GET business/:businessId/products?page=1&category=&search=El Remate
     static async getProductsByBusiness(req, res) {
@@ -18,7 +53,40 @@ export class ProductCommonController {
     }
 
     /**
-     * Obtener todos los productos de un negocio ordenados por sucursales
+     * @swagger
+     * /api/v1/business/products/by-id/{productId}:
+     *   get:
+     *     summary: Get product details by ID
+     *     tags: [Products]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: productId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the product
+     *     responses:
+     *       200:
+     *         description: Product retrieved successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 error:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: Producto recuperado exitosamente
+     *                 data:
+     *                   type: object
+     *       404:
+     *         description: Product not found
+     *       500:
+     *         description: Server error
      */
     // GET business/products/by-id/:productId
     static async getProductById(req, res) {

@@ -19,8 +19,71 @@ export class EmployeeManagementController {
 
 
     /**
-    * Crea las credenciales del empleado cobrador
-    */
+     * @swagger
+     * /api/v1/business/{businessId}/employees/collector:
+     *   post:
+     *     summary: Create credentials for a collector employee
+     *     tags: [Employee Management]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - email
+     *               - password
+     *               - keyword
+     *               - name
+     *               - lastname
+     *               - rut
+     *               - phone
+     *               - branchId
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: Employee email
+     *               password:
+     *                 type: string
+     *                 description: Employee password
+     *               keyword:
+     *                 type: string
+     *                 description: Keyword for the employee
+     *               name:
+     *                 type: string
+     *                 description: Employee first name
+     *               lastname:
+     *                 type: string
+     *                 description: Employee last name
+     *               rut:
+     *                 type: string
+     *                 description: Employee RUT identification
+     *               phone:
+     *                 type: string
+     *                 description: Employee phone number
+     *               branchId:
+     *                 type: string
+     *                 description: ID of the branch where the employee works
+     *     responses:
+     *       201:
+     *         description: Employee credentials created successfully
+     *       400:
+     *         description: Validation errors or missing fields
+     *       404:
+     *         description: Branch not found
+     *       500:
+     *         description: Server error
+     */
     // POST business/:businessId/employees/collector
     static async createCollectorEmployeeCredentials(req, res) {
         const result = await EmployeeManagementBusinessService.createCollectorEmployeeCredentials(req.locales, req.body)
@@ -30,7 +93,33 @@ export class EmployeeManagementController {
 
 
     /**
-     * Obtiene el detalle de un empleado
+     * @swagger
+     * /api/v1/business/{businessId}/employees/{employeeId}:
+     *   get:
+     *     summary: Get details of a collector employee
+     *     tags: [Employee Management]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: employeeId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the employee
+     *     responses:
+     *       200:
+     *         description: Employee details retrieved successfully
+     *       404:
+     *         description: Employee not found
+     *       500:
+     *         description: Server error
      */
     // GET business/:businessId/employees/:employeeId
     static async getEmployeeCollectorDetails(req, res) {
@@ -45,7 +134,33 @@ export class EmployeeManagementController {
      ******************************** */
 
     /**
-     * Obtiene los empleados asociados a una empresa
+     * @swagger
+     * /api/v1/business/{businessId}/employees:
+     *   get:
+     *     summary: Get employees associated with a business
+     *     tags: [Employee Management]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: query
+     *         name: page
+     *         schema:
+     *           type: integer
+     *           minimum: 1
+     *         description: Page number for pagination
+     *     responses:
+     *       200:
+     *         description: Employees retrieved successfully
+     *       404:
+     *         description: Business not found
+     *       500:
+     *         description: Server error
      */
     // GET business/:businessId/employees?page=1
     static async getEmployeesByBusiness(req, res) {
@@ -71,7 +186,76 @@ export class EmployeeManagementController {
 
 
     /**
-     * Crea las credenciales del empleado gerente
+     * @swagger
+     * /api/v1/business/employees/manager/create/{businessId}:
+     *   post:
+     *     summary: Create credentials for a manager employee
+     *     tags: [Employee Management]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - email
+     *               - password
+     *               - keyword
+     *               - name
+     *               - lastname
+     *               - rut
+     *               - phone
+     *               - branchId
+     *               - functions
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: Manager email
+     *               password:
+     *                 type: string
+     *                 description: Manager password
+     *               keyword:
+     *                 type: string
+     *                 description: Keyword for the manager
+     *               name:
+     *                 type: string
+     *                 description: Manager first name
+     *               lastname:
+     *                 type: string
+     *                 description: Manager last name
+     *               rut:
+     *                 type: string
+     *                 description: Manager RUT identification
+     *               phone:
+     *                 type: string
+     *                 description: Manager phone number
+     *               branchId:
+     *                 type: string
+     *                 description: ID of the branch where the manager works
+     *               functions:
+     *                 type: array
+     *                 items:
+     *                   type: string
+     *                 description: Array of function IDs assigned to the manager
+     *     responses:
+     *       201:
+     *         description: Manager credentials created successfully
+     *       400:
+     *         description: Validation errors or missing fields
+     *       404:
+     *         description: Branch not found or function not found
+     *       500:
+     *         description: Server error
      */
     // POST business/employees/manager/create/:businessId
     static async createManagerEmployeeCredentials(req, res) {
