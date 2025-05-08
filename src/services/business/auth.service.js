@@ -154,7 +154,7 @@ export class AuthService {
                     include: [
                         {
                             model: Business,
-                            required: true,
+                            // required: true,
                             attributes: ['id', 'typeCompany', 'name'],
                         },
                     ]
