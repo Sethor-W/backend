@@ -261,7 +261,7 @@ export class EmployeeManagementBusinessService {
                             {
                                 model: ProfileBusiness,
                                 // required: true,
-                                attributes: ['id', 'name', 'lastname', 'profilePicture'],
+                                // attributes: ['id', 'name', 'lastname', 'profilePicture'],
                             },
                             {
                                 model: UserBusinessRole,
