@@ -34,7 +34,6 @@ export class BranchController {
      *               - name
      *               - address
      *               - googleMap
-     *               - operatingHours
      *               - country_cca2
      *             properties:
      *               name:
@@ -47,11 +46,17 @@ export class BranchController {
      *                 type: string
      *                 description: Google Maps location
      *               operatingHours:
-     *                 type: string
-     *                 description: JSON string with operating hours
+     *                 type: object
+     *                 description: JSON object with operating hours
      *               country_cca2:
      *                 type: string
      *                 description: Country code (2 characters)
+     *               photo:
+     *                 type: string
+     *                 description: Branch photo URL
+     *               main:
+     *                 type: boolean
+     *                 description: Whether this is the main branch
      *     responses:
      *       201:
      *         description: Branch registered successfully
@@ -63,7 +68,7 @@ export class BranchController {
     // POST business/branches/:businessId
     static async registerBranch(req, res) {
         const { businessId } = req.params;
-        const { name, address, googleMap, operatingHours, country_cca2 } = req.body;
+        const { name, address, googleMap, operatingHours, country_cca2, photo, main } = req.body;
 
         try {
             // Validar la presencia de los campos requeridos
@@ -71,8 +76,6 @@ export class BranchController {
                 "name",
                 "address",
                 "googleMap",
-                "operatingHours",
-                "businessId",
                 "country_cca2",
             ];
             const missingFields = validateRequiredFields({...req.body, ...req.params}, requiredFields);
@@ -80,10 +83,21 @@ export class BranchController {
                 return sendResponse(res, 400, true, `Los campos son obligatorios: ${missingFields.join(", ")}`);
             }
 
-            // Registrar sucursal  
-            const newBranch = await Branch.create({ name, address, googleMap, operatingHours, businessId, country_cca2 });
+            console.log(req.body);
 
-            return sendResponse(res, 201, false, "La sucursal ha sido registrada exitosamente");
+            // Registrar sucursal  
+            const newBranch = await Branch.create({ 
+                name, 
+                address, 
+                googleMap, 
+                operatingHours, 
+                businessId, 
+                country_cca2,
+                photo,
+                main
+            });
+
+            return sendResponse(res, 201, false, "La sucursal ha sido registrada exitosamente", newBranch);
         } catch (error) {
             console.error("Error al registrar la sucursal:", error);
             return sendResponse(res, 500, true, "Error al registrar la sucursal");
@@ -128,7 +142,7 @@ export class BranchController {
             // Parsear las horas de operación a objetos
             const branches = branchesDB.map(branch => ({
                 ...branch.toJSON(),
-                operatingHours: JSON.parse(branch.operatingHours)
+                // operatingHours: JSON.parse(branch.operatingHours)
             }));
 
             return sendResponse(res, 200, false, "Sucursales recuperadas exitosamente", branches);

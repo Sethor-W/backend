@@ -32,12 +32,12 @@ export const Branch = sequelize.define('branch', {
         defaultValue: false,
         validate: {
             async isUniqueMainBranch(value) {
-                if (value === true) {
-                    const existingMainBranch = await Branch.findOne({ where: { businessId: this.businessId, main: true } });
-                    if (existingMainBranch) {
-                        throw new Error('Ya existe una sucursal principal para este negocio.');
-                    }
-                }
+                // if (value === true) {
+                //     const existingMainBranch = await Branch.findOne({ where: { businessId: this.businessId, main: true } });
+                //     if (existingMainBranch) {
+                //         throw new Error('Ya existe una sucursal principal para este negocio.');
+                //     }
+                // }
             }
         }
     },
