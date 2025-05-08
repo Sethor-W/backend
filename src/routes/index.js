@@ -3,7 +3,6 @@ import { Router } from 'express';
 // Importar todos los routers
 import { routerAuth } from './client/auth.router.js';
 import { routerSecurityAccount } from './securityAccount.router.js';
-import { routerIdentityDocument } from './identityDocument.router.js';
 import { routerCode } from './code.router.js';
 import { routerAuthBusiness } from './business/authBusiness.router.js';
 import { routerBusiness } from './business.router.js';
@@ -17,12 +16,10 @@ import { routerProfileBusiness } from './profileBusiness.router.js';
 import { routerProfile } from './profile.router.js';
 import { routerStatistics } from './statistics.router.js';
 import { routerStorage } from './storage.router.js';
-import { routerPayment } from './payment.router.js';
 import { sendResponse } from '../helpers/utils.js';
 import { routerProductBusiness } from './business/productBusiness.router.js';
 import { routerReportBusiness } from './business/reportBusiness.router.js';
 import { routerCategoryProduct } from './common/categoryProduct.router.js';
-import { routerCard } from './cards.router.js';
 import { routerSdk } from '../controllers/sdk/sdk.router.js';
 import { routerTransbank } from './payment/transbank.route.js';
 
@@ -41,9 +38,7 @@ router.use('/auth', routerAuth);
 
 
 router.use('/security', routerSecurityAccount);
-router.use('/identity-documents', routerIdentityDocument);
 router.use('/code', routerCode);
-router.use('/cards', routerCard);
 router.use('/users/profile', routerProfile);
 
 router.use('/statistics', routerStatistics);
@@ -91,7 +86,6 @@ router.use('/business', routerBusiness);
 router.use('/invoices', routerInvoice);
 
 router.use('/storage', routerStorage);
-router.use('/payment', routerPayment);
 
 router.use('/', routerOther);
 

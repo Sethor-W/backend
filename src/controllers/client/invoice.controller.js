@@ -1,9 +1,6 @@
-import { Op } from "sequelize";
 import { invoiceStatusEnum } from "../../enum/invoiceStatus.enum.js";
 import {
-  calculateExpirationDate,
   sendResponse,
-  validateRequiredFields
 } from "../../helpers/utils.js";
 import { Business } from "../../models/common/business.js";
 import { Invoice } from "../../models/common/invoice.js";
@@ -11,9 +8,6 @@ import { User } from "../../models/client/users.js";
 import { UserBusiness } from "../../models/business/usersBusiness.js";
 import { Profile } from "../../models/client/profile.js";
 import { ProfileBusiness } from "../../models/business/profileBusiness.js";
-import { Branch } from "../../models/common/branch.js";
-import { EmployeesAssociatedBusinesses } from "../../models/business/employeesAssocitedBusiness.js";
-import { PaymentController } from "../payment.controller.js";
 
 export class InvoiceClientController {
 

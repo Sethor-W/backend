@@ -38,13 +38,13 @@ routerEmployeeManagement.get('/collector/:employeeId', [
 
 // Obtiene los empleados asociados a una empresa
 routerEmployeeManagement.get('/', [
-    verifyTokenMiddleware,
-    checkRoleMiddleware([
-        rolesEnum.OWNER,
-        rolesEnum.MANAGER,
-        rolesEnum.ADMIN
-    ]),
-    verifyAssociatedUserMiddleware,
+    // verifyTokenMiddleware,
+    // checkRoleMiddleware([
+    //     rolesEnum.OWNER,
+    //     rolesEnum.MANAGER,
+    //     rolesEnum.ADMIN
+    // ]),
+    // verifyAssociatedUserMiddleware,
 ], EmployeeManagementController.getEmployeesByBusiness);
 
 

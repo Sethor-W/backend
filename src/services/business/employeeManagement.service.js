@@ -255,17 +255,17 @@ export class EmployeeManagementBusinessService {
                 include: [
                     {
                         model: UserBusiness,
-                        required: true,
+                        // required: true,
                         attributes: ['id', 'email', 'status', 'createdAt'],
                         include: [
                             {
                                 model: ProfileBusiness,
-                                required: true,
+                                // required: true,
                                 attributes: ['id', 'name', 'lastname', 'profilePicture'],
                             },
                             {
                                 model: UserBusinessRole,
-                                required: true,
+                                // required: true,
                                 attributes: ['id', 'role'],
                             },
                         ]

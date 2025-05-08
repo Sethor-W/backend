@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
+import { Payment } from "./common/payment.js";
 
 // Determinar el directorio actual
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -65,3 +66,7 @@ const loadModulesFromDir = async (dir) => {
         console.error('❌ Error general al cargar módulos:', error.message);
     }
 })();
+
+export {
+  Payment,
+};

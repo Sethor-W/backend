@@ -13,7 +13,7 @@ import { Profile } from "../models/client/profile.js";
 import { ProfileBusiness } from "../models/business/profileBusiness.js";
 import { Branch } from "../models/common/branch.js";
 import { EmployeesAssociatedBusinesses } from "../models/business/employeesAssocitedBusiness.js";
-import { PaymentController } from "./payment.controller.js";
+import { Payment } from "../models/common/payment.js";
 
 export class InvoiceController {
   /** *********************************************************************************
@@ -50,18 +50,9 @@ export class InvoiceController {
    *               name:
    *                 type: string
    *                 description: Invoice name or description
-   *               subtotal:
-   *                 type: number
-   *                 description: Subtotal amount
-   *               sth:
-   *                 type: number
-   *                 description: STH amount
-   *               totalIVA:
-   *                 type: number
-   *                 description: Total VAT amount
-   *               totalGeneral:
-   *                 type: number
-   *                 description: Total amount including taxes
+   *               note:
+   *                 type: string
+   *                 description: Additional notes for the invoice
    *               products:
    *                 type: array
    *                 description: List of products in the invoice
@@ -74,24 +65,111 @@ export class InvoiceController {
    *                     name:
    *                       type: string
    *                       description: Product name
-   *                     quantity:
-   *                       type: number
-   *                       description: Quantity of product
    *                     price:
    *                       type: number
    *                       description: Unit price
-   *               note:
-   *                 type: string
-   *                 description: Additional notes for the invoice
+   *                     quantity:
+   *                       type: number
+   *                       description: Quantity of product
+   *               sth:
+   *                 type: number
+   *                 description: STH amount
+   *               subtotal:
+   *                 type: number
+   *                 description: Subtotal amount
+   *               totalGeneral:
+   *                 type: number
+   *                 description: Total amount including taxes
+   *               totalIVA:
+   *                 type: number
+   *                 description: Total VAT amount
+   *           example:
+   *             name: "Monthly Service Invoice"
+   *             subtotal: 100
+   *             sth: 5
+   *             totalIVA: 18
+   *             totalGeneral: 123
+   *             products: [
+   *               {
+   *                 id: "prod-001",
+   *                 name: "Web Development",
+   *                 quantity: 1,
+   *                 price: 100
+   *               }
+   *             ]
+   *             note: "Payment due within 30 days"
    *     responses:
    *       201:
    *         description: Invoice created successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: "Factura creada exitosamente"
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                       example: "inv-12345"
+   *                     name:
+   *                       type: string
+   *                       example: "Monthly Service Invoice"
+   *                     status:
+   *                       type: string
+   *                       example: "draft"
+   *                     products:
+   *                       type: array
+   *                       items:
+   *                         type: object
+   *                     currency:
+   *                       type: string
+   *                       example: "USD"
    *       400:
    *         description: Missing required fields or collector has no branch assigned
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "Los campos son obligatorios: name, products"
    *       404:
    *         description: Collector profile not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "Perfil del cobrador no encontrado"
    *       500:
    *         description: Server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "Error al enviar"
    */
   // POST invoices/:businessId/create
   static async createInvoice(req, res) {
@@ -202,22 +280,70 @@ export class InvoiceController {
    *           type: string
    *         description: ID of the business
    *       - in: query
+   *         name: page
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *           default: 1
+   *         description: Page number for pagination
+   *       - in: query
    *         name: status
    *         schema:
    *           type: string
    *           enum: [draft, paid, pending, cancelled]
    *         description: Filter invoices by status
-   *       - in: query
-   *         name: page
-   *         schema:
-   *           type: integer
-   *           minimum: 1
-   *         description: Page number for pagination
    *     responses:
    *       200:
    *         description: Invoices retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: "Facturas recuperadas exitosamente"
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     count:
+   *                       type: integer
+   *                       example: 10
+   *                     rows:
+   *                       type: array
+   *                       items:
+   *                         type: object
+   *                         properties:
+   *                           id:
+   *                             type: string
+   *                           name:
+   *                             type: string
+   *                           status:
+   *                             type: string
+   *                           products:
+   *                             type: array
+   *                           client:
+   *                             type: object
+   *                           business:
+   *                             type: object
+   *                           collector:
+   *                             type: object
    *       500:
    *         description: Server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "Error al recuperar facturas"
    */
   // GET invoices/:businessId/collector/getAll?page=1&status=draft
   static async getAllInvoicesByCollector(req, res) {
@@ -313,10 +439,63 @@ export class InvoiceController {
    *     responses:
    *       200:
    *         description: Invoice details retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: "Detalles de la factura recuperados exitosamente"
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                       example: "inv-12345"
+   *                     name:
+   *                       type: string
+   *                     note:
+   *                       type: string
+   *                     status:
+   *                       type: string
+   *                     products:
+   *                       type: array
+   *                     client:
+   *                       type: object
+   *                     business:
+   *                       type: object
+   *                     collector:
+   *                       type: object
    *       404:
    *         description: Invoice not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "Factura no encontrada"
    *       500:
    *         description: Server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "Error al recuperar los detalles de la factura"
    */
   // GET invoices/:businessId/collector/details/:invoiceId
   static async getInvoiceDetailsByCollector(req, res) {
@@ -433,35 +612,106 @@ export class InvoiceController {
    *               name:
    *                 type: string
    *                 description: Invoice name or description
+   *               note:
+   *                 type: string
+   *                 description: Additional notes for the invoice
+   *               products:
+   *                 type: array
+   *                 description: List of products in the invoice
+   *                 items:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                     name:
+   *                       type: string
+   *                     price:
+   *                       type: number
+   *                     quantity:
+   *                       type: number
    *               status:
    *                 type: string
    *                 enum: [draft, pending, cancelled]
    *                 description: Invoice status (cannot be changed to paid)
-   *               subtotal:
-   *                 type: number
-   *                 description: Subtotal amount
    *               sth:
    *                 type: number
    *                 description: STH amount
-   *               totalIVA:
+   *               subtotal:
    *                 type: number
-   *                 description: Total VAT amount
+   *                 description: Subtotal amount
    *               totalGeneral:
    *                 type: number
    *                 description: Total amount including taxes
-   *               products:
-   *                 type: array
-   *                 description: List of products in the invoice
-   *               note:
-   *                 type: string
-   *                 description: Additional notes for the invoice
+   *               totalIVA:
+   *                 type: number
+   *                 description: Total VAT amount
+   *           example:
+   *             name: "Updated Invoice Name"
+   *             status: "pending"
+   *             subtotal: 200
+   *             sth: 10
+   *             totalIVA: 36
+   *             totalGeneral: 246
+   *             products: [
+   *               {
+   *                 id: "prod-001",
+   *                 name: "Web Development",
+   *                 quantity: 2,
+   *                 price: 100
+   *               }
+   *             ]
+   *             note: "Updated payment terms"
    *     responses:
    *       200:
    *         description: Invoice updated successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: "Factura actualizada exitosamente"
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                     name:
+   *                       type: string
+   *                     status:
+   *                       type: string
+   *                     products:
+   *                       type: array
    *       404:
    *         description: Invoice not found or unauthorized
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "Factura no encontrada o no tienes permiso para actualizarla"
    *       500:
    *         description: Server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "Error al actualizar la factura"
    */
   // PUT invoices/:businessId/collector/update/:invoiceId
   static async updateInvoiceByCollector(req, res) {
@@ -559,22 +809,70 @@ export class InvoiceController {
    *           type: string
    *         description: ID of the business
    *       - in: query
+   *         name: page
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *           default: 1
+   *         description: Page number for pagination
+   *       - in: query
    *         name: status
    *         schema:
    *           type: string
    *           enum: [draft, paid, pending, cancelled]
    *         description: Filter invoices by status
-   *       - in: query
-   *         name: page
-   *         schema:
-   *           type: integer
-   *           minimum: 1
-   *         description: Page number for pagination
    *     responses:
    *       200:
    *         description: Invoices retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: "Facturas recuperadas exitosamente"
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     count:
+   *                       type: integer
+   *                       example: 25
+   *                     rows:
+   *                       type: array
+   *                       items:
+   *                         type: object
+   *                         properties:
+   *                           id:
+   *                             type: string
+   *                           name:
+   *                             type: string
+   *                           status:
+   *                             type: string
+   *                           products:
+   *                             type: array
+   *                           client:
+   *                             type: object
+   *                           business:
+   *                             type: object
+   *                           collector:
+   *                             type: object
    *       500:
    *         description: Server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "Error al recuperar facturas"
    */
   // GET invoices/:businessId/getAll?page=1&status=draft
   static async getAllInvoices(req, res) {
@@ -749,24 +1047,6 @@ export class InvoiceController {
    *         schema:
    *           type: string
    *         description: ID of the invoice to pay
-   *       - in: query
-   *         name: action_type
-   *         schema:
-   *           type: string
-   *           default: payment
-   *         description: Type of payment action
-   *       - in: query
-   *         name: buy_currency
-   *         schema:
-   *           type: string
-   *           default: USD
-   *         description: Currency to buy
-   *       - in: query
-   *         name: fixed_side
-   *         schema:
-   *           type: string
-   *           default: sell
-   *         description: Fixed side for currency conversion
    *     requestBody:
    *       required: true
    *       content:
@@ -783,15 +1063,51 @@ export class InvoiceController {
    *                 type: string
    *                 format: date-time
    *                 description: Date and time of payment
+   *           example:
+   *             clientId: "usr-12345"
+   *             dateTimePayment: "2023-09-01T14:30:00Z"
    *     responses:
    *       200:
    *         description: Payment processing initiated successfully
-   *       400:
-   *         description: Error with payment rate or details
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: "Factura en proceso de pago"
+   *                 data:
+   *                   type: object
    *       404:
    *         description: User, business, invoice or profile not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "Usuario no encontrado"
    *       500:
    *         description: Server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "Error al pagar la factura"
    */
   // POST invoices/:businessId/collector/pay/:invoiceId
   static async payInvoiceByCollector(req, res) {
@@ -804,12 +1120,8 @@ export class InvoiceController {
     } = req.user;
     const {
       clientId,
-      dateTimePayment,
-      ...bodyReq
+      dateTimePayment
     } = req.body;
-    const {
-      action_type = "payment", buy_currency = "USD", fixed_side = "sell", ...params
-    } = req.query;
 
     try {
       // Verificar existencia del usuario y empresa
@@ -836,89 +1148,61 @@ export class InvoiceController {
         }) // Buscar el perfil del usuario
       ]);
 
-      if (!user) return sendResponse(res, 404, true, "Usuario no encontrado"); // Factura no encontrada o no tienes permiso para actualizarla
-      if (!business || !business.PSPWalletId) return sendResponse(res, 404, true, "Empresa no encontrada o sin PSPWalletId");
+      if (!user) return sendResponse(res, 404, true, "Usuario no encontrado");
+      if (!business) return sendResponse(res, 404, true, "Empresa no encontrada");
       if (!invoice) return sendResponse(res, 404, true, "Factura no encontrada o no autorizada para actualizar");
       if (!userProfile) return sendResponse(res, 404, true, "Perfil del usuario pagador no existe");
 
-
-      const bodyFXRate = {
-        ...params,
-        action_type,
-        buy_currency,
-        fixed_side,
-        sell_currency: invoice.currency,
-        amount: invoice.totalGeneral
-      }
-      const responseFXRate = await PaymentController.getFXRateHandleFuntion(bodyFXRate)
-      const FXRate = responseFXRate.body.data;
-
-      // Validar el FXRate
-      if (responseFXRate.body.status.status == 'ERROR') {
-        return sendResponse(res, 400, false, "Error al obtener el FX Rate", FXRate, {
-          status: responseFXRate.body.status
-        });
-      }
-
-      // Preparar el cuerpo del payment
-      const body = {
-        ...bodyReq,
-        amount: FXRate.buy_amount,
-        currency: FXRate.buy_currency,
-        description: `Pago de la empresa ${business.name}: ${invoice.note}`,
-        complete_payment_url: "https://www.sethor.tech",
-        error_payment_url: "https://google.com",
-        capture: true,
-        receipt_email: user.email,
-        customer: userProfile.PSPCustomerId,
-        ewallets: [{
-          ewallet: business.PSPWalletId, // Wallet de la empresa
-          percentage: 85 // Porcentaje enviado a la empresa
-        }],
-        fixed_side: "sell",
-        expiration: calculateExpirationDate('card', true),
-        requested_currency: invoice.currency, // Moneda recibida en la billetera Rapyd.
-        metadata: {
-          merchant_defined: true,
+      // Generar un número de comprobante único
+      const voucherNumber = `ST-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+      
+      // Crear registro de pago
+      const payment = await Payment.create({
+        amount: invoice.totalGeneral,
+        currency: 'CLP', // Moneda de Chile
+        status: 'pending',
+        paymentDate: dateTimePayment || new Date(),
+        transactionReference: voucherNumber,
+        description: `Pago de factura ${invoice.name} de la empresa ${business.name}`,
+        voucherNumber: voucherNumber,
+        metadata: JSON.stringify({
           invoice_id: invoice.id,
-          // Si vez necesario agregar mas campos para cuando se escuche el webhook y verificar si el pago se hizo correctamente
-        }
+          business_id: business.id,
+          payer_id: clientId,
+          collector_id: userId
+        }),
+        invoiceId: invoice.id,
+        payerId: clientId,
+        businessId: business.id
+      });
+
+      // Actualizar la factura a estado pagado
+      await Invoice.update({
+        status: invoiceStatusEnum.PAID,
+        clientId: clientId,
+        dateTimePayment: dateTimePayment || new Date(),
+        voucherNumber: voucherNumber,
+      }, {
+        where: {
+          id: invoiceId,
+        },
+      });
+
+      // Recuperar la factura pagada con sus productos
+      const updatedInvoice = await Invoice.findByPk(invoiceId);
+      updatedInvoice.products = JSON.parse(updatedInvoice.products);
+
+      // Devolver información completa
+      const responseData = {
+        invoice: updatedInvoice,
+        payment: payment
       };
 
-      // Crear el payment
-      const paymentResponse = await PaymentController.createPaymentHandleFuntion(body);
-
-      // Enviar la respuesta para proceder con el pago de la factura
-      return sendResponse(res, 200, false, "Factura en proceso de pago", paymentResponse.body.data);
-
-
-      // // Generar un número de comprobante único
-      // const voucherNumber = `ST-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
-
-      // // Formatear la fecha y hora actual usando JavaScript nativo
-      // // const dateTimePayment = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-      // // Pagar factura
-      // await Invoice.update({
-      //   status: invoiceStatusEnum.PAID,
-      //   clientId: user.id,
-      //   dateTimePayment: dateTimePayment,
-      //   voucherNumber: voucherNumber,
-      // }, {
-      //   where: {
-      //     id: invoiceId,
-      //   },
-      // });
-
-      // // Recuperar la factura pagada
-      // const updatedInvoice = await Invoice.findByPk(invoiceId);
-      // updatedInvoice.products = JSON.parse(invoice.products);
+      return sendResponse(res, 200, false, "Factura pagada exitosamente", responseData);
     } catch (error) {
       console.error("Error al pagar la factura:", error);
-      return sendResponse(res, error.statusCode || 500, true, "Error al pagar la factura", error.message || error.body || "Unknown error");
+      return sendResponse(res, 500, true, "Error al pagar la factura", error.message || "Unknown error");
     }
   }
-
-
 
 }
