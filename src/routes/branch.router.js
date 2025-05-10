@@ -4,7 +4,6 @@ import {verifyTokenMiddleware} from '../middlewares/verifyToken.middleware.js'
 import { checkRoleMiddleware } from '../middlewares/checkRole.middleware.js';
 import { verifyAssociatedUserMiddleware } from '../middlewares/verifyAssociatedUser.middleware.js';
 
-import { BranchController } from '../controllers/branch.controller.js';
 import { rolesEnum } from '../enum/roles.enum.js';
 import { BranchBusinessController } from '../controllers/business/branch.controller.js';
 
@@ -32,16 +31,12 @@ routerBranch.get('/:branchId', [
 ], BranchBusinessController.getBrancheById);
 
 
-
-
-
-
 routerBranch.get('/', [
     verifyTokenMiddleware,
-], BranchController.getBranchesByBusiness);
+], BranchBusinessController.getBranchesByBusiness);
 
 
-routerBranch.put('/:businessId/:branchId', [
+routerBranch.put('/:branchId', [
     verifyTokenMiddleware,
     checkRoleMiddleware([
         rolesEnum.OWNER,
@@ -49,9 +44,9 @@ routerBranch.put('/:businessId/:branchId', [
         rolesEnum.ADMIN
     ]),
     verifyAssociatedUserMiddleware,
-], BranchController.updateBranch);
+], BranchBusinessController.updateBranch);
 
-routerBranch.delete('/:businessId/:branchId', [
+routerBranch.delete('/:branchId', [
     verifyTokenMiddleware,
     checkRoleMiddleware([
         rolesEnum.OWNER,
@@ -59,4 +54,4 @@ routerBranch.delete('/:businessId/:branchId', [
         rolesEnum.ADMIN
     ]),
     verifyAssociatedUserMiddleware,
-], BranchController.deleteBranch);
+], BranchBusinessController.deleteBranch);

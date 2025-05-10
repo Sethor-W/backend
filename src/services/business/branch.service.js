@@ -33,7 +33,7 @@ export class BranchService {
   static async getBranchDetailsById({ branchId }) {
     try {
       let branch = await Branch.findByPk(branchId, {
-        attributes: ['id', 'name', 'address', 'country_cca2', 'googleMap', 'main'],
+        // attributes: ['id', 'name', 'address', 'country_cca2', 'googleMap', 'main'],
       });
       if (!branch) {
         return {
