@@ -38,24 +38,18 @@ routerEmployeeManagement.get('/collector/:employeeId', [
 
 // Obtiene los empleados asociados a una empresa
 routerEmployeeManagement.get('/', [
-    // verifyTokenMiddleware,
-    // checkRoleMiddleware([
-    //     rolesEnum.OWNER,
-    //     rolesEnum.MANAGER,
-    //     rolesEnum.ADMIN
-    // ]),
-    // verifyAssociatedUserMiddleware,
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.OWNER,
+        rolesEnum.MANAGER,
+        rolesEnum.ADMIN
+    ]),
+    verifyAssociatedUserMiddleware,
 ], EmployeeManagementController.getEmployeesByBusiness);
 
 
-
-
-
-
-
-
 // Crear a new employee manager
-routerEmployeeManagement.post('/manager/create/:businessId', [
+routerEmployeeManagement.post('/manager', [
     verifyTokenMiddleware,
     checkRoleMiddleware([
         rolesEnum.OWNER,
@@ -63,15 +57,3 @@ routerEmployeeManagement.post('/manager/create/:businessId', [
     ]),
     verifyAssociatedUserMiddleware,
 ], EmployeeManagementController.createManagerEmployeeCredentials);
-
-
-/**
- * MANAGER
- */
-
-
-/**
- * OWNER
- */
-
-

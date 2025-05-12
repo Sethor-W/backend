@@ -110,13 +110,7 @@ export class EmployeeManagementBusinessService {
                     status: newUserBusiness.status,
                     email: newUserBusiness.email,
                     keyword: newUserBusiness.keyword,
-                    profile: {
-                        id: newProfile.id,
-                        codeEmployee: newProfile.codeEmployee,
-                        name: newProfile.name,
-                        lastname: newProfile.lastname,
-                        rut: newProfile.rut,
-                    },
+                    profile: newProfile,
                 },
             }
 
