@@ -24,7 +24,7 @@ export class OneClickTransbankController {
             }
 
             const { username, email } = req.body;
-
+            console.log('dataFront:',username, email)
             // Preparar los headers para la petición a Transbank
             const headers = {
                 "Tbk-Api-Key-Id": process.env.TRANSBANK_API_KEY_ID || "",

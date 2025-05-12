@@ -32,6 +32,7 @@ const router = Router();
 //Registrar sdk finger scan
 router.use('/sdk',routerSdk);
 
+
 // Registrar rutas de Transbank
 router.use('/payment/transbank', routerTransbank    );
 
