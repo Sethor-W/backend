@@ -134,6 +134,112 @@ export class SdkController {
             return sendResponse(res, 500, true, "Error interno al procesar la captura de huella");
         }
     }
+
+    static async validateOneFinger(req, res) {
+        const { scanResult, rut } = req.body;
+        console.log('***rut:',rut)
+        const url = "https://abis.tech5.tech/T5CloudService/1.0/processRequest";
+        const username = "jeycoradames@gmail.com";
+        const password = "j@yc0r@d@#T5";
+    
+        try {
+            // Extraer datos de la huella => pos - image64
+            const extractedData = SdkController.processScanResult(scanResult);
+            if (!extractedData || extractedData.length === 0) {
+                return sendResponse(res, 400, true, "No se pudieron extraer datos válidos de la huella");
+            }
+    
+            // Autenticación en Base64
+            const authHeader = Buffer.from(`${username}:${password}`).toString("base64");
+    
+            // Body de la consulta al abis
+            const body = {
+                "tid": "sethorPrueba1-daniel",
+                "request_type": "Identification",
+                "finger_data": {
+                    "live_scan_plain": extractedData
+                },
+                "fingerThreshold": 0.5,
+                "maxResults": 10
+            };
+    
+            // Llamado al abis
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Basic ${authHeader}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            });
+            
+            // TODAS LAS RESPUESTAS DEL ABIS SON BAJO EL CONTEXTO DE 200 OK
+            // POR LO TANTO LAS RESPUESTAS AL FRONT, VARIARAN DEPENDIENDO DE UN MENSAJE DETALLADO
+            
+            // SI LA RESPUESTA NO ES OK, ES PORQUE HAY UN ERROR EN EL FORMATO O ABIS DIRECTAMENTE
+            if (!response.ok) {
+                return sendResponse(res, response.status, true, `Error en la solicitud: ${response.statusText}`, {
+                    status_code: `HTTP_${response.status}`
+                });
+            }
+            
+            // DE ESTAR TODO BIEN, ADAPTO EL FORMATO DE LA RESPUESTA
+            const data = await response.json();
+
+            // 1. Verificar si hay error explícito en la respuesta
+            if (data.error) {
+                return sendResponse(res, 400, true, `Error del ABIS: ${data.error}`, {
+                    status_code: data.errorCode || "ABIS_ERROR",
+                    details: data.error
+                });
+            }
+    
+            // 2. Intentar parsear la respuesta para obtener la información de "finger"
+            let abisResponse;
+            try {
+                if (!data.response) {
+                    console.log("No se encontraron datos de huellas en la respuesta de ABIS.");
+                    return sendResponse(res, 400, true, "La respuesta del servidor ABIS no contiene datos de huellas", { status_code: "NO_FINGER_RESPONSE" });
+                }
+                
+                abisResponse = JSON.parse(data.response);
+            } catch (parseError) {
+                console.log("Error al interpretar la respuesta del servidor ABIS:", parseError);
+                return sendResponse(res, 400, true, "Error al interpretar la respuesta del servidor ABIS", { status_code: "PARSE_ERROR" });
+            }
+
+            // 3. Extraer TODAS las coincidencias en "FINGER_OMNI_MATCH"
+            const fingerprintMatches = abisResponse?.finger?.FINGER_OMNI_MATCH || {};
+
+            // Convertimos las coincidencias en un array [{ id, score }, { id, score }]
+            const matchedFingerprints = Object.entries(fingerprintMatches).map(([id, score]) => ({
+                id,
+                score
+            }));
+
+            console.log('matchedFingerprints',matchedFingerprints)
+
+            //Validar si el rut enviado está entre los IDs
+            const matchFound = matchedFingerprints.some(fp => fp.id === rut);
+
+            console.log('matchFound',matchFound)
+            if (matchFound) {
+            return sendResponse(res, 200, false, "Identificación exitosa (RUT coincide con la huella)", {
+                status_code: "MATCH_FOUND"
+            });
+            } else {
+            return sendResponse(res, 200, false, "No se encontraron coincidencias para el RUT", {
+                status_code: "NO_MATCH"
+            });
+            }
+
+        } catch (error) {
+            console.error("Error al procesar la captura de huella:", error);
+            return sendResponse(res, 500, true, "Error interno al procesar la captura de huella");
+        }
+    }
+
+    //AÑADIR LOGICA PARA ACTUALIZAR EL ESTADO DE LA FACTURA
     
     /**
      * @swagger
@@ -338,8 +444,6 @@ export class SdkController {
             return `Error en la solicitud: ${error.message}`;
         }
     }
-    
-    
     
     /**
      * @swagger
