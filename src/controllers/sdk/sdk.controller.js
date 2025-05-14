@@ -241,6 +241,7 @@ export class SdkController {
 
     //AÑADIR LOGICA PARA ACTUALIZAR EL ESTADO DE LA FACTURA
     
+    
     /**
      * @swagger
      * /api/v1/sdk/validate-template:
