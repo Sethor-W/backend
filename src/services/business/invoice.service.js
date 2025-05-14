@@ -382,75 +382,75 @@ export class InvoiceService {
     }
 
 
-static async updateInvoiceStatusToPaid(params, body, user) {
-    const { invoiceId } = params;
-    const { userId } = user; // id del cobrador (sacado del token)
-    const { userClientId } = body; // id de la empresa (sacado del token)
+    static async updateInvoiceStatusToPaid(params, body, user) {
+        const { invoiceId } = params;
+        const { employeeId } = user; // id del cobrador (sacado del token)
+        const { clientId } = body;
 
-    try {
-        let whereClause = {
-            id: invoiceId,
-            status: {
-                [Op.ne]: invoiceStatusEnum.PAID,
-            },
-        };
-    
-        // Si el usuario no es admin ni owner, agregamos la validación por collectorId
-        if (!(user.roles.includes(rolesEnum.OWNER) || user.roles.includes(rolesEnum.ADMIN))) {
-            whereClause.collectorId = userId;
-        }
+        try {
+            let whereClause = {
+                id: invoiceId,
+                status: {
+                    [Op.ne]: invoiceStatusEnum.PAID,
+                },
+            };
         
-        const invoice = await Invoice.findOne({ where: whereClause });
+            // Si el usuario no es admin ni owner, agregamos la validación por collectorId
+            if (!(user.roles.includes(rolesEnum.OWNER) || user.roles.includes(rolesEnum.ADMIN))) {
+                whereClause.collectorId = employeeId;
+            }
+            
+            const invoice = await Invoice.findOne({ where: whereClause });
 
-        if (!invoice) {
+            if (!invoice) {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Factura no encontrada o no tienes permiso para actualizarla",
+                };
+            }
+
+            // Actualizar el estado de la factura a pagado
+            await Invoice.update({
+                status: invoiceStatusEnum.PAID,
+                dateTimePayment: new Date(),
+                clientId: clientId
+            }, {
+                where: {
+                    id: invoiceId,
+                },
+            });
+
+            // Recuperar la factura actualizada
+            const updatedInvoice = await Invoice.findByPk(invoiceId);
+            updatedInvoice.products = JSON.parse(invoice.products);
+
+            // Actualizar estadísticas si es necesario
+            try {
+                const { businessId } = invoice;
+                await StatisticsController.updateStatistics(businessId, invoice);
+            } catch (statsError) {
+                console.error("Error al actualizar estadísticas:", statsError);
+                // Continuamos aunque falle la actualización de estadísticas
+            }
+
+            // Enviar la respuesta con la factura actualizada
+            return {
+                error: false,
+                statusCode: 200,
+                message: "Factura marcada como pagada exitosamente",
+                data: updatedInvoice,
+            }
+
+        } catch (error) {
+            console.error("Error al actualizar estado de factura:", error);
             return {
                 error: true,
-                statusCode: 404,
-                message: "Factura no encontrada o no tienes permiso para actualizarla",
+                statusCode: 500,
+                message: "Error al actualizar estado de factura",
             };
         }
-
-        // Actualizar el estado de la factura a pagado
-        await Invoice.update({
-            status: invoiceStatusEnum.PAID,
-            dateTimePayment: new Date(),
-            clientId: userClientId
-        }, {
-            where: {
-                id: invoiceId,
-            },
-        });
-
-        // Recuperar la factura actualizada
-        const updatedInvoice = await Invoice.findByPk(invoiceId);
-        updatedInvoice.products = JSON.parse(invoice.products);
-
-        // Actualizar estadísticas si es necesario
-        try {
-            const { businessId } = invoice;
-            await StatisticsController.updateStatistics(businessId, invoice);
-        } catch (statsError) {
-            console.error("Error al actualizar estadísticas:", statsError);
-            // Continuamos aunque falle la actualización de estadísticas
-        }
-
-        // Enviar la respuesta con la factura actualizada
-        return {
-            error: false,
-            statusCode: 200,
-            message: "Factura marcada como pagada exitosamente",
-            data: updatedInvoice,
-        }
-
-    } catch (error) {
-        console.error("Error al actualizar estado de factura:", error);
-        return {
-            error: true,
-            statusCode: 500,
-            message: "Error al actualizar estado de factura",
-        };
     }
-}
 
 
 
