@@ -30,3 +30,14 @@ routerProductBusiness.put('/:productId', [
     ]),
     verifyAssociatedUserMiddleware,
 ], ProductBusinessController.updateProduct);
+
+routerProductBusiness.delete('/:productId', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.OWNER,
+        rolesEnum.MANAGER,
+        rolesEnum.ADMIN
+    ]),
+    verifyAssociatedUserMiddleware,
+], ProductBusinessController.deleteProduct);
+

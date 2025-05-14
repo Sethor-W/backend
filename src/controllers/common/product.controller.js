@@ -54,7 +54,7 @@ export class ProductCommonController {
 
     /**
      * @swagger
-     * /api/v1/business/products/by-id/{productId}:
+     * /api/v1/business/{businessId}/products/{productId}:
      *   get:
      *     summary: Get product details by ID
      *     tags: [Products]
@@ -88,7 +88,7 @@ export class ProductCommonController {
      *       500:
      *         description: Server error
      */
-    // GET business/products/by-id/:productId
+    // GET business/:businessId/products/:productId
     static async getProductById(req, res) {
         const { productId } = req.params;
         try {

@@ -9,10 +9,10 @@ export class ProductBusinessController {
 
     /**
      * @swagger
-     * /api/v1/business/products/{businessId}/branch/{branchId}:
+     * /api/v1/business/{businessId}/products:
      *   post:
      *     summary: Create a new product
-     *     tags: [Business Products]
+     *     tags: [Products]
      *     security:
      *       - bearerAuth: []
      *     parameters:
@@ -22,12 +22,6 @@ export class ProductBusinessController {
      *         schema:
      *           type: string
      *         description: ID of the business
-     *       - in: path
-     *         name: branchId
-     *         required: true
-     *         schema:
-     *           type: string
-     *         description: ID of the branch or 'all' for all branches
      *     requestBody:
      *       required: true
      *       content:
@@ -36,47 +30,58 @@ export class ProductBusinessController {
      *             type: object
      *             required:
      *               - name
-     *               - type
      *               - price
      *               - description
+     *               - profilePicture
      *             properties:
      *               name:
      *                 type: string
      *                 description: Product name
-     *               category:
-     *                 type: string
-     *                 description: Product category
-     *               offer:
-     *                 type: boolean
-     *                 description: Whether the product is on offer
-     *               type:
-     *                 type: string
-     *                 description: Product type
      *               description:
      *                 type: string
      *                 description: Product description
-     *               photos:
-     *                 type: array
-     *                 items:
-     *                   type: string
-     *                 description: Array of photo URLs
      *               price:
      *                 type: number
      *                 description: Product price
      *               profilePicture:
      *                 type: string
      *                 description: URL to product profile picture
+     *               photos:
+     *                 type: array
+     *                 items:
+     *                   type: string
+     *                 description: Array of photo URLs
+     *               discountType:
+     *                 type: string
+     *                 enum: [fixed, percentage]
+     *                 description: Type of discount (fixed or percentage)
+     *               discountValue:
+     *                 type: number
+     *                 description: Value of the discount
+     *               category:
+     *                 type: string
+     *                 description: Product category
+     *               branchId:
+     *                 type: string
+     *                 description: ID of the branch or 'all' for all branches
+     *               offer:
+     *                 type: boolean
+     *                 description: Whether the product is on offer
+     *               type:
+     *                 type: string
+     *                 enum: [individual, combo, offer]
+     *                 description: Product type
      *     responses:
      *       201:
      *         description: Product created successfully
      *       400:
-     *         description: Missing required fields
+     *         description: Missing required fields or invalid discount type
      *       404:
      *         description: Branch not found
      *       500:
      *         description: Server error
      */
-    // POST business/products/:businessId/branch/:branchId
+    // POST business/:businessId/products
     static async registerProduct(req, res) {
         const result = await ProductBusinessService.createProduct(req.params, req.body, req.locales);
         return sendResponse(res, result.statusCode, result.error, result.message, result.data);
@@ -84,10 +89,10 @@ export class ProductBusinessController {
 
     /**
      * @swagger
-     * /api/v1/business/products/by-id/{businessId}/{productId}:
+     * /api/v1/business/{businessId}/products/{productId}:
      *   put:
      *     summary: Update a product
-     *     tags: [Business Products]
+     *     tags: [Products]
      *     security:
      *       - bearerAuth: []
      *     parameters:
@@ -112,32 +117,40 @@ export class ProductBusinessController {
      *               name:
      *                 type: string
      *                 description: Product name
-     *               category:
-     *                 type: string
-     *                 description: Product category
-     *               offer:
-     *                 type: boolean
-     *                 description: Whether the product is on offer
-     *               type:
-     *                 type: string
-     *                 description: Product type
      *               description:
      *                 type: string
      *                 description: Product description
-     *               photos:
-     *                 type: array
-     *                 items:
-     *                   type: string
-     *                 description: Array of photo URLs
      *               price:
      *                 type: number
      *                 description: Product price
      *               profilePicture:
      *                 type: string
      *                 description: URL to product profile picture
+     *               photos:
+     *                 type: array
+     *                 items:
+     *                   type: string
+     *                 description: Array of photo URLs
+     *               discountType:
+     *                 type: string
+     *                 enum: [fixed, percentage]
+     *                 description: Type of discount (fixed or percentage)
+     *               discountValue:
+     *                 type: number
+     *                 description: Value of the discount
+     *               category:
+     *                 type: string
+     *                 description: Product category
      *               branchId:
      *                 type: string
-     *                 description: ID of the branch
+     *                 description: ID of the branch or 'all' for all branches
+     *               offer:
+     *                 type: boolean
+     *                 description: Whether the product is on offer
+     *               type:
+     *                 type: string
+     *                 enum: [individual, combo, offer]
+     *                 description: Product type
      *     responses:
      *       200:
      *         description: Product updated successfully
@@ -146,46 +159,20 @@ export class ProductBusinessController {
      *       500:
      *         description: Server error
      */
-    // PUT business/products/by-id/:businessId/:productId
+    // PUT business/:businessId/products/:productId
     static async updateProduct(req, res) {
         const result = await ProductBusinessService.updateProduct(req.params, req.body, req.locales);
         return sendResponse(res, result.statusCode, result.error, result.message, result.data);
-
-        // try {
-
-
-        //     if (branchId) {
-        //         // Check if the specified branch exists
-        //         const branch = await Branch.findByPk(branchId);
-        //         if (!branch) {
-        //             return sendResponse(res, 404, true, 'Sucursal no encontrado');
-        //         }
-        //     }
-
-        //     // Buscar el producto por su ID
-        //     let product = await Product.findByPk(productId);
-        //     if (!product) {
-        //         return sendResponse(res, 404, true, 'Producto no encontrado');
-        //     }
-
-        //     const photosString = Array.isArray(photos) ? photos.join(', ') : product.photos;
-
-        //     // Actualizar el producto con los nuevos datos
-        //     product = await product.update({ name, category, offer, type, description, photos: photosString, price, profilePicture, branchId });
-
-        //     return sendResponse(res, 200, false, 'Producto actualizado exitosamente', product);
-        // } catch (error) {
-        //     console.error('Error al actualizar el producto por ID:', error);
-        //     return sendResponse(res, 500, true, 'No se pudo actualizar el producto');
-        // }
     }
+
+
 
     /**
      * @swagger
-     * /api/v1/business/products/by-id/{businessId}/{productId}:
+     * /api/v1/business/{businessId}/products/{productId}:
      *   delete:
      *     summary: Delete a product
-     *     tags: [Business Products]
+     *     tags: [Products]
      *     security:
      *       - bearerAuth: []
      *     parameters:
@@ -209,7 +196,7 @@ export class ProductBusinessController {
      *       500:
      *         description: Server error
      */
-    // DELETE business/products/by-id/:businessId/:productId
+    // DELETE business/:businessId/products/:productId
     static async deleteProduct(req, res) {
         const { productId } = req.params;
         try {

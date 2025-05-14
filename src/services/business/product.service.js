@@ -76,6 +76,14 @@ export class ProductBusinessService {
                 }
             }
 
+            // Validate discount type if provided
+            if (discountType && !Object.values(discountTypeEnum).includes(discountType)) {
+                return {
+                    error: true,
+                    statusCode: 400,
+                    message: "Tipo de descuento no válido: fixed o percentage",
+                }
+            }
 
             // Create a new product in the database
             const newProduct = await Product.create({
@@ -99,7 +107,7 @@ export class ProductBusinessService {
             return {
                 error: false,
                 statusCode: 201,
-                message: "Factura creada exitosamente",
+                message: "Producto creado exitosamente",
                 data: newProduct,
             };
 

@@ -181,8 +181,13 @@ export class InvoiceService {
                         description: invoice.note || "",
                         discountValue: invoice.discountValue || 0,
                         discountType: invoice.discountType,
-                        total: invoice.totalGeneral,
                         date: invoice.dateTimePayment ? invoice.dateTimePayment.toISOString() : null,
+
+                        sth: invoice.sth || 0,
+                        totalIva: invoice.totalIVA || 0,
+                        subtotal: invoice.subtotal || 0,
+                        total: invoice.totalGeneral,
+
                         createdAt: invoice.createdAt.toISOString(),
                     })),
                     pagination: {
