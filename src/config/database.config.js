@@ -9,7 +9,6 @@ const {
   DB_PORT,
 } = process.env;
 
-/*
 export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD,{
   host: DB_HOST,
   dialect: DB_DIALECT,
@@ -20,16 +19,16 @@ export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD,{
       rejectUnauthorized: false, // Esto evita problemas con certificados autofirmados
     }
   }
-})*/
-
-export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD,{
-  host: DB_HOST,
-  dialect: DB_DIALECT,
-  port: DB_PORT,
-  dialectOptions: {
-    ssl:false
-  }
 })
+
+// export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD,{
+//   host: DB_HOST,
+//   dialect: DB_DIALECT,
+//   port: DB_PORT,
+//   dialectOptions: {
+//     ssl:false
+//   }
+// })
 
 
 // Probando la conexión

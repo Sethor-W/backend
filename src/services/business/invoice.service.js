@@ -13,6 +13,7 @@ import { ProfileBusiness } from "../../models/business/profileBusiness.js";
 import { Op } from "sequelize";
 import { calculateInvoiceValues } from "../../helpers/invoice.helper.js";
 import { rolesEnum } from "../../enum/roles.enum.js";
+import { Payment } from "../../models/common/payment.js";
 
 export class InvoiceService {
 
@@ -383,71 +384,123 @@ export class InvoiceService {
 
 
     static async updateInvoiceStatusToPaid(params, body, user) {
-        const { invoiceId } = params;
-        const { employeeId } = user; // id del cobrador (sacado del token)
-        const { clientId } = body;
+        const { invoiceId, businessId } = params;
+        const { clientId, employeeId } = body;
 
         try {
-            let whereClause = {
-                id: invoiceId,
-                status: {
-                    [Op.ne]: invoiceStatusEnum.PAID,
-                },
-            };
-        
-            // Si el usuario no es admin ni owner, agregamos la validación por collectorId
-            if (!(user.roles.includes(rolesEnum.OWNER) || user.roles.includes(rolesEnum.ADMIN))) {
-                whereClause.collectorId = employeeId;
-            }
-            
-            const invoice = await Invoice.findOne({ where: whereClause });
+            // Verificar existencia del usuario y empresa
+            const [user, business, invoice, userProfile] = await Promise.all([
+                User.findByPk(clientId), // Buscar el usuario
+                Business.findOne({
+                    where: {
+                        id: businessId
+                    }
+                }), // Buscar la empresa
+                Invoice.findOne({
+                    where: {
+                        id: invoiceId,
+                        collectorId: employeeId,
+                        status: {
+                            [Op.ne]: invoiceStatusEnum.PAID
+                        }
+                    }
+                }), // Buscar la factura
+                Profile.findOne({
+                    where: {
+                        userId: clientId
+                    }
+                }) // Buscar el perfil del usuario
+            ]);
 
+            if (!user) {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Usuario no encontrado"
+                };
+            }
+            if (!business) {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Empresa no encontrada"
+                };
+            }
             if (!invoice) {
                 return {
                     error: true,
                     statusCode: 404,
-                    message: "Factura no encontrada o no tienes permiso para actualizarla",
+                    message: "Factura no encontrada o no autorizada para actualizar"
+                };
+            }
+            if (!userProfile) {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Perfil del usuario pagador no existe"
                 };
             }
 
-            // Actualizar el estado de la factura a pagado
+            // Generar un número de comprobante único
+            const voucherNumber = `ST-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+
+            // Actualizar la factura a estado pagado
             await Invoice.update({
                 status: invoiceStatusEnum.PAID,
+                clientId: clientId,
                 dateTimePayment: new Date(),
-                clientId: clientId
+                voucherNumber: voucherNumber,
             }, {
                 where: {
                     id: invoiceId,
                 },
             });
 
-            // Recuperar la factura actualizada
-            const updatedInvoice = await Invoice.findByPk(invoiceId);
-            updatedInvoice.products = JSON.parse(invoice.products);
+            // Recuperar la factura pagada con sus productos y datos de la empresa
+            const updatedInvoice = await Invoice.findByPk(invoiceId, {
+                include: [
+                    { model: Business },
+                    {
+                        model: User,
+                        as: "client",
+                        attributes: ["id", "email"],
+                        include: [{ model: Profile, attributes: ["name", "lastName"] }],
+                    },
+                    {
+                        model: UserBusiness,
+                        as: "collector",
+                        attributes: ["id", "email"],
+                        include: [{ model: ProfileBusiness, attributes: ["codeEmployee", "name", "lastName"] }],
+                    }
+                ]
+            });
+            updatedInvoice.products = JSON.parse(updatedInvoice.products);
 
             // Actualizar estadísticas si es necesario
             try {
-                const { businessId } = invoice;
-                await StatisticsController.updateStatistics(businessId, invoice);
+                await StatisticsController.updateStatistics(businessId, updatedInvoice);
             } catch (statsError) {
                 console.error("Error al actualizar estadísticas:", statsError);
                 // Continuamos aunque falle la actualización de estadísticas
             }
 
-            // Enviar la respuesta con la factura actualizada
+            // Devolver información completa
             return {
                 error: false,
                 statusCode: 200,
-                message: "Factura marcada como pagada exitosamente",
-                data: updatedInvoice,
-            }
+                message: "Factura pagada exitosamente",
+                data: {
+                    invoice: updatedInvoice,
+                }
+            };
 
         } catch (error) {
-            console.error("Error al actualizar estado de factura:", error);
+            console.error("Error al pagar la factura:", error);
             return {
                 error: true,
                 statusCode: 500,
-                message: "Error al actualizar estado de factura",
+                message: "Error al pagar la factura",
+                data: error.message || "Unknown error"
             };
         }
     }

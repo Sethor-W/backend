@@ -46,6 +46,15 @@ routerInvoice.get('/:businessId/details/:invoiceId', [
     verifyAssociatedUserMiddleware,
 ], InvoiceBusinessController.getInvoiceDetails);
 
+routerInvoice.post('/:businessId/updateStatusToPaid/:invoiceId', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.MANAGER,
+        rolesEnum.OWNER,
+        rolesEnum.ADMIN,
+    ]),
+    verifyAssociatedUserMiddleware,
+], InvoiceBusinessController.updateInvoiceStatusToPaid);
 
 
 /** *********************************************************************************

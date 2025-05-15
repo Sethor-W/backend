@@ -28,7 +28,7 @@ export class InvoiceBusinessController {
    * /api/v1/invoices/{businessId}/create:
    *   post:
    *     summary: Create a new invoice with draft status
-   *     tags: [Business Invoices]
+   *     tags: [Invoices]
    *     security:
    *       - bearerAuth: []
    *     parameters:
@@ -143,7 +143,7 @@ export class InvoiceBusinessController {
    * /api/v1/invoices/{businessId}/getAll:
    *   get:
    *     summary: Get all invoices with optional filtering and pagination
-   *     tags: [Business Invoices]
+   *     tags: [Invoices]
    *     security:
    *       - bearerAuth: []
    *     parameters:
@@ -182,7 +182,7 @@ export class InvoiceBusinessController {
    * /api/v1/invoices/{businessId}/details/{invoiceId}:
    *   get:
    *     summary: Get details of a specific invoice
-   *     tags: [Business Invoices]
+   *     tags: [Invoices]
    *     security:
    *       - bearerAuth: []
    *     parameters:
@@ -220,7 +220,7 @@ export class InvoiceBusinessController {
    * /api/v1/invoices/{businessId}/update/{invoiceId}:
    *   put:
    *     summary: Update an invoice
-   *     tags: [Business Invoices]
+   *     tags: [Invoices]
    *     security:
    *       - bearerAuth: []
    *     parameters:
@@ -284,29 +284,56 @@ export class InvoiceBusinessController {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  /**
+   * @swagger
+   * /api/v1/invoices/{businessId}/updateStatusToPaid/{invoiceId}:
+   *   post:
+   *     summary: Update invoice status to paid
+   *     tags: [Invoices]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: businessId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the business
+   *       - in: path
+   *         name: invoiceId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the invoice to update
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - clientId
+   *               - employeeId
+   *             properties:
+   *               clientId:
+   *                 type: string
+   *                 description: ID of the client who paid the invoice
+   *               employeeId:
+   *                 type: string
+   *                 description: ID of the employee who paid the invoice
+   *     responses:
+   *       200:
+   *         description: Invoice status updated to paid successfully
+   *       404:
+   *         description: Invoice not found, unauthorized, or client/business not found
+   *       500:
+   *         description: Server error
+   */
+  // POST invoices/:businessId/updateStatusToPaid/:invoiceId
+  static async updateInvoiceStatusToPaid(req, res) {
+    const result = await InvoiceService.updateInvoiceStatusToPaid(req.params, req.body, req.user)
+    return sendResponse(res, result.statusCode, result.error, result.message, result.data);
+  }
 
 
 
@@ -316,7 +343,7 @@ export class InvoiceBusinessController {
    * /api/v1/invoices/{businessId}/collector/getAll:
    *   get:
    *     summary: Get invoices by collector with optional filtering and pagination
-   *     tags: [Business Invoices]
+   *     tags: [Invoices]
    *     security:
    *       - bearerAuth: []
    *     parameters:
@@ -419,7 +446,7 @@ export class InvoiceBusinessController {
    * /api/v1/invoices/{businessId}/collector/details/{invoiceId}:
    *   get:
    *     summary: Get details of a specific invoice by collector
-   *     tags: [Business Invoices]
+   *     tags: [Invoices]
    *     security:
    *       - bearerAuth: []
    *     parameters:
