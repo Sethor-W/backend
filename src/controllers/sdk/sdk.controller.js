@@ -1,9 +1,11 @@
 import { sendResponse, validateRequiredFields } from "../../helpers/utils.js";
+import { Profile } from "../../models/client/profile.js";
+import { User } from "../../models/client/users.js";
 
 export class SdkController {
     /**
      * @swagger
-     * /api/v1/sdk/validate-finger:
+     * /api/v1/sdk/capture:
      *   post:
      *     summary: Validate fingerprint against a RUT
      *     tags: [SDK]
@@ -119,14 +121,18 @@ export class SdkController {
             const matchFound = matchedFingerprints.some(fp => fp.id === rut);
 
             console.log('matchFound',matchFound)
+
+            const user = await SdkController.getInfoUser(rut);
             if (matchFound) {
-            return sendResponse(res, 200, false, "Identificación exitosa (RUT coincide con la huella)", {
-                status_code: "MATCH_FOUND"
-            });
+                return sendResponse(res, 200, false, "Identificación exitosa (RUT coincide con la huella)", {
+                    status_code: "MATCH_FOUND",
+                    user: user
+                });
             } else {
-            return sendResponse(res, 200, false, "No se encontraron coincidencias para el RUT", {
-                status_code: "NO_MATCH"
-            });
+                return sendResponse(res, 200, false, "No se encontraron coincidencias para el RUT", {
+                    status_code: "NO_MATCH",
+                    user: user
+                });
             }
 
         } catch (error) {
@@ -135,6 +141,44 @@ export class SdkController {
         }
     }
 
+    /**
+     * @swagger
+     * /api/v1/sdk/capture-one:
+     *   post:
+     *     summary: Validate single fingerprint against a RUT
+     *     tags: [SDK]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - scanResult
+     *               - rut
+     *             properties:
+     *               scanResult:
+     *                 type: object
+     *                 description: Single fingerprint scan result data
+     *               rut:
+     *                 type: string
+     *                 description: RUT to validate against the fingerprint
+     *     responses:
+     *       200:
+     *         description: Validation successful
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 status_code:
+     *                   type: string
+     *                   enum: [MATCH_FOUND, NO_MATCH]
+     *       400:
+     *         description: Invalid input or ABIS error
+     *       500:
+     *         description: Server error
+     */
     static async validateOneFinger(req, res) {
         const { scanResult, rut } = req.body;
         console.log('***rut:',rut)
@@ -222,15 +266,18 @@ export class SdkController {
             //Validar si el rut enviado está entre los IDs
             const matchFound = matchedFingerprints.some(fp => fp.id === rut);
 
+            const user = await SdkController.getInfoUser(rut);
             console.log('matchFound',matchFound)
             if (matchFound) {
-            return sendResponse(res, 200, false, "Identificación exitosa (RUT coincide con la huella)", {
-                status_code: "MATCH_FOUND"
-            });
+                return sendResponse(res, 200, false, "Identificación exitosa (RUT coincide con la huella)", {
+                    status_code: "MATCH_FOUND",
+                    user: user
+                });
             } else {
-            return sendResponse(res, 200, false, "No se encontraron coincidencias para el RUT", {
-                status_code: "NO_MATCH"
-            });
+                return sendResponse(res, 200, false, "No se encontraron coincidencias para el RUT", {
+                    status_code: "NO_MATCH",
+                    user: user
+                });
             }
 
         } catch (error) {
@@ -244,7 +291,7 @@ export class SdkController {
     
     /**
      * @swagger
-     * /api/v1/sdk/validate-template:
+     * /api/v1/sdk/template:
      *   post:
      *     summary: Create and validate fingerprint templates
      *     tags: [SDK]
@@ -474,5 +521,23 @@ export class SdkController {
             pos: finger.pos || index + 1,
             data: finger.image_base64 ? finger.image_base64.replace(/\s+/g, '') : null
         })).filter(finger => finger.data);
-    }    
+    } 
+    
+    
+
+    static async getInfoUser(rut) {
+        const user = await Profile.findOne({
+            where: {
+                rut: rut
+            },
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'email']
+                }
+            ]
+        });
+
+        return user;
+    }
 }
