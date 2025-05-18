@@ -23,11 +23,7 @@ export class ProductCommonService {
         } = query;
 
         try {
-            page = parseInt(page, 10) || 1; // Si `page` no es válido, asignar 1 como valor predeterminado
-            const pageSize = 15;
-            const offset = (page - 1) * pageSize;
-
-            // Configurar la condición de consulta para incluir todas las facturas si no se proporciona un estado
+            // Configurar la condición de consulta base
             const whereCondition = {
                 businessId
             };
@@ -43,22 +39,38 @@ export class ProductCommonService {
                 },];
             }
 
-            // Ordenar las facturas según el estado de pago
+            // Ordenar los productos por fecha de creación
             const order = [
                 ["createdAt", "DESC"]
-            ]
+            ];
 
+            // Si no se proporciona página, traer todos los productos
+            if (!page) {
+                const products = await Product.findAll({
+                    where: whereCondition,
+                    order,
+                });
 
-            // Consultar las facturas
+                return {
+                    error: false,
+                    statusCode: 200,
+                    message: "Productos recuperados exitosamente",
+                    data: {
+                        category: category || "Todos",
+                        products: products,
+                        pagination: null
+                    },
+                };
+            }
+
+            // Si se proporciona página, usar paginación
+            page = parseInt(page, 10) || 1;
+            const pageSize = 15;
+            const offset = (page - 1) * pageSize;
+
             const products = await Product.findAndCountAll({
                 where: whereCondition,
                 order,
-                // include: [
-                //     {
-                //         model: Branch,
-                //         attributes: ['id', 'name', 'address', 'country_cca2', 'googleMap', 'main'],
-                //     },
-                // ],
                 limit: pageSize,
                 offset: offset,
             });

@@ -93,7 +93,7 @@ export class ProductBusinessService {
                 description,
                 price,
                 discountType: discountType || discountTypeEnum.FIXED,
-                discountValue: discountValue,
+                discountValue: discountValue || 0,
                 category,
 
                 businessId,

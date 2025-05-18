@@ -221,14 +221,9 @@ export class EmployeeManagementBusinessService {
 
     static async getEmployeesByBusiness(locales, query) {
         const { businessId } = locales;
-        let { page, role, search } = query;
+        let { role, search } = query;
 
         try {
-            // Configurar opciones de paginación
-            page = parseInt(page, 10) || 1;
-            const pageSize = 15;
-            const offset = (page - 1) * pageSize;
-
             // Configuración de criterios de consulta
             const whereCondition = { businessId };
             if (role) whereCondition.role = role;
@@ -239,27 +234,21 @@ export class EmployeeManagementBusinessService {
                 ];
             }
 
-            // Buscar los empleados asociados a la empresa con paginación y filtros
-            const employees = await EmployeesAssociatedBusinesses.findAndCountAll({
+            // Buscar los empleados asociados a la empresa con filtros
+            const employees = await EmployeesAssociatedBusinesses.findAll({
                 where: whereCondition,
                 order: [['createdAt', 'DESC']],
-                limit: pageSize,
-                offset: offset,
                 attributes: ['id', 'usersBusinessId', 'businessId'],
                 include: [
                     {
                         model: UserBusiness,
-                        // required: true,
                         attributes: ['id', 'email', 'status', 'createdAt'],
                         include: [
                             {
                                 model: ProfileBusiness,
-                                // required: true,
-                                // attributes: ['id', 'name', 'lastname', 'profilePicture'],
                             },
                             {
                                 model: UserBusinessRole,
-                                // required: true,
                                 attributes: ['id', 'role'],
                             },
                         ]
@@ -267,17 +256,12 @@ export class EmployeeManagementBusinessService {
                 ]
             });
 
-
             return {
                 error: false,
                 statusCode: 200,
                 message: "Empleados recuperados exitosamente",
                 data: {
-                    employees: employees.rows,
-                    pagination: {
-                        currentPage: Number(page),
-                        totalPages: Math.ceil(employees.count / pageSize),
-                    },
+                    employees: employees
                 }
             };
         } catch (error) {

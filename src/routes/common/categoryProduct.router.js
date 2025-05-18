@@ -38,7 +38,6 @@ routerCategoryProduct.put('/:idCategoryProduct', [
 ], CategoryProductBusinessController.updateCategoryProduct);
 
 
-// Actualizar una categoría de producto
 routerCategoryProduct.delete('/:idCategoryProduct', [
     verifyTokenMiddleware,
     checkRoleMiddleware([
