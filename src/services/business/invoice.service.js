@@ -13,7 +13,6 @@ import { ProfileBusiness } from "../../models/business/profileBusiness.js";
 import { Op } from "sequelize";
 import { calculateInvoiceValues } from "../../helpers/invoice.helper.js";
 import { rolesEnum } from "../../enum/roles.enum.js";
-import { Payment } from "../../models/common/payment.js";
 
 export class InvoiceService {
 

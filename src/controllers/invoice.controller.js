@@ -13,7 +13,7 @@ import { Profile } from "../models/client/profile.js";
 import { ProfileBusiness } from "../models/business/profileBusiness.js";
 import { Branch } from "../models/common/branch.js";
 import { EmployeesAssociatedBusinesses } from "../models/business/employeesAssocitedBusiness.js";
-import { Payment } from "../models/common/payment.js";
+// import { Payment } from "../models/common/payment.js";
 
 export class InvoiceController {
   /** *********************************************************************************
@@ -1002,24 +1002,24 @@ export class InvoiceController {
       const voucherNumber = `ST-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
       
       // Crear registro de pago
-      const payment = await Payment.create({
-        amount: invoice.totalGeneral,
-        currency: 'CLP', // Moneda de Chile
-        status: 'pending',
-        paymentDate: dateTimePayment || new Date(),
-        transactionReference: voucherNumber,
-        description: `Pago de factura ${invoice.name} de la empresa ${business.name}`,
-        voucherNumber: voucherNumber,
-        metadata: JSON.stringify({
-          invoice_id: invoice.id,
-          business_id: business.id,
-          payer_id: clientId,
-          collector_id: userId
-        }),
-        invoiceId: invoice.id,
-        payerId: clientId,
-        businessId: business.id
-      });
+      // const payment = await Payment.create({
+      //   amount: invoice.totalGeneral,
+      //   currency: 'CLP', // Moneda de Chile
+      //   status: 'pending',
+      //   paymentDate: dateTimePayment || new Date(),
+      //   transactionReference: voucherNumber,
+      //   description: `Pago de factura ${invoice.name} de la empresa ${business.name}`,
+      //   voucherNumber: voucherNumber,
+      //   metadata: JSON.stringify({
+      //     invoice_id: invoice.id,
+      //     business_id: business.id,
+      //     payer_id: clientId,
+      //     collector_id: userId
+      //   }),
+      //   invoiceId: invoice.id,
+      //   payerId: clientId,
+      //   businessId: business.id
+      // });
 
       // Actualizar la factura a estado pagado
       await Invoice.update({
