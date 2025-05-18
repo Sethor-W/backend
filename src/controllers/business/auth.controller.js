@@ -111,12 +111,12 @@ export class AuthBusinessController {
    *           schema:
    *             type: object
    *             required:
-   *               - userCode
+   *               - email
    *               - password
-   *             properties:
-   *               userCode:
+    *             properties:
+    *               email:
    *                 type: string
-   *                 description: User code or keyword
+   *                 description: User email
    *               password:
    *                 type: string
    *                 description: User password
@@ -148,7 +148,7 @@ export class AuthBusinessController {
   // POST business/auth/login
   static async login(req, res) {
     // Validaciones de los campos
-    await body('userCode').isString().withMessage('La palabra clave debe ser una cadena').run(req);
+    await body('email').isEmail().withMessage('El correo electrónico debe ser válido').run(req);
     await body('password').isString().notEmpty().withMessage('La contraseña es obligatoria').run(req);
 
     // Verifica si hay errores de validación
@@ -157,9 +157,9 @@ export class AuthBusinessController {
       return sendResponse(res, 400, true, 'Errores de validación', errors.array());
     }
 
-    const { userCode, password } = req.body;
+    const { email, password } = req.body;
     try {
-      const result = await AuthService.login({ userCode, password });
+      const result = await AuthService.login({ email, password });
       return sendResponse(res, result.statusCode, result.error, result.message, result.data);
     } catch (error) {
       console.error("Error al intentar hacer login:", error);

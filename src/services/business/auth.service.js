@@ -111,16 +111,15 @@ export class AuthService {
      * @param {string} password - The user's password
      * @returns {Promise<object>} - Authentication result
      */
-    static async login({ userCode, password }) {
-
+    static async login({ email, password }) {
         try {
             // Verificar si el usuario existe
-            const user = await UserBusiness.findOne({ where: { credential: userCode } });
+            const user = await UserBusiness.findOne({ where: { email } });
             if (!user) {
                 return {
                     error: true,
                     statusCode: 401,
-                    message: "Invalid credentials",
+                    message: "Credenciales inválidas",
                 };
             }
 
@@ -130,7 +129,7 @@ export class AuthService {
                 return {
                     error: true,
                     statusCode: 401,
-                    message: "Invalid credentials",
+                    message: "Credenciales inválidas",
                 };
             }
 
@@ -139,8 +138,7 @@ export class AuthService {
                 where: { id: user.userBusinessRoleId },
             });
 
-            const roleNames = [roles.role]
-            console.log(roles.role)
+            const roleNames = [roles.role];
 
             let business;
             if (roles.role == rolesEnum.OWNER) {
@@ -154,7 +152,6 @@ export class AuthService {
                     include: [
                         {
                             model: Business,
-                            // required: true,
                             attributes: ['id', 'typeCompany', 'name'],
                         },
                     ]
@@ -163,7 +160,7 @@ export class AuthService {
                     return {
                         error: true,
                         statusCode: 500,
-                        message: "Server Error",
+                        message: "Error del servidor",
                     };
                 }
 
@@ -187,7 +184,7 @@ export class AuthService {
             return {
                 error: false,
                 statusCode: 200,
-                message: "Authentication successful",
+                message: "Autenticación exitosa",
                 data: {
                     user: {
                         id: user.id,
@@ -205,11 +202,11 @@ export class AuthService {
             };
 
         } catch (error) {
-            console.error("Error during login:", error);
+            console.error("Error durante la autenticación:", error);
             return {
                 error: true,
                 statusCode: 500,
-                message: "An error occurred during authentication",
+                message: "Ocurrió un error durante la autenticación",
             };
         }
     }
