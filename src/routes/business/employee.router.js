@@ -10,8 +10,7 @@ import { rolesEnum } from '../../enum/roles.enum.js';
 export const routerEmployeeManagement = Router();
 
 
-// Crear a new employee collector
-routerEmployeeManagement.post('/collector', [
+routerEmployeeManagement.post('/', [
     verifyTokenMiddleware,
     checkRoleMiddleware([
         rolesEnum.OWNER,
@@ -19,7 +18,7 @@ routerEmployeeManagement.post('/collector', [
         rolesEnum.ADMIN
     ]),
     verifyAssociatedUserMiddleware,
-], EmployeeManagementController.createCollectorEmployeeCredentials);
+], EmployeeManagementController.createEmployeeCredentials);
 
 
 
@@ -57,3 +56,36 @@ routerEmployeeManagement.post('/manager', [
     ]),
     verifyAssociatedUserMiddleware,
 ], EmployeeManagementController.createManagerEmployeeCredentials);
+
+// Actualizar el estado de un empleado (activar/desactivar)
+routerEmployeeManagement.patch('/:employeeId/status', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.OWNER,
+        rolesEnum.MANAGER,
+        rolesEnum.ADMIN
+    ]),
+    verifyAssociatedUserMiddleware,
+], EmployeeManagementController.updateEmployeeStatus);
+
+// Actualizar la contraseña de un empleado
+routerEmployeeManagement.patch('/:employeeId/password', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.OWNER,
+        rolesEnum.MANAGER,
+        rolesEnum.ADMIN
+    ]),
+    verifyAssociatedUserMiddleware,
+], EmployeeManagementController.updateEmployeePassword);
+
+// Actualizar la información de un empleado
+routerEmployeeManagement.patch('/:employeeId', [
+    verifyTokenMiddleware,
+    checkRoleMiddleware([
+        rolesEnum.OWNER,
+        rolesEnum.MANAGER,
+        rolesEnum.ADMIN
+    ]),
+    verifyAssociatedUserMiddleware,
+], EmployeeManagementController.updateEmployeeInformation);

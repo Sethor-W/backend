@@ -16,14 +16,14 @@ import { EmployeesAssociatedBusinesses } from "../../models/business/employeesAs
 import { generateUniqueCode } from '../../helpers/utils.js';
 import { sequelize } from '../../config/database.config.js';
 import { invoiceStatusEnum } from '../../enum/invoiceStatus.enum.js';
+import { actuveAccountEnum } from '../../enum/activeAccount.enum.js';
 
 export class EmployeeManagementBusinessService {
 
 
-    // Crear una nueva categoría de producto
-    static async createCollectorEmployeeCredentials(locales, body) {
+    static async createEmployeeCredentials(locales, body) {
         const { businessId } = locales;
-        const { name, lastname, rut, email, role, branchId, keyword, password } = body;
+        const { name, lastname, rut, email, role, branchId, keyword, password, phone, profilePicture } = body;
 
         try {
             // Iniciar una transacción
@@ -63,9 +63,18 @@ export class EmployeeManagementBusinessService {
                 };
             }
 
-            // Buscar el rol "manager" en la tabla de roles
-            const collectorRole = await UserBusinessRole.findOne({
-                where: { role: rolesEnum.COLLECTOR },
+            // Validar que el rol sea collector o manager
+            if (role !== rolesEnum.COLLECTOR && role !== rolesEnum.MANAGER) {
+                return {
+                    error: true,
+                    statusCode: 400,
+                    message: "El rol debe ser collector o manager",
+                };
+            }
+
+            // Buscar el rol en la tabla de roles
+            const userRole = await UserBusinessRole.findOne({
+                where: { role },
                 transaction
             });
 
@@ -74,29 +83,27 @@ export class EmployeeManagementBusinessService {
             const newUserBusiness = await UserBusiness.create({
                 email,
                 password: hashedPassword,
-                keyword: keyword,
+                keyword,
                 credential: `${rut}.${keyword}`,
-                userBusinessRoleId: collectorRole.id,
+                userBusinessRoleId: userRole.id,
             }, { transaction });
 
             // Registrar perfil del usuario
             const newProfile = await ProfileBusiness.create({
-                codeEmployee: generateUniqueCode(),
                 name,
                 lastname,
                 rut,
-                phone: '123',
-                additionalData: {
-                    branch,
-                },
+                phone,
+                profilePicture,
                 usersBusinessId: newUserBusiness.id,
             }, { transaction });
 
             // Asociar al empleado a la empresa
-            const EmployeesAssociated = await EmployeesAssociatedBusinesses.create({
+            await EmployeesAssociatedBusinesses.create({
                 usersBusinessId: newUserBusiness.id,
-                businessId
-            }, { transaction })
+                businessId,
+                branchId,
+            }, { transaction });
 
             // Confirmar la transacción
             await transaction.commit();
@@ -238,7 +245,7 @@ export class EmployeeManagementBusinessService {
             const employees = await EmployeesAssociatedBusinesses.findAll({
                 where: whereCondition,
                 order: [['createdAt', 'DESC']],
-                attributes: ['id', 'usersBusinessId', 'businessId'],
+                attributes: ['id', 'usersBusinessId', 'businessId', 'branchId'],
                 include: [
                     {
                         model: UserBusiness,
@@ -274,6 +281,255 @@ export class EmployeeManagementBusinessService {
         }
     }
 
+    static async updateEmployeeStatus(locales, params, body) {
+        const { businessId } = locales;
+        const { employeeId } = params;
+        const { status } = body;
 
+        try {
+            // Verificar que el estatus sea válido
+            if (status !== actuveAccountEnum.ACTIVE && status !== actuveAccountEnum.DESACTIVED) {
+                return {
+                    error: true,
+                    statusCode: 400,
+                    message: `El estado debe ser ${actuveAccountEnum.ACTIVE} o ${actuveAccountEnum.DESACTIVED}`,
+                };
+            }
 
+            // Verificar si el empleado existe y pertenece a la empresa
+            const employeeAssociated = await EmployeesAssociatedBusinesses.findOne({
+                where: {
+                    usersBusinessId: employeeId,
+                    businessId
+                }
+            });
+
+            if (!employeeAssociated) {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Empleado no encontrado o no está asociado a esta empresa",
+                };
+            }
+
+            // Actualizar el estado del empleado
+            const employee = await UserBusiness.findByPk(employeeId);
+            
+            if (!employee) {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Empleado no encontrado",
+                };
+            }
+
+            // Actualizar el estado
+            await employee.update({ status });
+
+            return {
+                error: false,
+                statusCode: 200,
+                message: status === actuveAccountEnum.ACTIVE ? "Credencial de empleado activada exitosamente" : "Credencial de empleado desactivada exitosamente",
+                data: {
+                    id: employee.id,
+                    status: employee.status,
+                }
+            };
+
+        } catch (error) {
+            console.error("Error al actualizar el estado del empleado:", error);
+            return {
+                error: true,
+                statusCode: 500,
+                message: "Error al actualizar el estado del empleado",
+            };
+        }
+    }
+
+    static async updateEmployeePassword(locales, params, body) {
+        const { businessId } = locales;
+        const { employeeId } = params;
+        const { newPassword } = body;
+
+        try {
+            // Verificar si el empleado existe y pertenece a la empresa
+            const employeeAssociated = await EmployeesAssociatedBusinesses.findOne({
+                where: {
+                    usersBusinessId: employeeId,
+                    businessId
+                }
+            });
+
+            if (!employeeAssociated) {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Empleado no encontrado o no está asociado a esta empresa",
+                };
+            }
+
+            // Obtener el empleado
+            const employee = await UserBusiness.findByPk(employeeId);
+            
+            if (!employee) {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Empleado no encontrado",
+                };
+            }
+
+            // Actualizar la contraseña
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            await employee.update({ password: hashedPassword });
+
+            return {
+                error: false,
+                statusCode: 200,
+                message: "Contraseña actualizada exitosamente",
+            };
+
+        } catch (error) {
+            console.error("Error al actualizar la contraseña del empleado:", error);
+            return {
+                error: true,
+                statusCode: 500,
+                message: "Error al actualizar la contraseña del empleado",
+            };
+        }
+    }
+
+    static async updateEmployeeInformation(locales, params, body) {
+        const { businessId } = locales;
+        const { employeeId } = params;
+        const { name, lastname, phone, branchId, profilePicture, role } = body;
+
+        let transaction;
+
+        try {
+            // Start transaction
+            transaction = await sequelize.transaction();
+
+            // Verify employee exists and belongs to business
+            const employeeAssociated = await EmployeesAssociatedBusinesses.findOne({
+                where: {
+                    usersBusinessId: employeeId,
+                    businessId
+                },
+                transaction
+            });
+
+            if (!employeeAssociated) {
+                await transaction.rollback();
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Empleado no encontrado o no está asociado a esta empresa",
+                };
+            }
+
+            // Get employee and profile
+            const [employee, profile] = await Promise.all([
+                UserBusiness.findByPk(employeeId, { transaction }),
+                ProfileBusiness.findOne({
+                    where: { usersBusinessId: employeeId },
+                    transaction
+                })
+            ]);
+            
+            if (!employee || !profile) {
+                await transaction.rollback();
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "Empleado o perfil no encontrado",
+                };
+            }
+
+            // Update role if provided
+            if (role) {
+                const roleRecord = await UserBusinessRole.findOne({
+                    where: { role: role },
+                    transaction
+                });
+
+                if (!roleRecord) {
+                    await transaction.rollback();
+                    return {
+                        error: true,
+                        statusCode: 404,
+                        message: "Rol no encontrado",
+                    };
+                }
+
+                await employee.update({ userBusinessRoleId: roleRecord.id }, { transaction });
+            }
+
+            // Update profile information
+            const profileUpdates = {
+                ...(name && { name }),
+                ...(lastname && { lastname }),
+                ...(phone && { phone }),
+                ...(profilePicture && { profilePicture })
+            };
+
+            if (Object.keys(profileUpdates).length > 0) {
+                await profile.update(profileUpdates, { transaction });
+            }
+
+            // Update branch if provided
+            if (branchId) {
+                const branch = await Branch.findOne({
+                    where: {
+                        id: branchId,
+                        businessId
+                    },
+                    transaction
+                });
+
+                if (!branch) {
+                    await transaction.rollback();
+                    return {
+                        error: true,
+                        statusCode: 404,
+                        message: "Sucursal no encontrada",
+                    };
+                }
+
+                console.log(branchId);
+                const a = await employeeAssociated.update({ branchId: branchId }, { transaction });
+                console.log(a);
+            }
+
+            // Commit transaction
+            await transaction.commit();
+
+            return {
+                error: false,
+                statusCode: 200,
+                message: "Información del empleado actualizada exitosamente",
+                data: {
+                    id: employee.id,
+                    email: employee.email,
+                    role: employee.userBusinessRoleId,
+                    profile: {
+                        name: profile.name,
+                        lastname: profile.lastname,
+                        phone: profile.phone,
+                        profilePicture: profile.profilePicture
+                    },
+                    branchId: employeeAssociated.branchId
+                }
+            };
+
+        } catch (error) {
+            if (transaction) await transaction.rollback();
+            console.error("Error al actualizar la información del empleado:", error);
+            return {
+                error: true,
+                statusCode: 500,
+                message: "Error al actualizar la información del empleado",
+            };
+        }
+    }
 }

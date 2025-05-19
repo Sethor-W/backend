@@ -159,7 +159,7 @@ export class AuthBusinessController {
 
     const { email, password } = req.body;
     try {
-      const result = await AuthService.login({ email, password });
+      const result = await AuthService.login({ email, password, status: 'active' });
       return sendResponse(res, result.statusCode, result.error, result.message, result.data);
     } catch (error) {
       console.error("Error al intentar hacer login:", error);

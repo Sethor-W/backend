@@ -20,7 +20,7 @@ export class EmployeeManagementController {
 
     /**
      * @swagger
-     * /api/v1/business/{businessId}/employees/collector:
+     * /api/v1/business/{businessId}/employees:
      *   post:
      *     summary: Create credentials for a collector employee
      *     tags: [Employee Management]
@@ -48,6 +48,7 @@ export class EmployeeManagementController {
      *               - rut
      *               - phone
      *               - branchId
+     *               - role
      *             properties:
      *               email:
      *                 type: string
@@ -74,6 +75,10 @@ export class EmployeeManagementController {
      *               branchId:
      *                 type: string
      *                 description: ID of the branch where the employee works
+     *               role:
+     *                 type: string
+     *                 enum: [collector, manager]
+     *                 description: Employee role
      *     responses:
      *       201:
      *         description: Employee credentials created successfully
@@ -84,9 +89,9 @@ export class EmployeeManagementController {
      *       500:
      *         description: Server error
      */
-    // POST business/:businessId/employees/collector
-    static async createCollectorEmployeeCredentials(req, res) {
-        const result = await EmployeeManagementBusinessService.createCollectorEmployeeCredentials(req.locales, req.body)
+    // POST business/:businessId/employees
+    static async createEmployeeCredentials(req, res) {
+        const result = await EmployeeManagementBusinessService.createEmployeeCredentials(req.locales, req.body)
         return sendResponse(res, result.statusCode, result.error, result.message, result.data);
     }
 
@@ -329,7 +334,161 @@ export class EmployeeManagementController {
         }
     }
 
+    /**
+     * @swagger
+     * /api/v1/business/{businessId}/employees/{employeeId}/status:
+     *   patch:
+     *     summary: Activate or deactivate employee credentials
+     *     tags: [Employee Management]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: employeeId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the employee
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - status
+     *             properties:
+     *               status:
+     *                 type: string
+     *                 enum: [active, desactive]
+     *                 description: Status to set for the employee (active or desactive)
+     *     responses:
+     *       200:
+     *         description: Employee status updated successfully
+     *       400:
+     *         description: Invalid status value
+     *       404:
+     *         description: Employee not found
+     *       500:
+     *         description: Server error
+     */
+    // PATCH business/:businessId/employees/:employeeId/status
+    static async updateEmployeeStatus(req, res) {
+        const result = await EmployeeManagementBusinessService.updateEmployeeStatus(req.locales, req.params, req.body);
+        return sendResponse(res, result.statusCode, result.error, result.message, result.data);
+    }
 
+    /**
+     * @swagger
+     * /api/v1/business/{businessId}/employees/{employeeId}/password:
+     *   patch:
+     *     summary: Change employee password
+     *     tags: [Employee Management]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: employeeId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the employee
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - newPassword
+     *             properties:
+     *               newPassword:
+     *                 type: string
+     *                 description: New password for the employee
+     *     responses:
+     *       200:
+     *         description: Password updated successfully
+     *       404:
+     *         description: Employee not found
+     *       500:
+     *         description: Server error
+     */
+    // PATCH business/:businessId/employees/:employeeId/password
+    static async updateEmployeePassword(req, res) {
+        const result = await EmployeeManagementBusinessService.updateEmployeePassword(req.locales, req.params, req.body);
+        return sendResponse(res, result.statusCode, result.error, result.message, result.data);
+    }
 
-
+    /**
+     * @swagger
+     * /api/v1/business/{businessId}/employees/{employeeId}:
+     *   patch:
+     *     summary: Update employee information
+     *     tags: [Employee Management]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: businessId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the business
+     *       - in: path
+     *         name: employeeId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID of the employee
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: Employee first name
+     *               lastname:
+     *                 type: string
+     *                 description: Employee last name
+     *               phone:
+     *                 type: string
+     *                 description: Employee phone number
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: Employee email
+     *               branchId:
+     *                 type: string
+     *                 description: ID of the branch where the employee works
+     *               profilePicture:
+     *                 type: string
+     *                 description: URL to employee profile picture
+     *     responses:
+     *       200:
+     *         description: Employee information updated successfully
+     *       404:
+     *         description: Employee not found
+     *       500:
+     *         description: Server error
+     */
+    // PATCH business/:businessId/employees/:employeeId
+    static async updateEmployeeInformation(req, res) {
+        const result = await EmployeeManagementBusinessService.updateEmployeeInformation(req.locales, req.params, req.body);
+        return sendResponse(res, result.statusCode, result.error, result.message, result.data);
+    }
 }
