@@ -175,7 +175,7 @@ export class InvoiceController {
   static async createInvoice(req, res) {
     const {
       businessId
-    } = req.params;
+    } = req.locale;
     const {
       userId
     } = req.user;
@@ -505,6 +505,7 @@ export class InvoiceController {
     const {
       userId
     } = req.user;
+    
 
     try {
       // Buscar la factura por su ID
@@ -554,18 +555,6 @@ export class InvoiceController {
 
       // Convertir la cadena JSON de productos en un objeto
       invoice.products = await JSON.parse(invoice.products);
-      invoice.collector.profiles_business.additionalData = await JSON.parse(
-        invoice.collector.profiles_business.additionalData
-      );
-      invoice.collector.profiles_business.additionalData.branch.operatingHours =
-        await JSON.parse(
-          invoice.collector.profiles_business.additionalData.branch
-          .operatingHours
-        );
-
-      // Elimnar llaves inecesarias
-      delete invoice.collector.profiles_business.additionalData
-        .employeeSchedule;
 
       // Enviar la respuesta con los detalles de la factura
       return sendResponse(

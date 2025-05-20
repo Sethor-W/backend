@@ -59,6 +59,7 @@ export class ProfileBusinessController {
     // GET business/users/profile
     static async getUserProfile(req, res) {
         const { userId } = req.user;
+
         try {
             const profile = await UserBusiness.findByPk(userId, {
                 attributes: ['id', 'email', 'status', 'keyword'],
@@ -72,18 +73,17 @@ export class ProfileBusinessController {
                 ]
             });
 
-            
             if (!profile) {
                 return sendResponse(res, 404, true, "Perfil no encontrado");
             }
 
-            if (profile.profiles_business.additionalData) {
-                // Convertir la cadena JSON de productos en un objeto
-                profile.profiles_business.additionalData = await JSON.parse(profile.profiles_business.additionalData);
-                if (profile.profiles_business.additionalData?.branch?.operatingHours) {
-                    profile.profiles_business.additionalData.branch.operatingHours = JSON.parse(profile.profiles_business.additionalData.branch.operatingHours);
-                }
-            }
+            // if (profile.profiles_business.additionalData) {
+            //     // Convertir la cadena JSON de productos en un objeto
+            //     profile.profiles_business.additionalData = await JSON.parse(profile.profiles_business.additionalData);
+            //     if (profile.profiles_business.additionalData?.branch?.operatingHours) {
+            //         profile.profiles_business.additionalData.branch.operatingHours = JSON.parse(profile.profiles_business.additionalData.branch.operatingHours);
+            //     }
+            // }
 
             return sendResponse(res, 200, false, 'Perfil recuperado exitosamente', profile);
         } catch (error) {

@@ -13,6 +13,7 @@ import { ProfileBusiness } from "../../models/business/profileBusiness.js";
 import { Op } from "sequelize";
 import { calculateInvoiceValues } from "../../helpers/invoice.helper.js";
 import { rolesEnum } from "../../enum/roles.enum.js";
+import { StatisticsController } from "../../controllers/statistics.controller.js";
 
 export class InvoiceService {
 
@@ -24,15 +25,78 @@ export class InvoiceService {
         const { name, products, note, discountType, discountValue } = body;
 
         try {
-            // Llamar a la función de cálculo modularizada
+            // Validar tipo de descuento
+            if (discountType && !Object.values(discountTypeEnum).includes(discountType)) {
+                return {
+                    error: true,
+                    statusCode: 400,
+                    message: "Tipo de descuento inválido. Debe ser 'fixed' o 'percentage'",
+                };
+            }
+
+            // Validar estructura de productos
+            if (!Array.isArray(products) || products.length === 0) {
+                return {
+                    error: true,
+                    statusCode: 400,
+                    message: "Los productos deben ser un arreglo no vacío",
+                };
+            }
+
+            // Validar campos requeridos de cada producto
+            for (const product of products) {
+                if (!product.id || !product.name || !product.price || !product.quantity) {
+                    return {
+                        error: true,
+                        statusCode: 400,
+                        message: "Cada producto debe tener id, nombre, precio y cantidad",
+                    };
+                }
+
+                // Validar campos numéricos
+                if (typeof product.price !== 'number' || product.price < 0) {
+                    return {
+                        error: true,
+                        statusCode: 400,
+                        message: "El precio del producto debe ser un número positivo",
+                    };
+                }
+
+                if (typeof product.quantity !== 'number' || product.quantity < 1) {
+                    return {
+                        error: true,
+                        statusCode: 400,
+                        message: "La cantidad del producto debe ser un número positivo",
+                    };
+                }
+
+                // Validar campos de descuento si están presentes
+                if (product.discountType && !Object.values(discountTypeEnum).includes(product.discountType)) {
+                    return {
+                        error: true,
+                        statusCode: 400,
+                        message: "El tipo de descuento del producto debe ser 'fixed' o 'percentage'",
+                    };
+                }
+
+                if (product.discountValue && (typeof product.discountValue !== 'number' || product.discountValue < 0)) {
+                    return {
+                        error: true,
+                        statusCode: 400,
+                        message: "El valor del descuento del producto debe ser un número positivo",
+                    };
+                }
+            }
+
+            // Calcular valores de la factura usando función auxiliar
             const { subtotal, generalDiscount, sth, totalIVA, totalGeneral } = calculateInvoiceValues(products, discountType, discountValue);
 
-            // Validar si el cobrador tiene una sucursal asignada
+            // Validar perfil del cobrador y obtener información de la sucursal
             const profile = await ProfileService.getCollectorProfile(userId);
             const branch = await BranchService.getBranchFromProfile(profile);
-            const { currencyCode, currencyDetails } = await CurrencyService.getCurrencyFromCountry(branch.country_cca2);
+            const { currencyCode } = await CurrencyService.getCurrencyFromCountry(branch.country_cca2);
 
-            if (!profile.profiles_business.additionalData) {
+            if (!profile.profiles_business) {
                 return {
                     error: true,
                     statusCode: 400,
@@ -40,61 +104,44 @@ export class InvoiceService {
                 };
             }
 
-            // Crear la factura
+            // Crear registro de factura
             const newInvoice = await Invoice.create({
                 name,
                 note,
                 status: invoiceStatusEnum.DRAFT,
                 collectorId: userId,
-                businessId,
+                businessId: businessId,
                 clientId: null,
                 products: JSON.stringify(products),
-                subtotal,
-                sth,
+                subtotal: subtotal || 0,
+                sth: sth || 0,
                 discountType: discountType || discountTypeEnum.FIXED,
-                discountValue: discountValue,
-                totalIVA,
-                totalGeneral,
+                discountValue: discountValue || 0,
+                totalIVA: totalIVA || 0,
+                totalGeneral: totalGeneral || 0,
                 currency: currencyCode,
                 branchId: branch.id
             });
 
-            // Parsea los productos de cadena JSON a objeto
-            newInvoice.products = JSON.parse(newInvoice.products);
+            // Convertir productos de vuelta a objeto para la respuesta
+            const invoiceData = {
+                ...newInvoice.toJSON(),
+                products: JSON.parse(newInvoice.products) // Convertir productos de vuelta a arreglo
+            };
 
-            // Respuesta exitosa
             return {
                 error: false,
                 statusCode: 201,
                 message: "Factura creada exitosamente",
-                data: {
-                    id: newInvoice.id,
-                    name: newInvoice.name,
-                    note: newInvoice.note,
-                    status: newInvoice.status,
-                    collectorId: newInvoice.collectorId,
-                    businessId: newInvoice.businessId,
-                    clientId: newInvoice.clientId,
-                    products: newInvoice.products,
-                    subtotal: newInvoice.subtotal,
-                    sth: newInvoice.sth,
-                    totalIVA: newInvoice.totalIVA,
-                    totalGeneral: newInvoice.totalGeneral,
-                    currency: newInvoice.currency,
-                    discountValue: newInvoice.discountValue || 0,
-                    discountType: newInvoice.discountType,
-                    branchId: newInvoice.branchId,
-                    createdAt: newInvoice.createdAt,
-                    updatedAt: newInvoice.updatedAt,
-                },
+                data: invoiceData
             };
 
         } catch (error) {
-            console.error("Error al enviar:", error);
+            console.error("Error al crear la factura:", error);
             return {
                 error: true,
                 statusCode: 500,
-                message: "Error al enviar",
+                message: "Error al crear la factura",
             };
         }
     }
@@ -334,6 +381,12 @@ export class InvoiceService {
                     discountType || invoice.discountType,
                     discountValue || invoice.discountValue
                 );
+
+                console.log("newSubtotal", newSubtotal);
+                console.log("newGeneralDiscount", newGeneralDiscount);
+                console.log("newSth", newSth);
+                console.log("newTotalIVA", newTotalIVA);
+                console.log("newTotalGeneral", newTotalGeneral);
                 
                 subtotal = newSubtotal;
                 generalDiscount = newGeneralDiscount;
@@ -473,7 +526,7 @@ export class InvoiceService {
                     }
                 ]
             });
-            updatedInvoice.products = JSON.parse(updatedInvoice.products);
+            // updatedInvoice.products = JSON.parse(updatedInvoice.products);
 
             // Actualizar estadísticas si es necesario
             try {

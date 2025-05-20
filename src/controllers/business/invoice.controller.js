@@ -127,7 +127,8 @@ export class InvoiceBusinessController {
     if (!errors.isEmpty()) {
       return sendResponse(res, 400, true, 'Errores de validación', errors.array());
     }
-    const result = await InvoiceService.createInvoice(req.param, req.body, req.user)
+
+    const result = await InvoiceService.createInvoice(req.params, req.body, req.user)
     return sendResponse(res, result.statusCode, result.error, result.message, result.data);
   }
 
@@ -480,6 +481,16 @@ export class InvoiceBusinessController {
     } = req.user;
 
     try {
+
+      // Enviar la respuesta con los detalles de la factura
+      return sendResponse(
+        res,
+        200,
+        false,
+        "Detalles de la factura recuperados exitosamente, controller",
+        {}
+      );
+
       // Buscar la factura por su ID
       const invoice = await Invoice.findOne({
         where: {
@@ -526,15 +537,15 @@ export class InvoiceBusinessController {
       }
 
       // Convertir la cadena JSON de productos en un objeto
-      invoice.products = await JSON.parse(invoice.products);
+      // invoice.products = await JSON.parse(invoice.products);
       invoice.collector.profiles_business.additionalData = await JSON.parse(
         invoice.collector.profiles_business.additionalData
       );
       invoice.collector.profiles_business.additionalData.branch.operatingHours =
-        await JSON.parse(
-          invoice.collector.profiles_business.additionalData.branch
-            .operatingHours
-        );
+        // await JSON.parse(
+        //   invoice.collector.profiles_business.additionalData.branch
+        //     .operatingHours
+        // );
 
       // Elimnar llaves inecesarias
       delete invoice.collector.profiles_business.additionalData

@@ -158,8 +158,7 @@ export class BranchService {
     if (!profile.profiles_business.additionalData) {
       throw new Error("El cobrador no tiene una sucursal asignada");
     }
-    const additionalData = JSON.parse(profile.profiles_business.additionalData);
-    const branchId = additionalData.branch.id;
+    const branchId = profile.profiles_business.additionalData.branch.id;
     return await Branch.findByPk(branchId);
   }
 }

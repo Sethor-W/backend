@@ -4,43 +4,54 @@ import { discountTypeEnum } from "../enum/discountType.enum.js";
 
 
 export function calculateInvoiceValues(products, discountType, discountValue) {
-    // Calcular subtotal
-    let subtotal = 0;
-    products.forEach(product => {
+    // Validate inputs
+    if (!Array.isArray(products) || products.length === 0) {
+        throw new Error('Products must be a non-empty array');
+    }
+
+    // Calculate subtotal with product discounts
+    let subtotal = products.reduce((acc, product) => {
+        // Validate product values
+        if (!product.price || !product.quantity || product.price < 0 || product.quantity < 0) {
+            throw new Error('Invalid product price or quantity');
+        }
+
         const productTotal = product.price * product.quantity;
-        const discount =
-            product.discountType === discountTypeEnum.PERCENTAGE
-                ? (product.discountValue / 100) * productTotal
-                : product.discountValue;
-        
-        const amountProductTotal = productTotal - discount
-        subtotal += amountProductTotal;
-        // console.log({productTotal, discount, amountProductTotal})
-        // console.log({subtotal})
-        
-    });
+        let productDiscount = 0;
 
+        // Calculate product discount if applicable
+        if (product.discountType && product.discountValue) {
+            if (product.discountType === discountTypeEnum.PERCENTAGE) {
+                productDiscount = (product.discountValue / 100) * productTotal;
+            } else if (product.discountType === discountTypeEnum.FIXED) {
+                productDiscount = product.discountValue;
+            }
+        }
 
-    // Aplicar descuento general si se envía
+        return acc + (productTotal - productDiscount);
+    }, 0);
+
+    // Calculate general discount
     let generalDiscount = 0;
     if (discountType && discountValue) {
-        generalDiscount =
-            discountType === discountTypeEnum.PERCENTAGE
-                ? (discountValue / 100) * subtotal
-                : discountValue;
+        if (discountType === discountTypeEnum.PERCENTAGE) {
+            generalDiscount = (discountValue / 100) * subtotal;
+        } else if (discountType === discountTypeEnum.FIXED) {
+            generalDiscount = discountValue;
+        }
         subtotal -= generalDiscount;
     }
 
-    // Redondear valores a 2 decimales
-    subtotal = Math.round(subtotal * 100) / 100;
+    // Ensure subtotal is not negative
+    subtotal = Math.max(0, subtotal);
 
-    const sth = Math.round((subtotal * 0.05) * 100) / 100; // 5% del subtotal
-    const totalIVA = Math.round((subtotal * 0.10) * 100) / 100; // 10% del subtotal
-    const totalGeneral = Math.round((subtotal + sth + totalIVA) * 100) / 100;
-
-    // const sth = subtotal * 0.05; // (ejemplo: 5% del subtotal como un impuesto adicional)
-    // const totalIVA = subtotal * 0.10; // Calcular IVA (ejemplo: 10% del subtotal)
-    // const totalGeneral = subtotal + sth + totalIVA;
+    // Calculate taxes and total with proper rounding
+    const roundToTwoDecimals = (num) => Math.round(num * 100) / 100;
+    
+    subtotal = roundToTwoDecimals(subtotal);
+    const sth = roundToTwoDecimals(subtotal * 0.05); // 5% of subtotal
+    const totalIVA = roundToTwoDecimals(subtotal * 0.10); // 10% of subtotal
+    const totalGeneral = roundToTwoDecimals(subtotal + sth + totalIVA);
 
     return {
         subtotal,
