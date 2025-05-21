@@ -52,6 +52,7 @@ routerInvoice.post('/:businessId/updateStatusToPaid/:invoiceId', [
         rolesEnum.MANAGER,
         rolesEnum.OWNER,
         rolesEnum.ADMIN,
+        rolesEnum.COLLECTOR
     ]),
     verifyAssociatedUserMiddleware,
 ], InvoiceBusinessController.updateInvoiceStatusToPaid);

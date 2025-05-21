@@ -2,7 +2,6 @@
 
 import { discountTypeEnum } from "../enum/discountType.enum.js";
 
-
 export function calculateInvoiceValues(products, discountType, discountValue) {
     // Validate inputs
     if (!Array.isArray(products) || products.length === 0) {
@@ -49,8 +48,8 @@ export function calculateInvoiceValues(products, discountType, discountValue) {
     const roundToTwoDecimals = (num) => Math.round(num * 100) / 100;
     
     subtotal = roundToTwoDecimals(subtotal);
-    const sth = roundToTwoDecimals(subtotal * 0.05); // 5% of subtotal
-    const totalIVA = roundToTwoDecimals(subtotal * 0.10); // 10% of subtotal
+    const sth = roundToTwoDecimals(subtotal * process.env.APP_STH_CHILE);
+    const totalIVA = roundToTwoDecimals(subtotal * process.env.APP_IVA_CHILE);
     const totalGeneral = roundToTwoDecimals(subtotal + sth + totalIVA);
 
     return {
