@@ -320,7 +320,7 @@ export class SdkController {
      *         description: Server error
      */
     static async validateTemplate(req,res){
-        const { scanResult,rut } = req.body;
+        const { scanResult, rut } = req.body;
         const url = "https://abis.tech5.tech/T5CloudService/1.0/processRequest";
         const username = "jeycoradames@gmail.com";
         const password = "j@yc0r@d@#T5";

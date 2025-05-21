@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import { verifyTokenMiddleware } from '../middlewares/verifyToken.middleware.js';
-import { ProfileController } from '../controllers/profile.controller.js';
+import { verifyTokenMiddleware } from '../../middlewares/verifyToken.middleware.js';
+import { ProfileController } from '../../controllers/client/profile.controller.js';
 
 export const routerProfile = Router();
 
@@ -17,4 +17,6 @@ routerProfile.put('/', [
 
 
 // Obtener perfil by id
-routerProfile.get('/:id', ProfileController.getUserProfileById);
+routerProfile.get('/:userId', [
+    verifyTokenMiddleware,
+], ProfileController.getUserProfileById);

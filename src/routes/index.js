@@ -13,7 +13,7 @@ import { routerEmployeeManagement } from './business/employee.router.js';
 import { routerBusinessFunction } from './businessFunction.router.js';
 import { routerInvoice } from './invoice.router.js';
 import { routerProfileBusiness } from './profileBusiness.router.js';
-import { routerProfile } from './profile.router.js';
+import { routerProfile } from './client/profile.router.js';
 import { routerStatistics } from './statistics.router.js';
 import { routerStorage } from './storage.router.js';
 import { sendResponse } from '../helpers/utils.js';

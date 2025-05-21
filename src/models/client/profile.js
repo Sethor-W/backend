@@ -31,6 +31,14 @@ export const Profile = sequelize.define('profiles', {
     profilePicture: {
         type: DataTypes.STRING,
     },
+    handRight: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    handLeft: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
 });
 
 User.hasOne(Profile, {

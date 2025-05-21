@@ -1,6 +1,6 @@
-import { sendResponse } from "../helpers/utils.js";
-import { Profile } from "../models/client/profile.js";
-import { User } from "../models/client/users.js";
+import { sendResponse } from "../../helpers/utils.js";
+import { Profile } from "../../models/client/profile.js";
+import { User } from "../../models/client/users.js";
 
 
 export class ProfileController {
@@ -8,13 +8,13 @@ export class ProfileController {
 
     /**
      * @swagger
-     * /api/v1/users/profile/{id}:
+     * /api/v1/users/profile/{userId}:
      *   get:
      *     summary: Get user profile by ID
      *     tags: [User Profile]
      *     parameters:
      *       - in: path
-     *         name: id
+     *         name: userId
      *         required: true
      *         schema:
      *           type: string
@@ -117,6 +117,12 @@ export class ProfileController {
      *               profilePicture:
      *                 type: string
      *                 description: URL to profile picture
+     *               hand:
+     *                 type: string
+     *                 description: Hand to update
+     *                 enum:
+     *                   - right
+     *                   - left
      *     responses:
      *       200:
      *         description: Profile updated successfully
@@ -128,7 +134,7 @@ export class ProfileController {
     // PUT /users/profile
     static async updateUserProfile(req, res) {
         const { userId } = req.user;
-        const { phone, profilePicture } = req.body;
+        const { phone, profilePicture, hand } = req.body;
 
         try {
             // Buscar el perfil del usuario por el userId
@@ -138,8 +144,15 @@ export class ProfileController {
                 return sendResponse(res, 404, true, "Perfil no encontrado");
             }
 
-            profile.phone = phone || profile.phone;
-            profile.profilePicture = profilePicture || profile.profilePicture
+            // Actualizar solo los campos que se envían en el request
+            if (phone) profile.phone = phone;
+            if (profilePicture) profile.profilePicture = profilePicture;
+
+            if (hand === "right") {
+                profile.handRight = true;
+            } else if (hand === "left") {
+                profile.handLeft = true;
+            }
 
             // Guardar los cambios en la base de datos
             await profile.save();
