@@ -13,12 +13,6 @@ export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD,{
   host: DB_HOST,
   dialect: DB_DIALECT,
   port: DB_PORT,
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false, // Esto evita problemas con certificados autofirmados
-    }
-  }
 })
 
 // export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD,{

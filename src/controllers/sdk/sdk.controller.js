@@ -115,8 +115,6 @@ export class SdkController {
                 score
             }));
 
-            console.log('matchedFingerprints',matchedFingerprints)
-
             //Validar si el rut enviado está entre los IDs
             const matchFound = matchedFingerprints.some(fp => fp.id === rut);
 
