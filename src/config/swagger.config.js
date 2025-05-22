@@ -12,8 +12,12 @@ const options = {
     servers: [
       {
         url: `http://localhost:${process.env.PORT || 3000}`,
-        description: 'Development server',
+        description: 'Local Development Server',
       },
+      {
+        url: 'https://backendsethor.azurewebsites.net/',
+        description: 'Production Server',
+      }
     ],
     components: {
       securitySchemes: {
