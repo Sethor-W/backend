@@ -34,8 +34,7 @@ export class SdkController {
      *         description: Server error
      */
     static async validateFinger(req, res) {
-        const { scanResult, rut } = req.body;
-        console.log('***rut:',rut)
+        const { scanResult, rut, hand } = req.body;
         const url = "https://abis.tech5.tech/T5CloudService/1.0/processRequest";
         const username = "jeycoradames@gmail.com";
         const password = "j@yc0r@d@#T5";
@@ -116,7 +115,8 @@ export class SdkController {
             }));
 
             //Validar si el rut enviado está entre los IDs
-            const matchFound = matchedFingerprints.some(fp => fp.id === rut);
+            const rutWithHand = `${rut}-${hand}`;
+            const matchFound = matchedFingerprints.some(fp => fp.id === rutWithHand);
 
             console.log('matchFound',matchFound)
 
@@ -283,9 +283,6 @@ export class SdkController {
             return sendResponse(res, 500, true, "Error interno al procesar la captura de huella");
         }
     }
-
-    //AÑADIR LOGICA PARA ACTUALIZAR EL ESTADO DE LA FACTURA
-    
     
     /**
      * @swagger
@@ -318,7 +315,7 @@ export class SdkController {
      *         description: Server error
      */
     static async validateTemplate(req,res){
-        const { scanResult, rut } = req.body;
+        const { scanResult, rut, hand } = req.body;
         const url = "https://abis.tech5.tech/T5CloudService/1.0/processRequest";
         const username = "jeycoradames@gmail.com";
         const password = "j@yc0r@d@#T5";
@@ -393,8 +390,9 @@ export class SdkController {
                 template: item.template
             }));
 
+            const rutWithHand = `${rut}-${hand}`;
 
-            const enrollResponse = await SdkController.enrollarUser(filteredData, rut);
+            const enrollResponse = await SdkController.enrollarUser(filteredData, rutWithHand);
             /*LOGICA SEGUN SU RUT */
             return sendResponse(res, 200, false, enrollResponse);
         } catch (error) {
@@ -433,7 +431,7 @@ export class SdkController {
      *       500:
      *         description: Server error
      */
-    static async enrollarUser(dataTemplate,rut) {
+    static async enrollarUser(dataTemplate,rutWithHand) {
         const url = "https://abis.tech5.tech/T5CloudService/1.0/processRequest";
         const username = "jeycoradames@gmail.com";
         const password = "j@yc0r@d@#T5";
@@ -444,7 +442,7 @@ export class SdkController {
     
             const body = {
                 "tid": "sethorPrueba1-daniel",
-                "encounter_id": rut,
+                "encounter_id": rutWithHand,
                 "request_type": "Enroll",
                 "finger_data": {
                     "live_scan_plain": dataTemplate
