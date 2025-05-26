@@ -126,7 +126,7 @@ export class AuthController {
                 {
                     user: {
                         id: newUser.id,
-                        emial: newUser.email,
+                        email: newUser.email,
                     },
                 },
                 { token: token }
@@ -220,7 +220,7 @@ export class AuthController {
                 {
                     user: {
                         id: user.id,
-                        emial: user.email,
+                        email: user.email,
                     },
                 },
                 { token: token }

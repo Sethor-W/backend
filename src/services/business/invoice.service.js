@@ -14,6 +14,7 @@ import { Op } from "sequelize";
 import { calculateInvoiceValues } from "../../helpers/invoice.helper.js";
 import { rolesEnum } from "../../enum/roles.enum.js";
 import { StatisticsController } from "../../controllers/statistics.controller.js";
+import { OneClickCard } from "../../models/client/oneClickCard.js";
 
 export class InvoiceService {
 
@@ -441,7 +442,7 @@ export class InvoiceService {
 
         try {
             // Verificar existencia del usuario y empresa
-            const [user, business, invoice, userProfile] = await Promise.all([
+            const [user, business, invoice, userProfile, oneClickCard] = await Promise.all([
                 User.findByPk(clientId), // Buscar el usuario
                 Business.findOne({
                     where: {
@@ -461,7 +462,12 @@ export class InvoiceService {
                     where: {
                         userId: clientId
                     }
-                }) // Buscar el perfil del usuario
+                }), // Buscar el perfil del usuario
+                OneClickCard.findOne({
+                    where: {
+                        userId: clientId
+                    }
+                }) // Buscar la tarjeta registrada del usuario
             ]);
 
             if (!user) {
@@ -492,6 +498,41 @@ export class InvoiceService {
                     message: "Perfil del usuario pagador no existe"
                 };
             }
+            if (!oneClickCard) {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: "No se encontró tarjeta registrada para el usuario"
+                };
+            }
+
+            // Preparar los headers para la petición a Transbank
+            const headers = {
+                "Tbk-Api-Key-Id": process.env.TRANSBANK_API_KEY_ID || "",
+                "Tbk-Api-Key-Secret": process.env.TRANSBANK_API_KEY_SECRET || "",
+                "Content-Type": "application/json",
+                "User-Agent": "PostmanRuntime/7.43.2",
+                "Accept": "*/*",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Connection": "keep-alive"
+            };
+
+            // Realizar petición a Transbank para autorizar el pago
+            const response = await axios.post(
+                `${BASE_URL}/rswebpaytransaction/api/oneclick/v1.2/transactions`,
+                {
+                    username: user.email,
+                    tbk_user: oneClickCard.tbk_user,
+                    buy_order: `INV-${invoiceId}`,
+                    details: [{
+                        commerce_code: process.env.TRANSBANK_COMMERCE_CODE,
+                        buy_order: `INV-${invoice?.voucherNumber}`,
+                        amount: invoice.totalGeneral,
+                        installments_number: 1
+                    }]
+                },
+                { headers }
+            );
 
             // Generar un número de comprobante único
             const voucherNumber = `ST-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
@@ -543,6 +584,7 @@ export class InvoiceService {
                 message: "Factura pagada exitosamente",
                 data: {
                     invoice: updatedInvoice,
+                    transaction: response?.data
                 }
             };
 

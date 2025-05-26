@@ -20,3 +20,7 @@ routerTransbank.delete('/oneclick/inscriptions', [
 routerTransbank.post('/oneclick/authorize', [
     // verifyTokenMiddleware,
 ], OneClickTransbankController.authorizeTransaction);
+
+routerTransbank.get('/oneclick/cards/:userId', [
+    // verifyTokenMiddleware,
+], OneClickTransbankController.getCardsByUserId);
