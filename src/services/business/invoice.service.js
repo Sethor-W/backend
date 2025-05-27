@@ -523,11 +523,11 @@ export class InvoiceService {
                 {
                     username: user.email,
                     tbk_user: oneClickCard.tbk_user,
-                    buy_order: `INV-${invoiceId}`,
+                    buy_order: `${invoiceId}`,
                     details: [{
                         commerce_code: process.env.TRANSBANK_COMMERCE_CODE,
-                        buy_order: `INV-${invoice?.voucherNumber}`,
-                        amount: invoice.totalGeneral,
+                        buy_order: `${invoice?.voucherNumber}`,
+                        amount: `${invoice.totalGeneral}`,
                         installments_number: 1
                     }]
                 },
